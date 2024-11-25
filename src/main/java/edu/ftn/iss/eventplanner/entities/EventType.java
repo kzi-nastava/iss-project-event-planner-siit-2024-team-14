@@ -1,22 +1,20 @@
-package edu.ftn.iss.eventplanner.model;
+package edu.ftn.iss.eventplanner.entities;
 
 import lombok.*;
 import jakarta.persistence.*;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Chat {
+public class EventType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-
-    @OneToMany(mappedBy = "chat")
-    private List<Message> messages; // Lista poruka u chatu
+    private String description;
+    private boolean isActive;
 }
 

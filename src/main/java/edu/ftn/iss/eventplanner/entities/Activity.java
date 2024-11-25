@@ -1,14 +1,15 @@
-package edu.ftn.iss.eventplanner.model;
+package edu.ftn.iss.eventplanner.entities;
 
 import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Event {
+public class Activity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,14 +17,10 @@ public class Event {
 
     private String name;
     private String description;
-    private int maxParticipants;
-    private String privacyType;
-    private String location;
     private LocalDate startDate;
     private LocalDate endDate;
-    private double budget;
+    private String location;
 
-    @ManyToOne
-    @JoinColumn(name = "event_type_id")
-    private EventType eventType;
+    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL)
+    private List<Booking> bookings;
 }
