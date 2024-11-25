@@ -1,4 +1,4 @@
-package edu.ftn.iss.eventplanner.model;
+package edu.ftn.iss.eventplanner.entities;
 
 import edu.ftn.iss.eventplanner.enums.InvitationStatus;
 import lombok.*;

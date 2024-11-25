@@ -1,14 +1,14 @@
-package edu.ftn.iss.eventplanner.model;
+package edu.ftn.iss.eventplanner.entities;
 
 import lombok.*;
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Service {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,12 +19,11 @@ public class Service {
     private double price;
     private double discount;
     private String imageUrl;
-    private int duration;
-    private String reservationType;
-    private LocalDate reservationDate;
-    private LocalDate cancellationDate;
+    private boolean isAvailable;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<Service> services;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 }
