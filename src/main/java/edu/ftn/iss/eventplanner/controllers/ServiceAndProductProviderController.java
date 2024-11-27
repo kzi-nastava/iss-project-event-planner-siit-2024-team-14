@@ -18,23 +18,11 @@ public class ServiceAndProductProviderController {
 
         System.out.println("Saving provider with email: " + registerDTO.getEmail() + " and token: " + verificationToken);
 
-        String verificationLink = "http://localhost:8080/api/providers/verify-email?token=" + verificationToken;
+        String verificationLink = "http://localhost:8080/api/email-verification/verify?token=" + verificationToken;
 
         System.out.println("Verification email sent to " + registerDTO.getEmail());
         System.out.println("Verification link: " + verificationLink);
 
         return new ResponseEntity<>("Service and product provider registered successfully! Please verify your account via email.", HttpStatus.CREATED);
-    }
-
-    // Email verification endpoint
-    @GetMapping("/verify-email")
-    public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
-        System.out.println("Verifying token: " + token);
-
-        if (token != null) {
-            return new ResponseEntity<>("Email verified successfully! Your account is now active.", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Invalid or expired token.", HttpStatus.BAD_REQUEST);
-        }
     }
 }

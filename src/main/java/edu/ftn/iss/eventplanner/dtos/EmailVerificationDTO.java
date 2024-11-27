@@ -4,6 +4,5 @@ import lombok.Data;
 
 @Data
 public class EmailVerificationDTO {
-    private String email;
     private String token;
 }
