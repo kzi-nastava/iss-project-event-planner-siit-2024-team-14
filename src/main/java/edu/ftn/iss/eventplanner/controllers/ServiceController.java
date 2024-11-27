@@ -1,10 +1,12 @@
 package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.CreateServiceDTO;
+import edu.ftn.iss.eventplanner.dtos.CreateServiceForProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.ServiceDTO;
 import edu.ftn.iss.eventplanner.dtos.UpdateServiceDTO;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -35,11 +37,8 @@ public class ServiceController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<ServiceDTO> createService(
-            @RequestBody CreateServiceDTO service
+            @RequestBody @Validated CreateServiceForProviderDTO service
     ) {
-        // NOTE: Data about the provider of the service has to be passed. Here through dto, but should
-        // add create service on a path where you can deduce its owner. (there shall be get provider services...)
-        // TODO: figure this out
         ServiceDTO createdService = new ServiceDTO();
         return ResponseEntity
                 .created(URI.create("services/" + createdService.getId()))
@@ -47,9 +46,9 @@ public class ServiceController {
     }
 
 
-    @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<ServiceDTO> putUpdateService(
-            @RequestBody UpdateServiceDTO service
+            @RequestBody @Validated UpdateServiceDTO service
     ) {
         return ResponseEntity.accepted().build();
     }
