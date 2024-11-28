@@ -1,0 +1,19 @@
+package edu.ftn.iss.eventplanner.entities;
+
+import lombok.*;
+import jakarta.persistence.*;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class ServiceAndProductCategory {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String description;
+}
+
