@@ -144,12 +144,12 @@ public class UserController {
         return new ResponseEntity<ChangedPasswordDTO>(changedPassword, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deactivateUser(@PathVariable Long id) {
         DeactivateAccountDTO account = new DeactivateAccountDTO();
 
         account.setActive(false);
 
-        return new ResponseEntity<>("User account deactivated.", HttpStatus.OK);
+        return new ResponseEntity<>("User account deactivated.", HttpStatus.NO_CONTENT);
     }
 }
