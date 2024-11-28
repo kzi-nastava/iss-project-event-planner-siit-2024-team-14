@@ -1,4 +1,4 @@
-package edu.ftn.iss.eventplanner.model;
+package edu.ftn.iss.eventplanner.entities;
 
 import lombok.*;
 import jakarta.persistence.*;
@@ -7,15 +7,14 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class BudgetItem {
+public class Invitation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String category;
-    private double amount;
-    private boolean purchased;
+    private String guestEmail;
+    private String status;
 
     @ManyToOne
     @JoinColumn(name = "activity_id")

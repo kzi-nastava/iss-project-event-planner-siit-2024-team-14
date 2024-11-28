@@ -1,9 +1,9 @@
 package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.SolutionDTO;
-import edu.ftn.iss.eventplanner.model.Solution;
-import edu.ftn.iss.eventplanner.model.Service;
-import edu.ftn.iss.eventplanner.model.Product;
+import edu.ftn.iss.eventplanner.entities.Solution;
+import edu.ftn.iss.eventplanner.entities.Service;
+import edu.ftn.iss.eventplanner.entities.Product;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

@@ -1,6 +1,6 @@
 package edu.ftn.iss.eventplanner.dtos;
 
-import edu.ftn.iss.eventplanner.model.Comment;
+import edu.ftn.iss.eventplanner.entities.Comment;
 import lombok.*;
 
 import java.util.List;
