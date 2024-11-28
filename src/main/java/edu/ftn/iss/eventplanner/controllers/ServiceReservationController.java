@@ -1,14 +1,11 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.ServiceReservationRequest;
-import edu.ftn.iss.eventplanner.dtos.ServiceReservationResponse;
+import edu.ftn.iss.eventplanner.dtos.ServiceReservationRequestDTO;
+import edu.ftn.iss.eventplanner.dtos.ServiceReservationResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 @RestController
 @RequestMapping("/api/services/reservations")
@@ -21,9 +18,9 @@ public class ServiceReservationController {
      * @return Response sa statusom i informacijama o rezervaciji.
      */
     @PostMapping
-    public ResponseEntity<ServiceReservationResponse> bookService(@Valid @RequestBody ServiceReservationRequest request) {
+    public ResponseEntity<ServiceReservationResponseDTO> bookService(@Valid @RequestBody ServiceReservationRequestDTO request) {
         // Dummy response to simulate booking
-        ServiceReservationResponse response = new ServiceReservationResponse(
+        ServiceReservationResponseDTO response = new ServiceReservationResponseDTO(
                 1L,
                 request.getServiceId(),
                 request.getEventId(),

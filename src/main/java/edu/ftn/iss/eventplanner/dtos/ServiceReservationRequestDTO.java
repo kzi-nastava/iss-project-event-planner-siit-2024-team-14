@@ -12,7 +12,7 @@ import java.time.LocalTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceReservationRequest {
+public class ServiceReservationRequestDTO {
 
     @NotNull(message = "Service ID cannot be null")
     private Long serviceId;

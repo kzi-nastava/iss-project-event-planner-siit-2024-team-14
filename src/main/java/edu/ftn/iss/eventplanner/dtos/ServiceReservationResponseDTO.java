@@ -10,7 +10,7 @@ import java.time.LocalTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceReservationResponse {
+public class ServiceReservationResponseDTO {
 
     private Long reservationId;
     private Long serviceId;
