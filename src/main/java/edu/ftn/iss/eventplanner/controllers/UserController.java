@@ -1,16 +1,15 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.CreateUserDTO;
-import edu.ftn.iss.eventplanner.dtos.ReportDTO;
-import edu.ftn.iss.eventplanner.dtos.ReportResponseDTO;
-import edu.ftn.iss.eventplanner.dtos.LoginDTO;
+import edu.ftn.iss.eventplanner.dtos.*;
 import edu.ftn.iss.eventplanner.dtos.CreateUserDTO;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import java.util.UUID;
@@ -81,7 +80,7 @@ public class UserController {
         System.out.println("Report with ID " + reportId + " resolved.");
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-
+    }
       
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<GetUserDTO>> getUsers() {
