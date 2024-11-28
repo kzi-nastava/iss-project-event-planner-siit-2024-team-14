@@ -40,7 +40,8 @@ public class EventOrganizerController {
             return new ResponseEntity<>("Your account is not active. Please verify your email.", HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>("Event Organizer login successful!", HttpStatus.OK);
-      
+    }
+
     // Event Organizer registration
     @PostMapping("/register")
     public ResponseEntity<String> registerEventOrganizer(@RequestBody CreateEventOrganizerDTO registerDTO) {
@@ -112,7 +113,7 @@ public class EventOrganizerController {
         return new ResponseEntity<UpdatedOrganizerDTO>(updatedOrganizer, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}/change-password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChangedPasswordDTO> changePassword(@PathVariable Long id, @RequestBody ChangePasswordDTO password) throws Exception {
         ChangedPasswordDTO changedPassword = new ChangedPasswordDTO();
 

@@ -40,6 +40,7 @@ public class ServiceAndProductProviderController {
             return new ResponseEntity<>("Your account is not active. Please verify your email.", HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>("Service and Product Provider login successful!", HttpStatus.OK);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<String> registerServiceAndProductProvider(@RequestBody CreateServiceAndProductProviderDTO registerDTO) {
@@ -119,7 +120,7 @@ public class ServiceAndProductProviderController {
         return new ResponseEntity<UpdatedProviderDTO>(updatedProvider, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}/change-password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChangedPasswordDTO> changePassword(@PathVariable Long id, @RequestBody ChangePasswordDTO password) throws Exception {
         ChangedPasswordDTO changedPassword = new ChangedPasswordDTO();
 

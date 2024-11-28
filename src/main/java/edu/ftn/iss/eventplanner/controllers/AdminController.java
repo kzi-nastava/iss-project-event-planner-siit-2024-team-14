@@ -35,6 +35,7 @@ public class AdminController {
             return new ResponseEntity<>("Your account is not active. Please verify your email.", HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>("Admin login successful!", HttpStatus.OK);
+    }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<GetAdminDTO>> getAdmins() {
@@ -86,7 +87,7 @@ public class AdminController {
         return new ResponseEntity<UpdatedAdminDTO>(updatedAdmin, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}/change-password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChangedPasswordDTO> changePassword(@PathVariable Long id, @RequestBody ChangePasswordDTO password) throws Exception {
         ChangedPasswordDTO changedPassword = new ChangedPasswordDTO();
 
