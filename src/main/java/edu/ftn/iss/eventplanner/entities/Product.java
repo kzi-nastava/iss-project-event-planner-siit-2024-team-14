@@ -8,22 +8,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Product {
+@DiscriminatorValue("PRODUCT") // Oznaka za Product u bazi podataka
+public class Product extends Solution {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String name;
-    private String description;
-    private double price;
-    private double discount;
-    private String imageUrl;
     private boolean isAvailable;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Service> services;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Comment> comments;
+    public Product(Long id, String name, String description, double price, double discount, String imageUrl, boolean isAvailable, boolean isVisible, List<Comment> comments) {
+        super(id, name, description, price, discount, imageUrl, isAvailable, isVisible, false, comments);
+        this.isAvailable = isAvailable;
+    }
 }
