@@ -12,11 +12,6 @@ import java.util.Collection;
 import java.util.List;
 
 import edu.ftn.iss.eventplanner.dtos.LoginDTO;
-import edu.ftn.iss.eventplanner.dtos.CreateServiceAndProductProviderDTO;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.UUID;
 
 @RestController

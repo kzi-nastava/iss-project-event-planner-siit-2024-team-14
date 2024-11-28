@@ -13,9 +13,7 @@ import java.util.List;
 
 import edu.ftn.iss.eventplanner.dtos.LoginDTO;
 import edu.ftn.iss.eventplanner.dtos.CreateEventOrganizerDTO;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+
 
 import java.util.UUID;
 
@@ -41,6 +39,7 @@ public class EventOrganizerController {
         }
         return new ResponseEntity<>("Event Organizer login successful!", HttpStatus.OK);
     }
+
 
     // Event Organizer registration
     @PostMapping("/register")
