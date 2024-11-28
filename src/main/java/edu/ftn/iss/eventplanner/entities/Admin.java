@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 public class Admin extends User {
 }
