@@ -38,6 +38,7 @@ public class UserController {
             return new ResponseEntity<>("Your account is not active. Please verify your email.", HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>("Login successful!", HttpStatus.OK);
+    }
 
     // User registration endpoint
     @PostMapping("/register")

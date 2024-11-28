@@ -40,6 +40,7 @@ public class EventOrganizerController {
             return new ResponseEntity<>("Your account is not active. Please verify your email.", HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>("Event Organizer login successful!", HttpStatus.OK);
+    }
       
     // Event Organizer registration
     @PostMapping("/register")

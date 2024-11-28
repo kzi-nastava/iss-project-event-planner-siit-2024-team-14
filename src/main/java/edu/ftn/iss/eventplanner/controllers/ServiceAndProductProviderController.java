@@ -40,6 +40,7 @@ public class ServiceAndProductProviderController {
             return new ResponseEntity<>("Your account is not active. Please verify your email.", HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>("Service and Product Provider login successful!", HttpStatus.OK);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<String> registerServiceAndProductProvider(@RequestBody CreateServiceAndProductProviderDTO registerDTO) {
