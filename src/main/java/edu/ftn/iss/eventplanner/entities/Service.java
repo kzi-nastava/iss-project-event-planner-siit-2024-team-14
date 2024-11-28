@@ -6,10 +6,12 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+
 @DiscriminatorValue("SERVICE")
 
 public class Service extends Solution {
