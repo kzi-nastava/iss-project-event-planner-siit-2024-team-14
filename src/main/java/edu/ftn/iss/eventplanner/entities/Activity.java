@@ -15,9 +15,11 @@ public class Activity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    /*
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
+     */
 
     private String name;
     private String description;

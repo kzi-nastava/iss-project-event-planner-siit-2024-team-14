@@ -16,5 +16,4 @@ public class SolutionDTO {
     private double discount;
     private String imageUrl;
     private boolean isAvailable;
-    private List<Comment> comments;
 }

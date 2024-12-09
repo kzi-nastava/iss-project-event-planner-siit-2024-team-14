@@ -25,6 +25,7 @@ public class User {
     private boolean isVerified;
     private boolean isSuspended;
 
+    /*
     @ManyToMany
     @JoinTable(
             name = "user_blocked_users",
@@ -56,4 +57,5 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "event_id")
     )
     private List<Event> joinedEvents;
+     */
 }

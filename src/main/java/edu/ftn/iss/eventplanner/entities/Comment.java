@@ -20,6 +20,7 @@ public class Comment {
     private LocalDate date;
     private Status status;      // pending, accepted, rejected, deleted - LOGICAL DELETION
 
+    /*
     // one of these two will be null
     @ManyToOne
     @JoinColumn(name = "product_id")    // after buying product
@@ -28,4 +29,5 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "service_id")    // after booking service
     private Service service;
+     */
 }

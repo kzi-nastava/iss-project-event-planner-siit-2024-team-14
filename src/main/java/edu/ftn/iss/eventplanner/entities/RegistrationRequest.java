@@ -21,8 +21,10 @@ public class RegistrationRequest {
     @Enumerated(EnumType.STRING)
     private Status status;    // PENDING, ACCEPTED, REJECTED
 
+    /*
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;                  // who sent request
+     */
 }
 

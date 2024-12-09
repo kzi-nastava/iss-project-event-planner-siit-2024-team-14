@@ -16,6 +16,7 @@ public class PurchaseProduct {
 
     private LocalDateTime purchaseDate;
 
+    /*
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
@@ -23,4 +24,5 @@ public class PurchaseProduct {
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
+     */
 }

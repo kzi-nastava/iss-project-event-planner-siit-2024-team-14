@@ -19,8 +19,10 @@ public class SolutionCategory {
     private String name;
     private String description;
 
+    /*
     @OneToMany(mappedBy = "category")
     private List<EventType> eventTypes;
+     */
 
     private Status status;      // when new category is requested
 }

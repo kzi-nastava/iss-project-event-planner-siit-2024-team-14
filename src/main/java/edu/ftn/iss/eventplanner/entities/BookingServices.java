@@ -21,6 +21,7 @@ public class BookingServices {
     private Time startTime;
     private Time endTime;
 
+    /*
     @ManyToOne
     @JoinColumn(name = "service_id")
     private Service service;
@@ -28,5 +29,6 @@ public class BookingServices {
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
+     */
 }
 

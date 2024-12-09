@@ -24,7 +24,7 @@ public class SolutionController {
 
         // Pretvaranje u DTO i slanje odgovora
         List<SolutionDTO> solutionDTOs = topSolutions.stream()
-                .map(solution -> new SolutionDTO(solution.getId(), solution.getName(), solution.getDescription(), solution.getPrice(), solution.getDiscount(), solution.getImageUrl(), solution.isAvailable(), solution.getComments()))
+                .map(solution -> new SolutionDTO(solution.getId(), solution.getName(), solution.getDescription(), solution.getPrice(), solution.getDiscount(), solution.getImageUrl(), solution.isAvailable()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(solutionDTOs);
@@ -80,7 +80,7 @@ public class SolutionController {
         }
 
         return solutions.subList(start, end).stream()
-                .map(solution -> new SolutionDTO(solution.getId(), solution.getName(), solution.getDescription(), solution.getPrice(), solution.getDiscount(), solution.getImageUrl(), solution.isAvailable(), solution.getComments()))
+                .map(solution -> new SolutionDTO(solution.getId(), solution.getName(), solution.getDescription(), solution.getPrice(), solution.getDiscount(), solution.getImageUrl(), solution.isAvailable()))
                 .collect(Collectors.toList());
     }
 

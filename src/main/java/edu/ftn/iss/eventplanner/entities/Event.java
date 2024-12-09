@@ -14,9 +14,11 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    /*
     @ManyToOne
     @JoinColumn(name = "organizer_id")
     private EventOrganizer organizer;
+     */
 
     private String name;
     private String description;
@@ -26,7 +28,9 @@ public class Event {
     private LocalDate startDate;
     private LocalDate endDate;
 
+    /*
     @ManyToOne
     @JoinColumn(name = "event_type_id")
     private EventType eventType;
+     */
 }
