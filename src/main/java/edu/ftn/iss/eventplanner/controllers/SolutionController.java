@@ -55,11 +55,6 @@ public class SolutionController {
     private List<Solution> searchSolutionsFromDb(String name, String type, String availability, LocalDate startDate, LocalDate endDate, Boolean isProduct) {
         List<Solution> solutions = new ArrayList<>();
 
-        solutions.add(new Product(null, "Product 1", "Description 1", 100.0, 10.0, "image1.jpg", true, true, new ArrayList<>()));
-        solutions.add(new Product(null, "Product 2", "Description 2", 150.0, 15.0, "image2.jpg", true, true, new ArrayList<>()));
-        solutions.add(new Service(null, "Service 1", "Description 3", 120.0, 12.0, "image3.jpg", true, 60, "online", LocalDate.now(), LocalDate.now().plusDays(5), new ArrayList<>()));
-        solutions.add(new Service(null, "Service 2", "Description 4", 130.0, 13.0, "image4.jpg", false, 45, "offline", LocalDate.now().plusDays(1), LocalDate.now().plusDays(7), new ArrayList<>()));
-
         // Filtriranje po tipu (proizvod ili usluga)
         if (isProduct != null) {
             if (isProduct) {
@@ -92,11 +87,6 @@ public class SolutionController {
     // Helper metoda za dobijanje Top 5 usluga/proizvoda
     private List<Solution> getTop5SolutionsFromDb(String city) {
         List<Solution> solutions = new ArrayList<>();
-        solutions.add(new Product(1L, "Product 1", "Description 1", 100.0, 10.0, "image1.jpg", true, true, new ArrayList<>()));
-        solutions.add(new Product(2L, "Product 2", "Description 2", 120.0, 12.0, "image2.jpg", true, true, new ArrayList<>()));
-        solutions.add(new Service(3L, "Service 1", "Description 3", 130.0, 13.0, "image3.jpg", true, 60, "online", LocalDate.now(), LocalDate.now().plusDays(5), new ArrayList<>()));
-        solutions.add(new Service(4L, "Service 2", "Description 4", 140.0, 14.0, "image4.jpg", false, 45, "offline", LocalDate.now().plusDays(1), LocalDate.now().plusDays(7), new ArrayList<>()));
-        solutions.add(new Product(5L, "Product 3", "Description 5", 110.0, 11.0, "image5.jpg", true, true, new ArrayList<>()));
 
         return solutions;
     }
