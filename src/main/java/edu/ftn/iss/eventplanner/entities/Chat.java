@@ -12,11 +12,17 @@ public class Chat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private User sender;                // who sent a message
+
+    @ManyToOne
+    @JoinColumn(name = "recipient_id")
+    private User recipient;             // who got a message
 
     @OneToMany(mappedBy = "chat")
-    private List<Message> messages; // Lista poruka u chatu
+    private List<Message> messages;     // list of messages in the chat
 }
 

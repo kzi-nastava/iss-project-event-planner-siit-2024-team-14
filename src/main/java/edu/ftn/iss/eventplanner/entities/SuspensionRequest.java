@@ -1,28 +1,35 @@
 package edu.ftn.iss.eventplanner.entities;
 
 import edu.ftn.iss.eventplanner.enums.Status;
-import lombok.*;
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class RegistrationRequest {
+public class SuspensionRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private LocalDateTime timestamp;
+    private Status status;
 
-    @Enumerated(EnumType.STRING)
-    private Status status;    // PENDING, ACCEPTED, REJECTED
-
+    // who sent request
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;                  // who sent request
-}
+    private User sender;
 
+    // who is suspended
+    @ManyToOne
+    @JoinColumn(name = "suspended_user_id")
+    private User suspendedUser;
+
+    private String reason;
+}

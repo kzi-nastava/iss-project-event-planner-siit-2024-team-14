@@ -2,27 +2,31 @@ package edu.ftn.iss.eventplanner.entities;
 
 import lombok.*;
 import jakarta.persistence.*;
+
+import java.sql.Time;
 import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Booking {
+public class BookingServices {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private LocalDate bookingDate;
     private boolean isConfirmed;
+    private Time startTime;
+    private Time endTime;
 
     @ManyToOne
-    @JoinColumn(name = "activity_id")
-    private Activity activity;
+    @JoinColumn(name = "service_id")
+    private Service service;
 
-    @OneToOne
-    @JoinColumn(name = "purchase_id")
-    private Purchase purchase;
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 }
 

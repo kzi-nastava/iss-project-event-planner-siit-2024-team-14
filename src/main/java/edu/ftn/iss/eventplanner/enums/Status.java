@@ -1,8 +1,8 @@
 package edu.ftn.iss.eventplanner.enums;
 
-
-public enum CommentStatus {
+public enum Status {
     PENDING,
     APPROVED,
-    REJECTED
+    REJECTED,
+    DELETED
 }

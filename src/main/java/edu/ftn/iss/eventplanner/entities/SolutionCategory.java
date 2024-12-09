@@ -1,27 +1,26 @@
 package edu.ftn.iss.eventplanner.entities;
 
+import edu.ftn.iss.eventplanner.enums.Status;
 import lombok.*;
 import jakarta.persistence.*;
-import java.time.LocalDate;
+
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Activity {
+public class SolutionCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id")
-    private Event event;
-
     private String name;
     private String description;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private String location;
+
+    @OneToMany(mappedBy = "category")
+    private List<EventType> eventTypes;
+
+    private Status status;      // when new category is requested
 }
