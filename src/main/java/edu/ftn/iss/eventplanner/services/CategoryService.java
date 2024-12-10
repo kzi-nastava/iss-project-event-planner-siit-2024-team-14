@@ -1,6 +1,6 @@
 package edu.ftn.iss.eventplanner.services;
 
-import edu.ftn.iss.eventplanner.entities.Category;
+import edu.ftn.iss.eventplanner.entities.SolutionCategory;
 import edu.ftn.iss.eventplanner.repositories.CategoryRepository;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
@@ -31,37 +31,37 @@ public class CategoryService {
 
 
 
-    public Category getCategoryById(long id) {
+    public SolutionCategory getCategoryById(long id) {
         return categories.findById(id)
                 // TODO: Make custom exceptions
                 .orElseThrow(() -> new IllegalArgumentException("Category not found"));
     }
 
 
-    public Optional<Category> findCategoryById(long id) {
+    public Optional<SolutionCategory> findCategoryById(long id) {
         return categories.findById(id);
     }
 
 
-    public Optional<Category> findCategoryByName(String name) { return categories.findByName(name); }
+    public Optional<SolutionCategory> findCategoryByName(String name) { return categories.findByName(name); }
 
 
 
-    public Collection<Category> getAllCategories() {
+    public Collection<SolutionCategory> getAllCategories() {
         return categories.findAll();
     }
 
 
 
-    public Category insertCategory(Category category) {
+    public SolutionCategory insertCategory(SolutionCategory category) {
         category.setId(null);
         return categories.save(category);
     }
 
 
 
-    public Category updateCategory(Category category) {
-        Category oldCategoryState = getCategoryById(category.getId());
+    public SolutionCategory updateCategory(SolutionCategory category) {
+        SolutionCategory oldCategoryState = getCategoryById(category.getId());
         boolean hasNameChanged = !oldCategoryState.getName().equals(category.getName());
         if (hasNameChanged) onCategoryNameChanged(category);
         category = categories.save(category);
@@ -71,7 +71,7 @@ public class CategoryService {
 
 
     public void deleteCategoryById(long id) {
-        Category category = getCategoryById(id);
+        SolutionCategory category = getCategoryById(id);
         // TODO: Prevent deletion if services/products that are categorized into this category exist
         categories.deleteById(id);
     }
@@ -85,7 +85,7 @@ public class CategoryService {
 
 
 
-    protected void onCategoryNameChanged(Category category) {
+    protected void onCategoryNameChanged(SolutionCategory category) {
         // TODO
         eventPublisher.publishEvent(/* new CategoryNameChanged(*/category/*) */);
     }

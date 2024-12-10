@@ -3,7 +3,7 @@ package edu.ftn.iss.eventplanner.controllers;
 import edu.ftn.iss.eventplanner.dtos.CategoryDTO;
 import edu.ftn.iss.eventplanner.dtos.CreateCategoryDTO;
 import edu.ftn.iss.eventplanner.dtos.UpdateCategoryDTO;
-import edu.ftn.iss.eventplanner.entities.Category;
+import edu.ftn.iss.eventplanner.entities.SolutionCategory;
 import edu.ftn.iss.eventplanner.mappers.CategoryDTOMapper;
 import edu.ftn.iss.eventplanner.services.CategoryService;
 import jakarta.validation.Valid;
@@ -52,7 +52,7 @@ public class CategoryController {
     public ResponseEntity<CategoryDTO> getCategoryById(
             @PathVariable(name = "id") long id
     ) {
-        Category category = categoryService.getCategoryById(id);
+        SolutionCategory category = categoryService.getCategoryById(id);
         return ResponseEntity.ok(modelMapper.toCategoryDTO(category));
     }
 
@@ -76,7 +76,7 @@ public class CategoryController {
             @RequestBody @Valid CreateCategoryDTO categoryData,
             UriComponentsBuilder uriBuilder
     ) {
-        Category createdCategory = categoryService.insertCategory(modelMapper.fromDTO(categoryData));
+        SolutionCategory createdCategory = categoryService.insertCategory(modelMapper.fromDTO(categoryData));
 
         URI location = uriBuilder
                 .path("/{id}")
@@ -93,7 +93,7 @@ public class CategoryController {
     public ResponseEntity<CategoryDTO> putUpdateCategory(
             @RequestBody @Valid UpdateCategoryDTO categoryData
     ) {
-        Category updatedCategory = categoryService.updateCategory(modelMapper.fromDTO(categoryData));
+        SolutionCategory updatedCategory = categoryService.updateCategory(modelMapper.fromDTO(categoryData));
         return ResponseEntity.ok(modelMapper.toCategoryDTO(updatedCategory));
     }
 
