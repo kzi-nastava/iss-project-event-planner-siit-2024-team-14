@@ -1,16 +1,16 @@
 package edu.ftn.iss.eventplanner.dtos;
 
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Data
 public class CreateCategoryDTO {
-    @NotBlank
+    @NotBlank(message = "{category.name.blank}")
+    @Size(min = 3, max = 100, message = "{category.name.size}")
     private String name;
+
+    @Size(max = 500, message = "{category.description.size}")
     private String description;
 }
