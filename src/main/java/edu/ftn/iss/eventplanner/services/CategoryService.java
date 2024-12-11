@@ -31,14 +31,14 @@ public class CategoryService {
 
 
 
-    public SolutionCategory getCategoryById(long id) {
+    public SolutionCategory getCategoryById(int id) {
         return categories.findById(id)
                 // TODO: Make custom exceptions
                 .orElseThrow(() -> new IllegalArgumentException("Category not found"));
     }
 
 
-    public Optional<SolutionCategory> findCategoryById(long id) {
+    public Optional<SolutionCategory> findCategoryById(int id) {
         return categories.findById(id);
     }
 
@@ -70,7 +70,7 @@ public class CategoryService {
 
 
 
-    public void deleteCategoryById(long id) {
+    public void deleteCategoryById(int id) {
         SolutionCategory category = getCategoryById(id);
         // TODO: Prevent deletion if services/products that are categorized into this category exist
         categories.deleteById(id);

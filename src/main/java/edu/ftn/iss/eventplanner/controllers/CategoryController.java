@@ -50,7 +50,7 @@ public class CategoryController {
     // GET */api/categories/1
     @GetMapping(path = "/{id:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CategoryDTO> getCategoryById(
-            @PathVariable(name = "id") long id
+            @PathVariable(name = "id") int id
     ) {
         SolutionCategory category = categoryService.getCategoryById(id);
         return ResponseEntity.ok(modelMapper.toCategoryDTO(category));
@@ -102,7 +102,7 @@ public class CategoryController {
     // DELETE admin@*/api/categories/1
     @DeleteMapping(path = {"/{id:\\d+}"})
     public ResponseEntity<Void> deleteCategory(
-            @PathVariable(name = "id") long id
+            @PathVariable(name = "id") int id
     ) {
         categoryService.deleteCategoryById(id);
         return ResponseEntity.noContent().build();
@@ -110,7 +110,7 @@ public class CategoryController {
 
 
 
-    // DELETE admin@*/api/categories/1
+    // DELETE admin@*/api/categories
     @DeleteMapping
     public ResponseEntity<Void> deleteAllCategories() {
         categoryService.deleteAllCategories();
