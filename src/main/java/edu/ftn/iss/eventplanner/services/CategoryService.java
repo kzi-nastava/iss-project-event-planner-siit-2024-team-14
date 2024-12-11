@@ -1,7 +1,7 @@
 package edu.ftn.iss.eventplanner.services;
 
 import edu.ftn.iss.eventplanner.entities.SolutionCategory;
-import edu.ftn.iss.eventplanner.events.CategoryNameChangedEvent;
+import edu.ftn.iss.eventplanner.entities.CategoryNameChangedEvent;
 import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
 import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
