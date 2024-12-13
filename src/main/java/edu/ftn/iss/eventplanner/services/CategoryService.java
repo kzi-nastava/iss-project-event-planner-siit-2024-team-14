@@ -7,6 +7,7 @@ import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.CategoryRepository;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +77,7 @@ public class CategoryService {
 
 
 
-    public SolutionCategory insertCategory(SolutionCategory categoryRequest) {
+    public SolutionCategory insertCategory(@NotNull SolutionCategory categoryRequest) {
         categoryRequest.setId(null); // probably should create a new category
 
         try {
@@ -90,30 +91,34 @@ public class CategoryService {
 
 
     @Transactional
-    public SolutionCategory updateCategory(SolutionCategory categoryRequest) {
-        SolutionCategory category = getCategoryById(categoryRequest.getId());
-        String oldName = category.getName();
-
-        SolutionCategory updatedCategory;
+    public SolutionCategory updateCategory(@NotNull SolutionCategory categoryRequest) {
         try {
-            updatedCategory = categories.save(categoryRequest);
+            SolutionCategory category = getCategoryById(categoryRequest.getId());
+            SolutionCategory updatedCategory = categories.save(categoryRequest);
+
+            boolean hasNameChanged = !category.getName().equals(updatedCategory.getName());
+            if (hasNameChanged) {
+                eventPublisher.publishEvent(
+                        new CategoryNameChangedEvent(category.getId(), category.getName(), updatedCategory.getName())
+                );
+            }
+
+            return updatedCategory;
+        } catch (NotFoundException ex) {
+            throw new NotFoundException("Category not found!");
         } catch (Exception ex) {
             throw new InternalServerError("An unexpected error has occurred. :(");
         }
-
-        // TODO: Maybe add domain events instead
-        boolean hasNameChanged = !oldName.equals(updatedCategory.getName());
-        if (hasNameChanged)
-            eventPublisher.publishEvent(new CategoryNameChangedEvent(category.getId(), oldName, updatedCategory.getName()));
-
-        return updatedCategory;
     }
 
 
 
     public void deleteCategoryById(int id) {
+        if (!categories.existsById(id)) {
+            throw new NotFoundException("Category not found!");
+        }
+
         try {
-            SolutionCategory category = getCategoryById(id);
             // TODO: Prevent deletion if services/products that are categorized into this category exist
             categories.deleteById(id);
         } catch (Exception ex) {
