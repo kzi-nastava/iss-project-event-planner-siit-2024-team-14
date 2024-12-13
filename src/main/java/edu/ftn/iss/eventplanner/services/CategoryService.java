@@ -94,16 +94,21 @@ public class CategoryService {
     public SolutionCategory updateCategory(@NotNull SolutionCategory categoryRequest) {
         try {
             SolutionCategory category = getCategoryById(categoryRequest.getId());
-            SolutionCategory updatedCategory = categories.save(categoryRequest);
+            String oldName = category.getName();
 
-            boolean hasNameChanged = !category.getName().equals(updatedCategory.getName());
+            Optional.ofNullable(categoryRequest.getName())
+                            .ifPresent(category::setName);
+            Optional.ofNullable(categoryRequest.getDescription())
+                            .ifPresent(category::setDescription);
+
+            boolean hasNameChanged = !oldName.equals(category.getName());
             if (hasNameChanged) {
                 eventPublisher.publishEvent(
-                        new CategoryNameChangedEvent(category.getId(), category.getName(), updatedCategory.getName())
+                        new CategoryNameChangedEvent(category.getId(), oldName, category.getName())
                 );
             }
 
-            return updatedCategory;
+            return category;
         } catch (NotFoundException ex) {
             throw new NotFoundException("Category not found!");
         } catch (Exception ex) {
