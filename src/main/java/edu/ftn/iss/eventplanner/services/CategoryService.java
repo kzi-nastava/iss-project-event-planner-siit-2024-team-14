@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 
 @Setter
@@ -44,7 +45,7 @@ public class CategoryService {
             throw new InternalServerError("An unexpected error has occurred. :(");
         }
 
-        return category.orElseThrow(() -> new NotFoundException("Category not found!"));
+        return category.orElseThrow(() -> new NotFoundException("Category not found."));
     }
 
 
@@ -78,10 +79,13 @@ public class CategoryService {
 
 
     public SolutionCategory insertCategory(@NotNull SolutionCategory categoryRequest) {
-        categoryRequest.setId(null); // probably should create a new category
+        SolutionCategory category = SolutionCategory.builder()
+                .name(categoryRequest.getName())
+                .description(categoryRequest.getDescription())
+                .build();
 
         try {
-            return categories.save(categoryRequest);
+            return categories.save(category);
         } catch (DataIntegrityViolationException | ConstraintViolationException | IllegalArgumentException ex) {
             throw new BadRequestException();
         } catch (Exception ex) {
@@ -94,14 +98,14 @@ public class CategoryService {
     public SolutionCategory updateCategory(@NotNull SolutionCategory categoryRequest) {
         try {
             SolutionCategory category = getCategoryById(categoryRequest.getId());
-            String oldName = category.getName();
+            final String oldName = category.getName();
 
             Optional.ofNullable(categoryRequest.getName())
                             .ifPresent(category::setName);
             Optional.ofNullable(categoryRequest.getDescription())
                             .ifPresent(category::setDescription);
 
-            boolean hasNameChanged = !oldName.equals(category.getName());
+            boolean hasNameChanged = !Objects.equals(oldName, category.getName());
             if (hasNameChanged) {
                 eventPublisher.publishEvent(
                         new CategoryNameChangedEvent(category.getId(), oldName, category.getName())
@@ -110,7 +114,7 @@ public class CategoryService {
 
             return category;
         } catch (NotFoundException ex) {
-            throw new NotFoundException("Category not found!");
+            throw new NotFoundException("Update failed, category does not exist.");
         } catch (Exception ex) {
             throw new InternalServerError("An unexpected error has occurred. :(");
         }
