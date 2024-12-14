@@ -14,7 +14,6 @@ public class Chat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    /*
     @ManyToOne
     @JoinColumn(name = "sender_id")
     private User sender;                // who sent a message
@@ -25,6 +24,5 @@ public class Chat {
 
     @OneToMany(mappedBy = "chat")
     private List<Message> messages;     // list of messages in the chat
-     */
 }
 

@@ -20,7 +20,6 @@ public class Notification {
     private LocalDate date;
     private boolean isRead;
 
-    /*
     // to whom is sent?
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -34,6 +33,5 @@ public class Notification {
     @ManyToOne
     @JoinColumn(name = "event_id")      // notification about event changes
     private Event event;
-     */
 }
 

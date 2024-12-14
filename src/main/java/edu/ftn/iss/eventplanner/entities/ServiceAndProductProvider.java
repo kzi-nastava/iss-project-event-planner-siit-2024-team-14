@@ -9,6 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@DiscriminatorValue("PROVIDER") // Maps to role = "PROVIDER"
 public class ServiceAndProductProvider extends User {
 
     private String companyName;

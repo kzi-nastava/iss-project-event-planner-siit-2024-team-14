@@ -14,14 +14,11 @@ public class BudgetItem {
     private Integer id;
     private double amount;
 
-    /*
     @ManyToOne
     @JoinColumn(name = "category_id")
     private SolutionCategory category;
 
-
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
-     */
 }

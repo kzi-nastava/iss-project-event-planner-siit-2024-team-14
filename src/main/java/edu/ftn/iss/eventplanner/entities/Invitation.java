@@ -16,9 +16,7 @@ public class Invitation {
     private String guestEmail;
     private String status;
 
-    /*
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
-     */
 }

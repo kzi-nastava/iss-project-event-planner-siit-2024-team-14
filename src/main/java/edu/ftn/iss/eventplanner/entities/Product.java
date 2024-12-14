@@ -6,12 +6,8 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
-
-@DiscriminatorValue("PRODUCT")
 
 public class Product extends Solution {
 
-    private boolean isAvailable;
 }

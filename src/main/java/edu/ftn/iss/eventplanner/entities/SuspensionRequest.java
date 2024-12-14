@@ -21,7 +21,6 @@ public class SuspensionRequest {
     private LocalDateTime timestamp;
     private Status status;
 
-    /*
     // who sent request
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -31,7 +30,6 @@ public class SuspensionRequest {
     @ManyToOne
     @JoinColumn(name = "suspended_user_id")
     private User suspendedUser;
-     */
 
     private String reason;
 }

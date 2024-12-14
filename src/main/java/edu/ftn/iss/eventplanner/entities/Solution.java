@@ -26,7 +26,6 @@ public abstract class Solution {
     private boolean isDeleted;
     private Status status;      // when new category is requested
 
-    /*
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
@@ -37,5 +36,4 @@ public abstract class Solution {
     @ManyToOne
     @JoinColumn(name = "provider_id")
     private ServiceAndProductProvider provider;
-     */
 }

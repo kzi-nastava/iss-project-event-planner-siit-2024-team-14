@@ -10,14 +10,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED) // Inheritance in Database
+@Table(name = "users")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Inheritance in Database
+@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Role role;
     private String email;
     private String password;
     private String address;
@@ -25,7 +26,6 @@ public class User {
     private boolean isVerified;
     private boolean isSuspended;
 
-    /*
     @ManyToMany
     @JoinTable(
             name = "user_blocked_users",
@@ -57,5 +57,4 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "event_id")
     )
     private List<Event> joinedEvents;
-     */
 }

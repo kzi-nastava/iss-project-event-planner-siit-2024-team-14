@@ -17,7 +17,6 @@ public class Message {
     private String content;
     private LocalDateTime timestamp;
 
-    /*
     @ManyToOne
     @JoinColumn(name = "sender_id")
     private User sender;            // who sent a message
@@ -25,5 +24,4 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "chat_id")
     private Chat chat;              // in which chat is this message sent to
-     */
 }

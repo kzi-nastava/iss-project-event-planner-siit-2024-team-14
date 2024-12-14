@@ -28,9 +28,7 @@ public class Event {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    /*
     @ManyToOne
     @JoinColumn(name = "event_type_id")
     private EventType eventType;
-     */
 }

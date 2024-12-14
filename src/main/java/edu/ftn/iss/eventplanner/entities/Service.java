@@ -14,8 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 
-@DiscriminatorValue("SERVICE")
-
 public class Service extends Solution {
 
     private Duration minDuration;

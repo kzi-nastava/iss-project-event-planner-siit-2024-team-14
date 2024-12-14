@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@DiscriminatorValue("ORGANIZER") // Maps to role = "ORGANIZER"
 public class EventOrganizer extends User {
 
     private String profilePicture;
