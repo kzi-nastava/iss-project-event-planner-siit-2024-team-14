@@ -1,4 +1,4 @@
-package edu.ftn.iss.eventplanner.services;
+package edu.ftn.iss.eventplanner.services.impl;
 
 import edu.ftn.iss.eventplanner.entities.SolutionCategory;
 import edu.ftn.iss.eventplanner.entities.CategoryNameChangedEvent;

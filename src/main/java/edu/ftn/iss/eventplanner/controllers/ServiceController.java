@@ -1,23 +1,33 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.CreateServiceDTO;
 import edu.ftn.iss.eventplanner.dtos.CreateServiceForProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.ServiceDTO;
 import edu.ftn.iss.eventplanner.dtos.UpdateServiceDTO;
+import edu.ftn.iss.eventplanner.services.ServiceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = {"api/services"})
 public class ServiceController {
 
-    public ServiceController() {}
+    //private final ServiceService serviceService;
+
+
+    public ServiceController() {
+
+    }
 
 
 
@@ -35,16 +45,6 @@ public class ServiceController {
     }
 
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<ServiceDTO> createService(
-            @RequestBody @Validated CreateServiceForProviderDTO service
-    ) {
-        ServiceDTO createdService = new ServiceDTO();
-        return ResponseEntity
-                .created(URI.create("services/" + createdService.getId()))
-                .body(createdService);
-    }
-
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<ServiceDTO> putUpdateService(
@@ -54,12 +54,19 @@ public class ServiceController {
     }
 
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(path = "/{id}")
-    ResponseEntity<Void> deleteService(
+    void deleteService(
             @PathVariable(name = "id") long id
     ) {
-        return ResponseEntity.noContent().build();
+
     }
+
+
+
+    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    @DeleteMapping
+    void deleteAllServices() { }
 
 }
 
