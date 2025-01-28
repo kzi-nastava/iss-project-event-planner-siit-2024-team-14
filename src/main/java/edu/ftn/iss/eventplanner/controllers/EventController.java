@@ -1,6 +1,7 @@
 package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.EventDTO;
+import edu.ftn.iss.eventplanner.services.EventService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,22 +14,17 @@ import java.util.List;
 @RestController
 public class EventController {
 
+    private final EventService eventService;
+
+    public EventController(EventService eventService) {
+        this.eventService = eventService;
+    }
+
     // Endpoint za Top 5 događaja
     @GetMapping("/api/events/top5")
     public ResponseEntity<List<EventDTO>> getTop5Events(
             @RequestParam String city) {
-        List<EventDTO> topEvents = new ArrayList<>();
-        for (int i = 1; i <= 5; i++) {
-            EventDTO event = new EventDTO();
-            event.setId((long) i);
-            event.setName("Event " + i);
-            event.setDescription("Description for Event " + i);
-            event.setLocation(city);
-            event.setStartDate(LocalDate.now().plusDays(i));
-            event.setEndDate(LocalDate.now().plusDays(i + 1));
-            topEvents.add(event);
-        }
-        return ResponseEntity.ok(topEvents);
+        return ResponseEntity.ok(eventService.getTop5Events(city));
     }
 
     // Endpoint za pretragu i filtriranje događaja
