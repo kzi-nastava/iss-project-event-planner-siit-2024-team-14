@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -34,8 +35,8 @@ public class SolutionCategory {
     @Column(name = "description", nullable = false, length = 500)
     private String description;
 
-    @OneToMany(mappedBy = "solutionCategory")
-    private List<EventType> eventTypes;
+    @OneToMany(mappedBy = "solutionCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventType> eventTypes = new ArrayList<>();
 
     private Status status;      // when new category is requested
 }
