@@ -32,6 +32,7 @@ public class UserController {
         System.out.println("Received login data: " + loginDTO);
 
         TokenDTO tokenDTO = userService.login(loginDTO);
+        System.out.println("TokenDTO value: " + tokenDTO);
         if (tokenDTO == null) {
             throw new InvalidCredentialsException("Invalid credentials");
         }
