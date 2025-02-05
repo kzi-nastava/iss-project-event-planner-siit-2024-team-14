@@ -12,16 +12,16 @@ public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String content;
     private LocalDateTime timestamp;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User sender; // Who sent a message
+    @JoinColumn(name = "sender_id")
+    private User sender;            // who sent a message
 
     @ManyToOne
     @JoinColumn(name = "chat_id")
-    private Chat chat; // In whose chat is this message sent to
+    private Chat chat;              // in which chat is this message sent to
 }

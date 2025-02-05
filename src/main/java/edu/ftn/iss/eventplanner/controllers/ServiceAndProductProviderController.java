@@ -12,11 +12,6 @@ import java.util.Collection;
 import java.util.List;
 
 import edu.ftn.iss.eventplanner.dtos.LoginDTO;
-import edu.ftn.iss.eventplanner.dtos.CreateServiceAndProductProviderDTO;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.UUID;
 
 @RestController
@@ -132,12 +127,12 @@ public class ServiceAndProductProviderController {
         return new ResponseEntity<ChangedPasswordDTO>(changedPassword, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deactivateProvider(@PathVariable Long id) {
         DeactivateAccountDTO account = new DeactivateAccountDTO();
 
         account.setActive(false);
 
-        return new ResponseEntity<>("Provider account deactivated.", HttpStatus.OK);
+        return new ResponseEntity<>("Provider account deactivated.", HttpStatus.NO_CONTENT);
     }
 }

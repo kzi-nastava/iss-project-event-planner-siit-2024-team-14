@@ -99,12 +99,12 @@ public class AdminController {
         return new ResponseEntity<ChangedPasswordDTO>(changedPassword, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deactivateAdmin(@PathVariable Long id) {
         DeactivateAccountDTO account = new DeactivateAccountDTO();
 
         account.setActive(false);
 
-        return new ResponseEntity<>("Admin account deactivated.", HttpStatus.OK);
+        return new ResponseEntity<>("Admin account deactivated.", HttpStatus.NO_CONTENT);
     }
 }

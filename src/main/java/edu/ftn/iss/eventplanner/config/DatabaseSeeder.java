@@ -1,8 +1,12 @@
 package edu.ftn.iss.eventplanner.config;
+
 import edu.ftn.iss.eventplanner.entities.Event;
+import edu.ftn.iss.eventplanner.entities.EventOrganizer;
 import edu.ftn.iss.eventplanner.entities.EventType;
 import edu.ftn.iss.eventplanner.repositories.EventRepository;
 import edu.ftn.iss.eventplanner.repositories.EventTypeRepository;
+import edu.ftn.iss.eventplanner.repositories.EventOrganizerRepository;
+import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,26 +18,45 @@ import java.util.List;
 public class DatabaseSeeder {
 
     @Bean
-    CommandLineRunner initDatabase(EventRepository eventRepository, EventTypeRepository eventTypeRepository) {
+    CommandLineRunner initDatabase(EventRepository eventRepository,
+                                   EventTypeRepository eventTypeRepository,
+                                   UserRepository userRepository) { // Koristi UserRepository
         return args -> {
-            if (eventRepository.count() == 0) {
-                // Dodavanje EventType-a
-                EventType partyType = new EventType(null, "Party", "Social gathering", true);
-                EventType theatreType = new EventType(null, "Theatre", "Performing arts", true);
-                eventTypeRepository.saveAll(List.of(partyType, theatreType));
+            System.out.println("🔍 Provera podataka u bazi...");
 
-                // Kreiranje događaja
-                List<Event> events = List.of(
-                        new Event(null, "Birthday Party", "Entry with present", 50, "open", "Novi Sad", LocalDate.of(2025, 6, 2), LocalDate.of(2025, 6, 2), 200.0, partyType),
-                        new Event(null, "Horse Riding", "For horse lovers, free entry", 30, "open", "Novi Sad", LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), 500.0, partyType),
-                        new Event(null, "Rooftop Theatre", "Free entry, bring popcorn and drinks :)", 100, "open", "Novi Sad", LocalDate.of(2025, 2, 16), LocalDate.of(2025, 2, 16), 150.0, theatreType),
-                        new Event(null, "Bakery Opening", "Come with an empty stomach!", 80, "open", "Novi Sad", LocalDate.of(2025, 9, 1), LocalDate.of(2025, 9, 1), 300.0, partyType),
-                        new Event(null, "Graduation Party", "All college graduates welcome :)", 60, "closed", "Novi Sad", LocalDate.of(2025, 1, 13), LocalDate.of(2025, 1, 13), 400.0, partyType)
-                );
+            // Proveri da li već postoji tip događaja
+            EventType partyType = eventTypeRepository.findByName("Party")
+                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Party", "Social gathering", true, null)));
+            EventType theatreType = eventTypeRepository.findByName("Theatre")
+                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Theatre", "Performing arts", true, null)));
 
-                eventRepository.saveAll(events);
-                System.out.println("✅ Podaci ubačeni u bazu!");
+            // Proveri da li već postoji organizator
+            EventOrganizer organizer = (EventOrganizer) userRepository.findByEmail("organizer@example.com")
+                    .orElseGet(() -> {
+                        EventOrganizer newOrganizer = new EventOrganizer();
+                        newOrganizer.setEmail("organizer@example.com");
+                        newOrganizer.setPassword("securepassword");
+                        newOrganizer.setFirstName("John");
+                        newOrganizer.setLastName("Doe");
+                        newOrganizer.setProfilePicture("default.png");
+                        newOrganizer.setVerified(true);
+                        newOrganizer.setSuspended(false);
+                        return userRepository.save(newOrganizer);
+                    });
+
+            // Proveri da li postoji događaj pre nego što ga dodaš
+            if (eventRepository.findByName("Birthday Party").isEmpty()) {
+                eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, "open", "Novi Sad",
+                        LocalDate.of(2025, 6, 2), LocalDate.of(2025, 6, 2), partyType));
             }
+
+            if (eventRepository.findByName("Horse Riding").isEmpty()) {
+                eventRepository.save(new Event(null, organizer, "Horse Riding", "For horse lovers, free entry", 30, "open", "Novi Sad",
+                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), partyType));
+            }
+
+            System.out.println("✅ Provera završena, dodati novi podaci ako su nedostajali.");
         };
     }
+
 }
