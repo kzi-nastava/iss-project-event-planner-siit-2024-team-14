@@ -36,6 +36,7 @@ public class SolutionService {
             dto.setDiscount(solution.getDiscount());
             dto.setImageUrl(solution.getImageUrl());
             dto.setLocation(solution.getLocation());
+            dto.setSolutionType(solution.getClass().getSimpleName());
             //dto.setIsAvailable(solution.getIsAvailable());
 
             if (solution.getProvider() != null) {

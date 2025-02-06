@@ -146,8 +146,9 @@ public class DatabaseSeeder {
 
 
             // Dodavanje Solution (proizvodi/usluge)
-            if (solutionRepository.findByName("Balloon Decoration1").isEmpty()) {
-                Solution balloonDecoration = new Solution();
+
+            Product musicProvider1 = (Product) solutionRepository.findByName("Balloon Decoration1").orElseGet(() -> {
+                Product balloonDecoration = new Product();
                 balloonDecoration.setName("Balloon Decoration1");
                 balloonDecoration.setDescription("Colorful balloon decorations for all occasions.");
                 balloonDecoration.setLocation("Belgrade");
@@ -161,11 +162,11 @@ public class DatabaseSeeder {
                 balloonDecoration.setCategory(decorationCategory);
                 balloonDecoration.setProvider(provider);
 
-                solutionRepository.save(balloonDecoration);
-            }
+                return solutionRepository.save(balloonDecoration);
+             });
 
-            if (solutionRepository.findByName("Gourmet Catering1").isEmpty()) {
-                Solution gourmetCatering = new Solution();
+            Product musicProvider2 = (Product) solutionRepository.findByName("Gourmet Catering1").orElseGet(() -> {
+                Product gourmetCatering = new Product();
                 gourmetCatering.setName("Gourmet Catering1");
                 gourmetCatering.setDescription("Exclusive gourmet catering for weddings and events.");
                 gourmetCatering.setLocation("Novi Sad");
@@ -179,11 +180,12 @@ public class DatabaseSeeder {
                 gourmetCatering.setCategory(cateringCategory);
                 gourmetCatering.setProvider(provider);
 
-                solutionRepository.save(gourmetCatering);
-            }
+                return solutionRepository.save(gourmetCatering);
+            });
 
-            if (solutionRepository.findByName("Gourmet1").isEmpty()) {
-                Solution gourmetCatering = new Solution();
+            Product musicProvider3 = (Product) solutionRepository.findByName("Gourmet1").orElseGet(() -> {
+
+                Product gourmetCatering = new Product();
                 gourmetCatering.setName("Gourmet1");
                 gourmetCatering.setDescription("Exclusive gourmet catering for weddings and events.");
                 gourmetCatering.setLocation("Novi Sad");
@@ -197,11 +199,11 @@ public class DatabaseSeeder {
                 gourmetCatering.setCategory(cateringCategory);
                 gourmetCatering.setProvider(provider);
 
-                solutionRepository.save(gourmetCatering);
-            }
+                return solutionRepository.save(gourmetCatering);
+            });
 
-            if (solutionRepository.findByName("LED Stage Lighting1").isEmpty()) {
-                Solution ledLighting = new Solution();
+            Product musicProvider4 = (Product) solutionRepository.findByName("LED Stage Lighting1").orElseGet(() -> {
+                Product ledLighting = new Product();
                 ledLighting.setName("LED Stage Lighting1");
                 ledLighting.setDescription("High-quality LED lighting for stage performances.");
                 ledLighting.setLocation("Belgrade");
@@ -214,11 +216,12 @@ public class DatabaseSeeder {
                 ledLighting.setStatus(Status.APPROVED);
                 ledLighting.setCategory(lightingCategory);
                 ledLighting.setProvider(lightingProvider);
-                solutionRepository.save(ledLighting);
-            }
+                return solutionRepository.save(ledLighting);
+            });
 
-            if (solutionRepository.findByName("Live Jazz Band1").isEmpty()) {
-                Solution jazzBand = new Solution();
+            Product musicProvider5 = (Product) solutionRepository.findByName("Live Jazz Band1").orElseGet(() -> {
+
+                Product jazzBand = new Product();
                 jazzBand.setName("Live Jazz Band1");
                 jazzBand.setDescription("Smooth jazz performances for elegant events.");
                 jazzBand.setLocation("Novi Sad");
@@ -231,14 +234,14 @@ public class DatabaseSeeder {
                 jazzBand.setStatus(Status.APPROVED);
                 jazzBand.setCategory(musicCategory);
                 jazzBand.setProvider(musicProvider);
-                solutionRepository.save(jazzBand);
-            }
+                return solutionRepository.save(jazzBand);
+            });
 
-            if (solutionRepository.findByName("Wedding DJ1").isEmpty()) {
-                Solution weddingDJ = new Solution();
+            Service musicProvider6 = (Service) solutionRepository.findByName("Wedding DJ1").orElseGet(() -> {
+                Service weddingDJ = new Service();
                 weddingDJ.setName("Wedding DJ1");
                 weddingDJ.setDescription("Professional DJ with a wide range of music for weddings.");
-                weddingDJ.setLocation("Subotica");
+                weddingDJ.setLocation("Novi Sad");
                 weddingDJ.setPrice(400.0);
                 weddingDJ.setDiscount(10.0);
                 weddingDJ.setImageUrl("assets/images/service7.png");
@@ -248,11 +251,12 @@ public class DatabaseSeeder {
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);
                 weddingDJ.setProvider(musicProvider);
-                solutionRepository.save(weddingDJ);
-            }
+                return solutionRepository.save(weddingDJ);
+            });
 
-            if (solutionRepository.findByName("Wedding1").isEmpty()) {
-                Solution weddingDJ = new Solution();
+            Service musicProvider7 = (Service) solutionRepository.findByName("Wedding1").orElseGet(() -> {
+
+                Service weddingDJ = new Service();
                 weddingDJ.setName("Wedding1");
                 weddingDJ.setDescription("Professional DJ with a wide range of music for weddings.");
                 weddingDJ.setLocation("Novi Sad");
@@ -265,8 +269,8 @@ public class DatabaseSeeder {
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);
                 weddingDJ.setProvider(musicProvider);
-                solutionRepository.save(weddingDJ);
-            }
+                return solutionRepository.save(weddingDJ);
+            });
 
             System.out.println("✅ Podaci uspešno dodati u bazu.");
         };

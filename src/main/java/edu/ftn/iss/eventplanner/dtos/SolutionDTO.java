@@ -19,4 +19,5 @@ public class SolutionDTO {
     private String imageUrl;
     private boolean isAvailable;
     private String providerCompanyName;
+    private String solutionType;
 }
