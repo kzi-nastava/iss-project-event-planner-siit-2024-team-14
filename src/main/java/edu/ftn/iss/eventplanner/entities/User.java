@@ -24,6 +24,7 @@ public class User {
     private String email;
     private String password;
     private String address;
+    private String city;
     private int phoneNumber;
     private boolean isVerified;
     private boolean isSuspended;
