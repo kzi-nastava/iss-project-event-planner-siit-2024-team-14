@@ -15,6 +15,8 @@ public class EventDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private double budget;
+    private String imageUrl;
     private String organizerFirstName;
     private String organizerLastName;
+    private String organizerProfilePicture;
 }

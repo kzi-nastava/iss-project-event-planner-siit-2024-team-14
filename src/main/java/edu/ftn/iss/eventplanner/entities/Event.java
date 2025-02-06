@@ -27,6 +27,7 @@ public class Event {
     private String location;
     private LocalDate startDate;
     private LocalDate endDate;
+    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "event_type_id")

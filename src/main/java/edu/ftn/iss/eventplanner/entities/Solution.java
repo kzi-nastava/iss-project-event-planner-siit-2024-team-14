@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "solution_type", discriminatorType = DiscriminatorType.STRING)
-public abstract class Solution {
+public class Solution {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +18,7 @@ public abstract class Solution {
 
     private String name;
     private String description;
+    private String location;
     private double price;
     private double discount;
     private String imageUrl;

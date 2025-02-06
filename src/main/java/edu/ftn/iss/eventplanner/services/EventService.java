@@ -56,20 +56,18 @@ public class EventService {
             dto.setLocation(event.getLocation());
             dto.setStartDate(event.getStartDate());
             dto.setEndDate(event.getEndDate());
+            dto.setImageUrl(event.getImageUrl());
+
 
             if (event.getOrganizer() != null) {
                 dto.setOrganizerFirstName(event.getOrganizer().getFirstName());
                 dto.setOrganizerLastName(event.getOrganizer().getLastName());
+                dto.setOrganizerProfilePicture(event.getOrganizer().getProfilePicture());
             }
-
             return dto;
         });
-
         return eventDTOPage;
     }
-
-
-
 
     private List<EventDTO> mapToDTO(List<Event> events) {
         return events.stream().map(event -> {
@@ -80,10 +78,12 @@ public class EventService {
             dto.setLocation(event.getLocation());
             dto.setStartDate(event.getStartDate());
             dto.setEndDate(event.getEndDate());
+            dto.setImageUrl(event.getImageUrl());
 
             if (event.getOrganizer() != null) {
                 dto.setOrganizerFirstName(event.getOrganizer().getFirstName());
                 dto.setOrganizerLastName(event.getOrganizer().getLastName());
+                dto.setOrganizerProfilePicture(event.getOrganizer().getProfilePicture());
             }
 
             return dto;
