@@ -1,3 +1,4 @@
+/*
 package edu.ftn.iss.eventplanner.security;
 
 import org.springframework.context.annotation.Bean;
@@ -27,3 +28,4 @@ public class CustomUserDetailsService {
         return new InMemoryUserDetailsManager(admin, user);
     }
 }
+ */
