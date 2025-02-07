@@ -1,6 +1,7 @@
 package edu.ftn.iss.eventplanner.controllers;
 import edu.ftn.iss.eventplanner.dtos.SolutionDTO;
 import edu.ftn.iss.eventplanner.services.SolutionService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,21 +31,25 @@ public class SolutionController {
         return ResponseEntity.ok(solutionService.getSolutions(city));
     }
 
-    /*
-    // Endpoint za pretragu i filtriranje usluga/proizvoda
-    @GetMapping("/api/solutions/search")
+    @GetMapping("api/solutions/locations")
+    public ResponseEntity<List<String>> getAllLocations() {
+        return ResponseEntity.ok(solutionService.getAllLocations());
+    }
 
-    public ResponseEntity<List<SolutionDTO>> searchSolutions(
-            @RequestParam(required = false) String name,
+
+    @GetMapping("/api/solutions/filter")
+    public ResponseEntity<Page<SolutionDTO>> searchSolutions(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String category,
             @RequestParam(required = false) String type,
-            @RequestParam(required = false) String availability,
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate,
-            @RequestParam(required = false) Boolean isProduct,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String location,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
+        Page<SolutionDTO> solutions = solutionService.getFilteredSolutions(startDate, endDate, category, type, minPrice, maxPrice, location, page, size);
+        return ResponseEntity.ok(solutions);
     }
-
-     */
 }

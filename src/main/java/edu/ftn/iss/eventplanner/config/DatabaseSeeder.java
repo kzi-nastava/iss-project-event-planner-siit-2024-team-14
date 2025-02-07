@@ -54,7 +54,7 @@ public class DatabaseSeeder {
                         LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event2.png", partyType));
             }
 
-            if (eventRepository.findByName("Bakery Opening").isEmpty()) {
+            if (eventRepository.findByName("Bakery opening").isEmpty()) {
                 eventRepository.save(new Event(null, organizer, "Bakery opening", "Come with an empty stomach!", 30, "open", "Novi Sad",
                         LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event3.png", partyType));
             }
