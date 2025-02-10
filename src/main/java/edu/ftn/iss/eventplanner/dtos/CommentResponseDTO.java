@@ -12,6 +12,10 @@ public class CommentResponseDTO {
     private String content;
     private int rating;
     private LocalDate date;
-    private String status;  // Status komentara: "pending", "approved", "deleted"
-    private Long productId; // ID proizvoda ili usluge na kojem je komentar
+    private String status;
+    private String commenterFirstName;
+    private String commenterLastName;
+    private String commenterProfilePicture;
+    private String solution;  // Naziv rešenja (ako je primenljivo)
+    private String solutionProvider;  // Dobavljač rešenja (ako je primenljivo)
 }
