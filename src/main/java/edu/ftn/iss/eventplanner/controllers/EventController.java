@@ -36,17 +36,28 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEvents(city));
     }
 
+    @GetMapping("api/events/locations")
+    public ResponseEntity<List<String>> getAllLocations() {
+        return ResponseEntity.ok(eventService.getAllLocations());
+    }
+
+    @GetMapping("api/events/categories")
+    public ResponseEntity<List<String>> getAllCategories() {
+        return ResponseEntity.ok(eventService.getAllCategories());
+    }
+
     // Endpoint za pretragu i filtriranje događaja
     @GetMapping("/api/events/filter")
     public ResponseEntity<Page<EventDTO>> getFilteredEvents(
             @RequestParam(value = "startDate", required = false) String startDate,
             @RequestParam(value = "endDate", required = false) String endDate,
             @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "location", required = false) String location,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<EventDTO> eventDTOPage = eventService.getFilteredEvents(startDate, endDate, category, pageable);
+        Page<EventDTO> eventDTOPage = eventService.getFilteredEvents(startDate, endDate, category, location, pageable);
         return ResponseEntity.ok(eventDTOPage);
     }
 

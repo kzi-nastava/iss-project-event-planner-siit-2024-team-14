@@ -24,30 +24,20 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     // Pronaći događaje po lokaciji
     List<Event> findByLocation(String location);
 
-    // Filtriranje po eventType i opsegu datuma
-    @Query("SELECT e FROM Event e WHERE e.eventType = :eventType AND e.startDate BETWEEN :startDate AND :endDate")
-    Page<Event> findByEventTypeAndDateRange(@Param("eventType") String eventType, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, Pageable pageable);
+    @Query("SELECT DISTINCT e.location FROM Event e")
+    List<String> findAllLocations();
 
-    // Filtriranje po eventType i datumu početka
-    @Query("SELECT e FROM Event e WHERE e.eventType = :eventType AND e.startDate >= :startDate")
-    Page<Event> findByEventTypeAndStartDateGreaterThanEqual(@Param("eventType") String eventType, @Param("startDate") LocalDate startDate, Pageable pageable);
+    @Query("SELECT DISTINCT e.eventType.name FROM Event e")
+    List<String> findAllCategories();
 
-    // Filtriranje po eventType i datumu završetka
-    @Query("SELECT e FROM Event e WHERE e.eventType = :eventType AND e.endDate <= :endDate")
-    Page<Event> findByEventTypeAndEndDateLessThanEqual(@Param("eventType") String eventType, @Param("endDate") LocalDate endDate, Pageable pageable);
-
-    // Filtriranje po eventType
-    Page<Event> findByEventType(String eventType, Pageable pageable);
-
-    // Filtriranje po opsegu datuma
-    @Query("SELECT e FROM Event e WHERE e.startDate BETWEEN :startDate AND :endDate")
-    Page<Event> findByDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, Pageable pageable);
-
-    // Filtriranje po datumu početka
-    @Query("SELECT e FROM Event e WHERE e.startDate >= :startDate")
-    Page<Event> findByStartDateGreaterThanEqual(@Param("startDate") LocalDate startDate, Pageable pageable);
-
-    // Filtriranje po datumu završetka
-    @Query("SELECT e FROM Event e WHERE e.endDate <= :endDate")
-    Page<Event> findByEndDateLessThanEqual(@Param("endDate") LocalDate endDate, Pageable pageable);
+    @Query("SELECT e FROM Event e WHERE " +
+            "(:category IS NULL OR e.eventType.name = :category) AND " +
+            "(:minDate IS NULL OR e.startDate >= :minDate) AND " +
+            "(:maxDate IS NULL OR e.endDate <= :maxDate) AND " +
+            "(:location IS NULL OR e.location = :location)")
+    Page<Event> findFilteredEvents(@Param("category") String category,
+                                   @Param("minDate") LocalDate minDate,
+                                   @Param("maxDate") LocalDate maxDate,
+                                   @Param("location") String location,
+                                   Pageable pageable);
 }

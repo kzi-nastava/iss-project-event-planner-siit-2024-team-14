@@ -34,6 +34,11 @@ public class SolutionController {
         return ResponseEntity.ok(solutionService.getAllLocations());
     }
 
+    @GetMapping("api/solutions/categories")
+    public ResponseEntity<List<String>> getAllCategories() {
+        return ResponseEntity.ok(solutionService.getAllCategories());
+    }
+
 
     @GetMapping("/api/solutions/filter")
     public ResponseEntity<Page<SolutionDTO>> searchSolutions(

@@ -38,6 +38,9 @@ public class SolutionService {
         return solutionRepository.findAllLocations();
     }
 
+    public List<String> getAllCategories() {
+        return solutionRepository.findAllCategories();
+    }
 
     public Page<SolutionDTO> getFilteredSolutions(String startDate, String endDate, String category,
                                                   String type, Double minPrice, Double maxPrice, String location, int page, int size) {

@@ -30,14 +30,66 @@ public class DatabaseSeeder {
                     .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Theatre", "Performing arts", true, null)));
 
 
-            EventOrganizer organizer = (EventOrganizer) userRepository.findByEmail("organizer1@example.com")
+            EventOrganizer organizer = (EventOrganizer) userRepository.findByEmail("anajovanovic@example.com")
                     .orElseGet(() -> {
                         EventOrganizer newOrganizer = new EventOrganizer();
-                        newOrganizer.setEmail("organizer1@example.com");
-                        newOrganizer.setPassword("securepassword");
-                        newOrganizer.setFirstName("John");
-                        newOrganizer.setLastName("Doe");
+                        newOrganizer.setEmail("anajovanovic@example.com");
+                        newOrganizer.setPassword("ana123");
+                        newOrganizer.setFirstName("Ana");
+                        newOrganizer.setLastName("Jovanovic");
                         newOrganizer.setProfilePicture("assets/images/profile1.png");
+                        newOrganizer.setVerified(true);
+                        newOrganizer.setSuspended(false);
+                        return userRepository.save(newOrganizer);
+                    });
+
+            EventOrganizer organizer2 = (EventOrganizer) userRepository.findByEmail("milosnikolic@example.com")
+                    .orElseGet(() -> {
+                        EventOrganizer newOrganizer = new EventOrganizer();
+                        newOrganizer.setEmail("milosnikolic@example.com");
+                        newOrganizer.setPassword("milos123");
+                        newOrganizer.setFirstName("Milos");
+                        newOrganizer.setLastName("Nikolic");
+                        newOrganizer.setProfilePicture("assets/images/profile2.png");
+                        newOrganizer.setVerified(true);
+                        newOrganizer.setSuspended(false);
+                        return userRepository.save(newOrganizer);
+                    });
+
+            EventOrganizer organizer3 = (EventOrganizer) userRepository.findByEmail("nikolinapetrovic@example.com")
+                    .orElseGet(() -> {
+                        EventOrganizer newOrganizer = new EventOrganizer();
+                        newOrganizer.setEmail("nikolinapetrovic@example.com");
+                        newOrganizer.setPassword("nikolina123");
+                        newOrganizer.setFirstName("Nikolina");
+                        newOrganizer.setLastName("Petrovic");
+                        newOrganizer.setProfilePicture("assets/images/profile3.png");
+                        newOrganizer.setVerified(true);
+                        newOrganizer.setSuspended(false);
+                        return userRepository.save(newOrganizer);
+                    });
+
+            EventOrganizer organizer4 = (EventOrganizer) userRepository.findByEmail("draganamilivojevic@example.com")
+                    .orElseGet(() -> {
+                        EventOrganizer newOrganizer = new EventOrganizer();
+                        newOrganizer.setEmail("draganamilivojevic@example.com");
+                        newOrganizer.setPassword("dragana123");
+                        newOrganizer.setFirstName("Dragana");
+                        newOrganizer.setLastName("Milivojevic");
+                        newOrganizer.setProfilePicture("assets/images/profile4.png");
+                        newOrganizer.setVerified(true);
+                        newOrganizer.setSuspended(false);
+                        return userRepository.save(newOrganizer);
+                    });
+
+            EventOrganizer organizer5 = (EventOrganizer) userRepository.findByEmail("nikolamatijevic@example.com")
+                    .orElseGet(() -> {
+                        EventOrganizer newOrganizer = new EventOrganizer();
+                        newOrganizer.setEmail("nikolamatijevic@example.com");
+                        newOrganizer.setPassword("nikola123");
+                        newOrganizer.setFirstName("Nikola");
+                        newOrganizer.setLastName("Matijevic");
+                        newOrganizer.setProfilePicture("assets/images/profile5.png");
                         newOrganizer.setVerified(true);
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
@@ -45,28 +97,33 @@ public class DatabaseSeeder {
 
             // Dodavanje događaja
             if (eventRepository.findByName("Birthday Party").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, "open", "Novi Sad",
+                eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, "open", "Beograd",
                         LocalDate.of(2025, 6, 2), LocalDate.of(2025, 6, 2), "assets/images/event1.png", partyType));
             }
 
             if (eventRepository.findByName("Horse Riding").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Horse Riding", "For horse lovers, free entry", 30, "open", "Novi Sad",
+                eventRepository.save(new Event(null, organizer2, "Horse Riding", "For horse lovers, free entry", 30, "open", "Novi Sad",
                         LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event2.png", partyType));
             }
 
             if (eventRepository.findByName("Bakery opening").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Bakery opening", "Come with an empty stomach!", 30, "open", "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event3.png", partyType));
+                eventRepository.save(new Event(null, organizer3, "Bakery opening", "Come with an empty stomach!", 30, "open", "Novi Sad",
+                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event6.png", partyType));
             }
 
             if (eventRepository.findByName("Rooftop theatre").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Rooftop theatre", "Free entry, bring popcorn and drinks!", 30, "open", "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25),"assets/images/event4.png", partyType));
+                eventRepository.save(new Event(null, organizer4, "Rooftop theatre", "Free entry, bring popcorn and drinks!", 30, "open", "Novi Sad",
+                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25),"assets/images/event3.png", partyType));
             }
 
             if (eventRepository.findByName("Graduation party").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Graduation party", "All college graduates wellcome :)", 30, "open", "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event5.png", partyType));
+                eventRepository.save(new Event(null, organizer5, "Graduation party", "All college graduates wellcome :)", 30, "open", "Novi Sad",
+                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event5.png", theatreType));
+            }
+
+            if (eventRepository.findByName("EXIT Festival").isEmpty()) {
+                eventRepository.save(new Event(null, organizer2, "EXIT Festival", "Together, always", 30, "open", "Novi Sad",
+                        LocalDate.of(2025, 7, 7), LocalDate.of(2025, 7, 10), "assets/images/event8.png", partyType));
             }
 
 
@@ -94,8 +151,8 @@ public class DatabaseSeeder {
                             null,
                             "Lighting",
                             "Professional event lighting solutions",
-                            null,
-                            Status.APPROVED
+                             null,
+                           Status.APPROVED
                     )));
 
             SolutionCategory musicCategory = solutionCategoryRepository.findByName("Music")
@@ -104,42 +161,54 @@ public class DatabaseSeeder {
                             "Music",
                             "Live bands and DJ services",
                             null,
-                            Status.APPROVED
+                             Status.APPROVED
                     )));
 
             // Dodavanje ServiceAndProductProvider
-            ServiceAndProductProvider provider = (ServiceAndProductProvider) userRepository.findByEmail("provider1@example.com")
+            ServiceAndProductProvider provider1 = (ServiceAndProductProvider) userRepository.findByEmail("provider1@example.com")
                     .orElseGet(() -> {
                         ServiceAndProductProvider newProvider = new ServiceAndProductProvider();
                         newProvider.setEmail("provider1@example.com");
                         newProvider.setPassword("securepassword");
-                        newProvider.setCompanyName("Event Solutions Ltd.");
+                        newProvider.setCompanyName("Prestige Champagne");
                         newProvider.setContactInfo("123-456-7890");
-                        newProvider.setDescription("We provide event planning solutions.");
+                        newProvider.setDescription("Sparkling wine");
                         newProvider.setPictures(List.of("assets/images/profile2.png"));
                         return userRepository.save(newProvider);
                     });
 
-            ServiceAndProductProvider lightingProvider = (ServiceAndProductProvider) userRepository.findByEmail("lighting1@example.com")
+            ServiceAndProductProvider provider2 = (ServiceAndProductProvider) userRepository.findByEmail("lighting1@example.com")
                     .orElseGet(() -> {
                         ServiceAndProductProvider newProvider = new ServiceAndProductProvider();
                         newProvider.setEmail("lighting1@example.com");
                         newProvider.setPassword("securepassword");
-                        newProvider.setCompanyName("Bright Lights Co.");
+                        newProvider.setCompanyName("Freedom Riders");
                         newProvider.setContactInfo("321-654-0987");
-                        newProvider.setDescription("Providing top-notch lighting for all events.");
+                        newProvider.setDescription("Galop beyond limits");
                         newProvider.setPictures(List.of("assets/images/profile3.png", "lights2.png"));
                         return userRepository.save(newProvider);
                     });
 
-            ServiceAndProductProvider musicProvider = (ServiceAndProductProvider) userRepository.findByEmail("music@example.com")
+            ServiceAndProductProvider provider3 = (ServiceAndProductProvider) userRepository.findByEmail("music@example.com")
                     .orElseGet(() -> {
                         ServiceAndProductProvider newProvider = new ServiceAndProductProvider();
                         newProvider.setEmail("music@example.com");
                         newProvider.setPassword("securepassword");
-                        newProvider.setCompanyName("Ultimate Sound");
+                        newProvider.setCompanyName("VibeX");
                         newProvider.setContactInfo("987-654-3210");
                         newProvider.setDescription("DJ and live band services for weddings and parties.");
+                        newProvider.setPictures(List.of("dj1.png", "band1.png"));
+                        return userRepository.save(newProvider);
+                    });
+
+            ServiceAndProductProvider provider4 = (ServiceAndProductProvider) userRepository.findByEmail("food@example.com")
+                    .orElseGet(() -> {
+                        ServiceAndProductProvider newProvider = new ServiceAndProductProvider();
+                        newProvider.setEmail("food@example.com");
+                        newProvider.setPassword("securepassword");
+                        newProvider.setCompanyName("Majestic bites");
+                        newProvider.setContactInfo("987-654-3210");
+                        newProvider.setDescription("Taste the Majesty, savor the moment");
                         newProvider.setPictures(List.of("dj1.png", "band1.png"));
                         return userRepository.save(newProvider);
                     });
@@ -147,30 +216,30 @@ public class DatabaseSeeder {
 
             // Dodavanje Solution (proizvodi/usluge)
 
-            Product musicProvider1 = (Product) solutionRepository.findByName("Balloon Decoration1").orElseGet(() -> {
+            Product champagne = (Product) solutionRepository.findByName("Champagne").orElseGet(() -> {
                 Product balloonDecoration = new Product();
-                balloonDecoration.setName("Balloon Decoration1");
-                balloonDecoration.setDescription("Colorful balloon decorations for all occasions.");
+                balloonDecoration.setName("Champagne");
+                balloonDecoration.setDescription("Sparkling wine for every occasion.");
                 balloonDecoration.setLocation("Belgrade");
-                balloonDecoration.setPrice(150.0);
+                balloonDecoration.setPrice(22000.0);
                 balloonDecoration.setDiscount(10.0);
-                balloonDecoration.setImageUrl("assets/images/service2.png");
+                balloonDecoration.setImageUrl("assets/images/service1.png");
                 balloonDecoration.setAvailable(true);
                 balloonDecoration.setVisible(true);
                 balloonDecoration.setDeleted(false);
                 balloonDecoration.setStatus(Status.APPROVED);
                 balloonDecoration.setCategory(decorationCategory);
-                balloonDecoration.setProvider(provider);
+                balloonDecoration.setProvider(provider1);
 
                 return solutionRepository.save(balloonDecoration);
              });
 
-            Product musicProvider2 = (Product) solutionRepository.findByName("Gourmet Catering1").orElseGet(() -> {
+            Product rooftop = (Product) solutionRepository.findByName("Rooftop theatre equipment").orElseGet(() -> {
                 Product gourmetCatering = new Product();
-                gourmetCatering.setName("Gourmet Catering1");
-                gourmetCatering.setDescription("Exclusive gourmet catering for weddings and events.");
+                gourmetCatering.setName("Rooftop theatre equipment");
+                gourmetCatering.setDescription("For the best movie night");
                 gourmetCatering.setLocation("Novi Sad");
-                gourmetCatering.setPrice(500.0);
+                gourmetCatering.setPrice(15000.0);
                 gourmetCatering.setDiscount(15.0);
                 gourmetCatering.setImageUrl("assets/images/service3.png");
                 gourmetCatering.setAvailable(true);
@@ -178,18 +247,18 @@ public class DatabaseSeeder {
                 gourmetCatering.setDeleted(false);
                 gourmetCatering.setStatus(Status.APPROVED);
                 gourmetCatering.setCategory(cateringCategory);
-                gourmetCatering.setProvider(provider);
+                gourmetCatering.setProvider(provider3);
 
                 return solutionRepository.save(gourmetCatering);
             });
 
-            Product musicProvider3 = (Product) solutionRepository.findByName("Gourmet1").orElseGet(() -> {
+            Product catering = (Product) solutionRepository.findByName("Catering service").orElseGet(() -> {
 
                 Product gourmetCatering = new Product();
-                gourmetCatering.setName("Gourmet1");
-                gourmetCatering.setDescription("Exclusive gourmet catering for weddings and events.");
+                gourmetCatering.setName("Catering service");
+                gourmetCatering.setDescription("The best food service in your town!");
                 gourmetCatering.setLocation("Novi Sad");
-                gourmetCatering.setPrice(500.0);
+                gourmetCatering.setPrice(15000.0);
                 gourmetCatering.setDiscount(15.0);
                 gourmetCatering.setImageUrl("assets/images/service4.png");
                 gourmetCatering.setAvailable(true);
@@ -197,52 +266,88 @@ public class DatabaseSeeder {
                 gourmetCatering.setDeleted(false);
                 gourmetCatering.setStatus(Status.APPROVED);
                 gourmetCatering.setCategory(cateringCategory);
-                gourmetCatering.setProvider(provider);
+                gourmetCatering.setProvider(provider4);
 
                 return solutionRepository.save(gourmetCatering);
             });
 
-            Product musicProvider4 = (Product) solutionRepository.findByName("LED Stage Lighting1").orElseGet(() -> {
+            Product photobooth = (Product) solutionRepository.findByName("Photobooth rentals").orElseGet(() -> {
                 Product ledLighting = new Product();
-                ledLighting.setName("LED Stage Lighting1");
-                ledLighting.setDescription("High-quality LED lighting for stage performances.");
+                ledLighting.setName("Photobooth rentals");
+                ledLighting.setDescription("Interactive photo booths with custom backdrops and props.");
                 ledLighting.setLocation("Belgrade");
-                ledLighting.setPrice(200.0);
+                ledLighting.setPrice(20000.0);
                 ledLighting.setDiscount(5.0);
-                ledLighting.setImageUrl("assets/images/service5.png");
+                ledLighting.setImageUrl("assets/images/service8.png");
                 ledLighting.setAvailable(true);
                 ledLighting.setVisible(true);
                 ledLighting.setDeleted(false);
                 ledLighting.setStatus(Status.APPROVED);
                 ledLighting.setCategory(lightingCategory);
-                ledLighting.setProvider(lightingProvider);
+                ledLighting.setProvider(provider3);
                 return solutionRepository.save(ledLighting);
             });
 
-            Product musicProvider5 = (Product) solutionRepository.findByName("Live Jazz Band1").orElseGet(() -> {
+            Service singer = (Service) solutionRepository.findByName("Singer").orElseGet(() -> {
 
-                Product jazzBand = new Product();
-                jazzBand.setName("Live Jazz Band1");
-                jazzBand.setDescription("Smooth jazz performances for elegant events.");
-                jazzBand.setLocation("Novi Sad");
-                jazzBand.setPrice(600.0);
-                jazzBand.setDiscount(20.0);
-                jazzBand.setImageUrl("assets/images/service6.png");
-                jazzBand.setAvailable(true);
-                jazzBand.setVisible(true);
-                jazzBand.setDeleted(false);
-                jazzBand.setStatus(Status.APPROVED);
-                jazzBand.setCategory(musicCategory);
-                jazzBand.setProvider(musicProvider);
-                return solutionRepository.save(jazzBand);
+                Service weddingDJ = new Service();
+                weddingDJ.setName("Singer");
+                weddingDJ.setDescription("Music lover");
+                weddingDJ.setLocation("Novi Sad");
+                weddingDJ.setPrice(60000.0);
+                weddingDJ.setDiscount(10.0);
+                weddingDJ.setImageUrl("assets/images/service6.png");
+                weddingDJ.setAvailable(true);
+                weddingDJ.setVisible(true);
+                weddingDJ.setDeleted(false);
+                weddingDJ.setStatus(Status.APPROVED);
+                weddingDJ.setCategory(musicCategory);
+                weddingDJ.setProvider(provider3);
+                return solutionRepository.save(weddingDJ);
             });
 
-            Service musicProvider6 = (Service) solutionRepository.findByName("Wedding DJ1").orElseGet(() -> {
+            Service band = (Service) solutionRepository.findByName("Band").orElseGet(() -> {
                 Service weddingDJ = new Service();
-                weddingDJ.setName("Wedding DJ1");
-                weddingDJ.setDescription("Professional DJ with a wide range of music for weddings.");
+                weddingDJ.setName("Band");
+                weddingDJ.setDescription("High-energy band playing modern favourites.");
                 weddingDJ.setLocation("Novi Sad");
-                weddingDJ.setPrice(400.0);
+                weddingDJ.setPrice(80000.0);
+                weddingDJ.setDiscount(10.0);
+                weddingDJ.setImageUrl("assets/images/service5.png");
+                weddingDJ.setAvailable(true);
+                weddingDJ.setVisible(true);
+                weddingDJ.setDeleted(false);
+                weddingDJ.setStatus(Status.APPROVED);
+                weddingDJ.setCategory(musicCategory);
+                weddingDJ.setProvider(provider3);
+                return solutionRepository.save(weddingDJ);
+            });
+
+            Service lessons = (Service) solutionRepository.findByName("Horse riding lessons").orElseGet(() -> {
+
+                Service weddingDJ = new Service();
+                weddingDJ.setName("Horse riding lessons");
+                weddingDJ.setDescription("For horse lovers");
+                weddingDJ.setLocation("Novi Sad");
+                weddingDJ.setPrice(6000.0);
+                weddingDJ.setDiscount(10.0);
+                weddingDJ.setImageUrl("assets/images/service2.png");
+                weddingDJ.setAvailable(true);
+                weddingDJ.setVisible(true);
+                weddingDJ.setDeleted(false);
+                weddingDJ.setStatus(Status.APPROVED);
+                weddingDJ.setCategory(musicCategory);
+                weddingDJ.setProvider(provider2);
+                return solutionRepository.save(weddingDJ);
+            });
+
+            Service team = (Service) solutionRepository.findByName("Marketing team").orElseGet(() -> {
+
+                Service weddingDJ = new Service();
+                weddingDJ.setName("Marketing team");
+                weddingDJ.setDescription("Burn your social medias");
+                weddingDJ.setLocation("Novi Sad");
+                weddingDJ.setPrice(30000.0);
                 weddingDJ.setDiscount(10.0);
                 weddingDJ.setImageUrl("assets/images/service7.png");
                 weddingDJ.setAvailable(true);
@@ -250,25 +355,7 @@ public class DatabaseSeeder {
                 weddingDJ.setDeleted(false);
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);
-                weddingDJ.setProvider(musicProvider);
-                return solutionRepository.save(weddingDJ);
-            });
-
-            Service musicProvider7 = (Service) solutionRepository.findByName("Wedding1").orElseGet(() -> {
-
-                Service weddingDJ = new Service();
-                weddingDJ.setName("Wedding1");
-                weddingDJ.setDescription("Professional DJ with a wide range of music for weddings.");
-                weddingDJ.setLocation("Novi Sad");
-                weddingDJ.setPrice(400.0);
-                weddingDJ.setDiscount(10.0);
-                weddingDJ.setImageUrl("assets/images/service8.png");
-                weddingDJ.setAvailable(true);
-                weddingDJ.setVisible(true);
-                weddingDJ.setDeleted(false);
-                weddingDJ.setStatus(Status.APPROVED);
-                weddingDJ.setCategory(musicCategory);
-                weddingDJ.setProvider(musicProvider);
+                weddingDJ.setProvider(provider3);
                 return solutionRepository.save(weddingDJ);
             });
 

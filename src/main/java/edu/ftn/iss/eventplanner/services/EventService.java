@@ -29,26 +29,23 @@ public class EventService {
         return mapToDTO(events);
     }
 
-    public Page<EventDTO> getFilteredEvents(String startDate, String endDate, String category, Pageable pageable) {
+    public List<String> getAllLocations() {
+        return eventRepository.findAllLocations();
+    }
+
+    public List<String> getAllCategories() {
+        return eventRepository.findAllCategories();
+    }
+
+    public Page<EventDTO> getFilteredEvents(String startDate, String endDate, String category, String location, Pageable pageable) {
         LocalDate start = (startDate != null && !startDate.isEmpty()) ? LocalDate.parse(startDate) : null;
         LocalDate end = (endDate != null && !endDate.isEmpty()) ? LocalDate.parse(endDate) : null;
 
-        Page<Event> eventPage;
-
-        if (category != null && !category.isEmpty()) {
-            eventPage = eventRepository.findByEventTypeAndDateRange(category, start, end, pageable);
-        } else if (start != null && end != null) {
-            eventPage = eventRepository.findByDateRange(start, end, pageable);
-        } else if (start != null) {
-            eventPage = eventRepository.findByStartDateGreaterThanEqual(start, pageable);
-        } else if (end != null) {
-            eventPage = eventRepository.findByEndDateLessThanEqual(end, pageable);
-        } else {
-            eventPage = eventRepository.findAll(pageable); // Ako nema filtera, vrati sve događaje
-        }
+        // Pozivanje novog metoda sa konsolidovanim filtriranjem
+        Page<Event> eventPage = eventRepository.findFilteredEvents(category, start, end, location, pageable);
 
         // Mapiranje Event objekata na EventDTO
-        Page<EventDTO> eventDTOPage = eventPage.map(event -> {
+        return eventPage.map(event -> {
             EventDTO dto = new EventDTO();
             dto.setId(event.getId());
             dto.setName(event.getName());
@@ -58,7 +55,6 @@ public class EventService {
             dto.setEndDate(event.getEndDate());
             dto.setImageUrl(event.getImageUrl());
 
-
             if (event.getOrganizer() != null) {
                 dto.setOrganizerFirstName(event.getOrganizer().getFirstName());
                 dto.setOrganizerLastName(event.getOrganizer().getLastName());
@@ -66,8 +62,8 @@ public class EventService {
             }
             return dto;
         });
-        return eventDTOPage;
     }
+
 
     private List<EventDTO> mapToDTO(List<Event> events) {
         return events.stream().map(event -> {

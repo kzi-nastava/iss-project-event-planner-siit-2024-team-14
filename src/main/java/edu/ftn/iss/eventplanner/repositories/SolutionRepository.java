@@ -24,6 +24,9 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
     @Query("SELECT DISTINCT s.location FROM Solution s WHERE s.isDeleted = false AND s.isVisible = true")
     List<String> findAllLocations();
 
+    @Query("SELECT DISTINCT s.category.name FROM Solution s WHERE s.isDeleted = false AND s.isVisible = true")
+    List<String> findAllCategories();
+
     @Query("SELECT s FROM Solution s WHERE " +
             "(:category IS NULL OR s.category.name = :category) AND " +
             "(:type IS NULL OR TYPE(s) = :type) AND " +  // Ovde sada očekuje Class objekat
