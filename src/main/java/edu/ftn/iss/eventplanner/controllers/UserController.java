@@ -2,6 +2,7 @@ package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.LoginDTO;
 import edu.ftn.iss.eventplanner.dtos.TokenDTO;
+import edu.ftn.iss.eventplanner.dtos.UserLoginDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.exceptions.InvalidCredentialsException;
@@ -18,18 +19,20 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Login
     @PostMapping("/login")
-    public ResponseEntity<TokenDTO> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<UserLoginDTO> login(@RequestBody LoginDTO loginDTO) {
         System.out.println("Received login data: " + loginDTO);
 
-        TokenDTO tokenDTO = userService.login(loginDTO);
-        System.out.println("TokenDTO value: " + tokenDTO);
-        if (tokenDTO == null) {
+        UserLoginDTO userLoginDTO = userService.login(loginDTO);
+        System.out.println("UserLoginDTO value: " + userLoginDTO);
+
+        if (userLoginDTO == null) {
             throw new InvalidCredentialsException("Invalid credentials");
         }
-        return new ResponseEntity<>(tokenDTO, HttpStatus.OK);
+
+        return new ResponseEntity<>(userLoginDTO, HttpStatus.OK);
     }
+
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterSppDTO dto) {
