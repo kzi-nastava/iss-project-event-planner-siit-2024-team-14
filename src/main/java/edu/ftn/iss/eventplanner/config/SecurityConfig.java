@@ -1,4 +1,4 @@
-/*
+
 package edu.ftn.iss.eventplanner.config;
 
 import org.springframework.context.annotation.Bean;
@@ -26,4 +26,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
- */
