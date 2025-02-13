@@ -22,4 +22,3 @@ public class EventType {
     @JoinColumn(name = "solution_category_id")
     private SolutionCategory solutionCategory;
 }
-

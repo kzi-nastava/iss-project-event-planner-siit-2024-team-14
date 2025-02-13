@@ -3,7 +3,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
+// Cross-Origin Resource Sharing
+
+@Configuration          // Spring configuration class
 public class CorsConfig implements WebMvcConfigurer {
 
     @Override
@@ -12,6 +14,6 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:4200")  // Allow only your frontend URL (Angular running on port 4200)
                 .allowedMethods("GET", "POST", "PUT", "DELETE")  // Allow specific methods
                 .allowedHeaders("*")  // Allow any headers
-                .allowCredentials(true);  // Allow credentials (like cookies)
+                .allowCredentials(true);  // Allow credentials (JWT tokens, cookies,...)
     }
 }
