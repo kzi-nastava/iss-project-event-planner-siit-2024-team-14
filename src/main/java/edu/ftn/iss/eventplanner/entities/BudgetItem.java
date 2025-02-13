@@ -11,13 +11,14 @@ public class BudgetItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String category;
+    private Integer id;
     private double amount;
-    private boolean purchased;
 
     @ManyToOne
-    @JoinColumn(name = "activity_id")
-    private Activity activity;
+    @JoinColumn(name = "category_id")
+    private SolutionCategory category;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 }
