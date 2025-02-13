@@ -10,6 +10,7 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "solution_type", discriminatorType = DiscriminatorType.STRING)
+
 public class Solution {
 
     @Id

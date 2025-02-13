@@ -4,7 +4,9 @@ import edu.ftn.iss.eventplanner.enums.Role;
 import lombok.*;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -25,8 +27,9 @@ public class User {
     private String password;
     private String address;
     private String city;
+    private boolean isActive;   // for deactivation
     private int phoneNumber;
-    private boolean isVerified;
+    private boolean isVerified;     // for account activation
     private boolean isSuspended;
 
     @ManyToMany
@@ -60,4 +63,13 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "event_id")
     )
     private List<Event> joinedEvents;
+
+    // Add the activationToken field
+    private String activationToken;
+    private LocalDateTime tokenCreationDate;
+
+    // Optionally, a method to generate a token
+    public void generateActivationToken() {
+        this.activationToken = UUID.randomUUID().toString();
+    }
 }

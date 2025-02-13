@@ -13,11 +13,9 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     @ManyToOne
     @JoinColumn(name = "organizer_id")
     private EventOrganizer organizer;
-
     private String name;
     private String description;
     private int maxParticipants;
