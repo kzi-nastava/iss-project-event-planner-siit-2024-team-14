@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.5</version>
+		<version>3.3.5</version> <!-- Make sure you use the correct Spring Boot version -->
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>edu.ftn.iss</groupId>
@@ -13,41 +13,53 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>EventPlanner</name>
 	<description>Backend server for the EventPlanner application.</description>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
-	<properties>
-		<java.version>17</java.version>
-	</properties>
-	<dependencies>
 
+	<properties>
+		<java.version>17</java.version> <!-- Java version for compatibility -->
+	</properties>
+
+	<dependencies>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
 			<version>0.12.5</version>
 		</dependency>
+    
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-impl</artifactId>
 			<version>0.12.5</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>6.2.0.Final</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
 		<dependency>
@@ -63,33 +75,36 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
 			<groupId>jakarta.persistence</groupId>
 			<artifactId>jakarta.persistence-api</artifactId>
 			<version>3.1.0</version>
 		</dependency>
 
-		<!-- Hibernate Validator (validacija) -->
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>6.2.0.Final</version>
 		</dependency>
 
-		<!-- Bean Validation API (za @Valid i druge anotacije) -->
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
 			<version>2.0.1.Final</version>
 		</dependency>
 
-		<!-- ModelMapper za mapiranje objekata -->
 		<dependency>
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
 			<version>3.2.1</version>
 		</dependency>
 
-		<!-- Spring Boot Starter Data JPA za rad sa JPA i bazama podataka -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -106,12 +121,12 @@
 			<scope>test</scope>
 		</dependency>
 
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+    
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
@@ -119,6 +134,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>jakarta.mail</groupId>
+			<artifactId>jakarta.mail-api</artifactId>
+			<version>2.1.0</version>
+    </dependency>
+
+    <dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.12.5</version>
@@ -129,6 +155,7 @@
 
 	<build>
 		<plugins>
+			<!-- Spring Boot Maven Plugin for packaging the app -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
