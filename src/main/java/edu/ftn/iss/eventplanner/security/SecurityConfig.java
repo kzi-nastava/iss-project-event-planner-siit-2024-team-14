@@ -22,7 +22,8 @@ public class SecurityConfig {
         http
                 .csrf().disable()  // Disabling CSRF if not needed (adjust as per your need)
                 .authorizeHttpRequests()
-                .requestMatchers("/api/providers/register", "/api/providers/activate", "/api/users/register", "/api/users/activate").permitAll()  // Public routes
+                //.requestMatchers("/api/providers/register", "/api/providers/activate", "/api/users/register", "/api/users/activate", "/api/users/login").permitAll()  // Public routes
+                .requestMatchers("/api/providers/**", "/api/users/**").permitAll()
                 .anyRequest().authenticated()  // Secured routes
                 .and()
                 .formLogin().disable();  // Disable form login (if using JWT or other methods)
