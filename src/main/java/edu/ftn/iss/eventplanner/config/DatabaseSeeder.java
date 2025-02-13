@@ -20,7 +20,7 @@ public class DatabaseSeeder {
                                    SolutionRepository solutionRepository,
                                    CategoryRepository solutionCategoryRepository,
                                    ServiceAndProductProviderRepository providerRepository,
-                                   CommentRepository commentRepository) {
+                                   CommentRepository commentRepository, NotificationRepository notificationRepository) {
         return args -> {
             System.out.println("🔍 Provera podataka u bazi...");
 
@@ -374,6 +374,14 @@ public class DatabaseSeeder {
             comment2.setProduct(photobooth);
             comment2.setCommenter(organizer); // Koristimo organizatora kao komentatora
             commentRepository.save(comment2);
+
+            Notification notification = new Notification();
+            notification.setUser(organizer);
+            notification.setDate(LocalDate.now());
+            notification.setMessage("lalalalala");
+            notification.setRead(false);
+            notificationRepository.save(notification);
+
             System.out.println("✅ Podaci uspešno dodati u bazu.");
         };
     }
