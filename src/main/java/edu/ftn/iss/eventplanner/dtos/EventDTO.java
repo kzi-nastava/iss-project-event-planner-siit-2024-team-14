@@ -7,7 +7,7 @@ import java.time.LocalDate;
 @Data
 public class EventDTO {
 
-    private Long id;
+    private Integer id;
     private String name;
     private String description;
     private String location;
@@ -15,4 +15,8 @@ public class EventDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private double budget;
+    private String imageUrl;
+    private String organizerFirstName;
+    private String organizerLastName;
+    private String organizerProfilePicture;
 }
