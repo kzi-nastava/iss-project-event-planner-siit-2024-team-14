@@ -19,7 +19,8 @@ public class DatabaseSeeder {
                                    UserRepository userRepository,
                                    SolutionRepository solutionRepository,
                                    CategoryRepository solutionCategoryRepository,
-                                   ServiceAndProductProviderRepository providerRepository) {
+                                   ServiceAndProductProviderRepository providerRepository,
+                                   CommentRepository commentRepository) {
         return args -> {
             System.out.println("🔍 Provera podataka u bazi...");
 
@@ -359,6 +360,24 @@ public class DatabaseSeeder {
                 return solutionRepository.save(weddingDJ);
             });
 
+            // Dodavanje komentara sa statusom PENDING
+            Comment comment1 = new Comment();
+            comment1.setContent("Great event, looking forward to it!");
+            comment1.setRating(5);
+            comment1.setDate(LocalDate.now());
+            comment1.setStatus(Status.PENDING);
+            comment1.setProduct(champagne);
+            comment1.setCommenter(organizer); // Koristimo organizatora kao komentatora
+            commentRepository.save(comment1);
+
+            Comment comment2 = new Comment();
+            comment2.setContent("Excited about this event!");
+            comment2.setRating(4);
+            comment2.setDate(LocalDate.now());
+            comment2.setStatus(Status.PENDING);
+            comment2.setProduct(photobooth);
+            comment2.setCommenter(organizer); // Koristimo organizatora kao komentatora
+            commentRepository.save(comment2);
             System.out.println("✅ Podaci uspešno dodati u bazu.");
         };
     }

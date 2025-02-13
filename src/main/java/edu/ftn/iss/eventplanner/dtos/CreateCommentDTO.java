@@ -11,13 +11,12 @@ import java.time.LocalDate;
 public class CreateCommentDTO {
 
     @NotNull
-    private Long productId;
-
-    @NotBlank
     private String content;
-
+    @NotNull
     private int rating;
-
     private LocalDate date;
+    private Long productId;
+    private Long serviceId;
+    private Integer commenterId;
 }
 
