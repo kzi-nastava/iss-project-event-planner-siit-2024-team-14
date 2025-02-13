@@ -1,28 +1,29 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.CreateServiceAndProductProviderDTO;
-import org.springframework.http.HttpStatus;
+import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
+import edu.ftn.iss.eventplanner.services.ServiceAndProductProviderService;
+import jakarta.mail.MessagingException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/providers")
 public class ServiceAndProductProviderController {
 
+    @Autowired
+    private ServiceAndProductProviderService providerService;
+
     @PostMapping("/register")
-    public ResponseEntity<String> registerServiceAndProductProvider(@RequestBody CreateServiceAndProductProviderDTO registerDTO) {
-        // mock verification token
-        String verificationToken = UUID.randomUUID().toString();
-
-        System.out.println("Saving provider with email: " + registerDTO.getEmail() + " and token: " + verificationToken);
-
-        String verificationLink = "http://localhost:8080/api/email-verification/verify?token=" + verificationToken;
-
-        System.out.println("Verification email sent to " + registerDTO.getEmail());
-        System.out.println("Verification link: " + verificationLink);
-
-        return new ResponseEntity<>("Service and product provider registered successfully! Please verify your account via email.", HttpStatus.CREATED);
+    public ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterSppDTO dto) {
+        return providerService.register(dto);
     }
+
+    @GetMapping("/activate")
+    public ResponseEntity<RegisterResponseDTO> activate(@RequestParam("token") String token) {
+        return providerService.activate(token);
+    }
+
+
 }

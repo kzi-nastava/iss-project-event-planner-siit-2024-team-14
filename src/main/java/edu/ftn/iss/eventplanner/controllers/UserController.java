@@ -1,29 +1,26 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.CreateUserDTO;
-import org.springframework.http.HttpStatus;
+import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
+import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
+import edu.ftn.iss.eventplanner.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-    // User registration endpoint
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody CreateUserDTO registerDTO) {
-        // mock verification token
-        String verificationToken = UUID.randomUUID().toString();
+    public ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterSppDTO dto) {
+        return userService.registerSpp(dto);
+    }
 
-        System.out.println("Saving user with email: " + registerDTO.getEmail() + " and token: " + verificationToken);
-
-        String verificationLink = "http://localhost:8080/api/email-verification/verify?token=" + verificationToken;
-
-        System.out.println("Verification email sent to " + registerDTO.getEmail());
-        System.out.println("Verification link: " + verificationLink);
-
-        return new ResponseEntity<>("User registered successfully! Please verify your account via email.", HttpStatus.CREATED);
+    @GetMapping("/activate")
+    public ResponseEntity<RegisterResponseDTO> activate(@RequestParam("token") String token) {
+        return userService.activate(token);
     }
 }
