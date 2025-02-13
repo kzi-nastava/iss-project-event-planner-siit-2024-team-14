@@ -13,14 +13,15 @@ public class Activity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 
     private String name;
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
     private String location;
-
-    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL)
-    private List<Booking> bookings;
 }

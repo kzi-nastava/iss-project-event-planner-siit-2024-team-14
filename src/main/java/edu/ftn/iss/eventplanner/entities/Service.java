@@ -1,30 +1,27 @@
 package edu.ftn.iss.eventplanner.entities;
 
+import edu.ftn.iss.eventplanner.enums.ReservationType;
 import lombok.*;
 import jakarta.persistence.*;
+
+import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
+
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Service {
+@DiscriminatorValue("Service")
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Service extends Solution {
 
-    private String name;
-    private String description;
-    private double price;
-    private double discount;
-    private String imageUrl;
-    private int duration;
-    private String reservationType;
-    private LocalDate reservationDate;
-    private LocalDate cancellationDate;
+    private Duration minDuration;
+    private Duration maxDuration;
+    private Duration duration;
+    private ReservationType reservationType;
+    private Duration reservationPeriod;
+    private Duration cancellationPeriod;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
 }

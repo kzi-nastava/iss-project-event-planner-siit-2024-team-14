@@ -24,6 +24,4 @@ public class ServiceAndProductProviderController {
     public ResponseEntity<RegisterResponseDTO> activate(@RequestParam("token") String token) {
         return providerService.activate(token);
     }
-
-
 }
