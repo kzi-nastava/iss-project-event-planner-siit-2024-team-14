@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class GetUserDTO {
-    private String firstName;
-    private String lastName;
+    private Integer id;
     private String email;
-    private String profilePicture;
+    private String role;
+    private String city;
 }

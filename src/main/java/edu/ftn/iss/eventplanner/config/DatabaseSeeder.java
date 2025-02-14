@@ -40,6 +40,7 @@ public class DatabaseSeeder {
                         newOrganizer.setLastName("Jovanovic");
                         newOrganizer.setProfilePicture("assets/images/profile1.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setCity("Belgrade");
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
@@ -53,6 +54,7 @@ public class DatabaseSeeder {
                         newOrganizer.setLastName("Nikolic");
                         newOrganizer.setProfilePicture("assets/images/profile2.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setCity("Novi Sad");
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
@@ -98,7 +100,7 @@ public class DatabaseSeeder {
 
             // Dodavanje događaja
             if (eventRepository.findByName("Birthday Party").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, "open", "Beograd",
+                eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, "open", "Belgrade",
                         LocalDate.of(2025, 6, 2), LocalDate.of(2025, 6, 2), "assets/images/event1.png", partyType));
             }
 
