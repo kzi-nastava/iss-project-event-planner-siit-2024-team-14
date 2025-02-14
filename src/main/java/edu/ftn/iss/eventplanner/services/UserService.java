@@ -1,5 +1,6 @@
 package edu.ftn.iss.eventplanner.services;
 
+import edu.ftn.iss.eventplanner.dtos.*;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.entities.User;
@@ -14,9 +15,6 @@ import jakarta.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import edu.ftn.iss.eventplanner.dtos.CreateUserDTO;
-import edu.ftn.iss.eventplanner.dtos.LoginDTO;
-import edu.ftn.iss.eventplanner.dtos.TokenDTO;
 import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import edu.ftn.iss.eventplanner.security.JWTUtil;
@@ -163,7 +161,7 @@ public class UserService {
         }
     }
 
-    public TokenDTO login(LoginDTO loginDTO) {
+    public UserLoginDTO login(LoginDTO loginDTO) {
         Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail());
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -173,9 +171,20 @@ public class UserService {
 
             if (user.getPassword().equals(loginDTO.getPassword())) {
                 String token = JWTUtil.generateToken(user.getEmail());
-                TokenDTO tokenDTO = new TokenDTO();
-                tokenDTO.setToken(token);
-                return tokenDTO;
+
+                // Kreiramo UserDTO sa podacima korisnika
+                GetUserDTO userDTO = new GetUserDTO();
+                userDTO.setId(user.getId());
+                userDTO.setEmail(user.getEmail());
+                userDTO.setRole(user.getClass().getSimpleName());
+                userDTO.setCity(user.getCity());
+
+                // Kreiramo UserLoginDTO koji sadrži i token i korisničke podatke
+                UserLoginDTO userLoginDTO = new UserLoginDTO();
+                userLoginDTO.setToken(token);
+                userLoginDTO.setUser(userDTO);
+
+                return userLoginDTO;
             } else {
                 System.out.println("Password mismatch for user: " + user.getEmail());
             }
@@ -184,4 +193,5 @@ public class UserService {
         }
         return null;  // Or throw an exception for better error handling
     }
+
 }

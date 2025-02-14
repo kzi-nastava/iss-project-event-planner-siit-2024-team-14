@@ -40,6 +40,7 @@ public class DatabaseSeeder {
                         newOrganizer.setLastName("Jovanovic");
                         newOrganizer.setProfilePicture("assets/images/profile1.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setCity("Belgrade");
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
@@ -53,6 +54,7 @@ public class DatabaseSeeder {
                         newOrganizer.setLastName("Nikolic");
                         newOrganizer.setProfilePicture("assets/images/profile2.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setCity("Novi Sad");
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
@@ -98,7 +100,7 @@ public class DatabaseSeeder {
 
             // Dodavanje događaja
             if (eventRepository.findByName("Birthday Party").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, "open", "Beograd",
+                eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, "open", "Belgrade",
                         LocalDate.of(2025, 6, 2), LocalDate.of(2025, 6, 2), "assets/images/event1.png", partyType));
             }
 
@@ -172,9 +174,8 @@ public class DatabaseSeeder {
                         newProvider.setEmail("provider1@example.com");
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("Prestige Champagne");
-                        newProvider.setContactInfo("123-456-7890");
                         newProvider.setDescription("Sparkling wine");
-                        newProvider.setPictures(List.of("assets/images/profile2.png"));
+                        newProvider.setPhotos(List.of("assets/images/profile2.png"));
                         return userRepository.save(newProvider);
                     });
 
@@ -184,9 +185,8 @@ public class DatabaseSeeder {
                         newProvider.setEmail("lighting1@example.com");
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("Freedom Riders");
-                        newProvider.setContactInfo("321-654-0987");
                         newProvider.setDescription("Galop beyond limits");
-                        newProvider.setPictures(List.of("assets/images/profile3.png", "lights2.png"));
+                        newProvider.setPhotos(List.of("assets/images/profile3.png", "lights2.png"));
                         return userRepository.save(newProvider);
                     });
 
@@ -196,9 +196,8 @@ public class DatabaseSeeder {
                         newProvider.setEmail("music@example.com");
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("VibeX");
-                        newProvider.setContactInfo("987-654-3210");
                         newProvider.setDescription("DJ and live band services for weddings and parties.");
-                        newProvider.setPictures(List.of("dj1.png", "band1.png"));
+                        newProvider.setPhotos(List.of("dj1.png", "band1.png"));
                         return userRepository.save(newProvider);
                     });
 
@@ -208,9 +207,8 @@ public class DatabaseSeeder {
                         newProvider.setEmail("food@example.com");
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("Majestic bites");
-                        newProvider.setContactInfo("987-654-3210");
                         newProvider.setDescription("Taste the Majesty, savor the moment");
-                        newProvider.setPictures(List.of("dj1.png", "band1.png"));
+                        newProvider.setPhotos(List.of("dj1.png", "band1.png"));
                         return userRepository.save(newProvider);
                     });
 
