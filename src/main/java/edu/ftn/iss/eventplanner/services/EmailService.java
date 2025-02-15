@@ -45,6 +45,7 @@ public class EmailService {
     public boolean verifyActivationToken(String token) {
         User user = userRepository.findByActivationToken(token);
         if (user == null) {
+            System.out.println("NEMA USERA------------------------------------------------------------------------------------------------------------");
             return false; // Token is invalid
         }
 
