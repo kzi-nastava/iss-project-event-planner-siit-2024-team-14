@@ -43,8 +43,7 @@ public class UserService {
             return ResponseEntity.status(401).body(new LoginResponseDTO(null, null, "User is not active!", false));
         }
 
-
-        if (!user.isSuspended()) {
+        if (user.isSuspended()) {
             System.out.println("User is suspended");
             return ResponseEntity.status(401).body(new LoginResponseDTO(null, null, "User is suspended!", false));
         }
