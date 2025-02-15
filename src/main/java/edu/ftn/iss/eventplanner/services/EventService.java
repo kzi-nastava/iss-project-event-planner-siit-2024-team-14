@@ -56,9 +56,9 @@ public class EventService {
             dto.setImageUrl(event.getImageUrl());
 
             if (event.getOrganizer() != null) {
-                dto.setOrganizerFirstName(event.getOrganizer().getFirstName());
-                dto.setOrganizerLastName(event.getOrganizer().getLastName());
-                dto.setOrganizerProfilePicture(event.getOrganizer().getProfilePicture());
+                dto.setOrganizerFirstName(event.getOrganizer().getName());
+                dto.setOrganizerLastName(event.getOrganizer().getSurname());
+                dto.setOrganizerProfilePicture(event.getOrganizer().getProfilePhoto());
             }
             return dto;
         });
@@ -77,9 +77,9 @@ public class EventService {
             dto.setImageUrl(event.getImageUrl());
 
             if (event.getOrganizer() != null) {
-                dto.setOrganizerFirstName(event.getOrganizer().getFirstName());
-                dto.setOrganizerLastName(event.getOrganizer().getLastName());
-                dto.setOrganizerProfilePicture(event.getOrganizer().getProfilePicture());
+                dto.setOrganizerFirstName(event.getOrganizer().getName());
+                dto.setOrganizerLastName(event.getOrganizer().getSurname());
+                dto.setOrganizerProfilePicture(event.getOrganizer().getProfilePhoto());
             }
 
             return dto;
