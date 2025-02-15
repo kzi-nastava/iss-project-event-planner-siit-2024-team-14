@@ -20,9 +20,9 @@ public class EmailService {
     @Autowired
     private UserRepository userRepository;
 
-    public void sendActivationEmail(String to, String activationToken) throws MessagingException {
+    public void sendActivationEmail(String to, String activationToken, String role) throws MessagingException {
         String subject = "Activate Your Account";
-        String activationLink = "http://localhost:4200/activate?token=" + activationToken;
+        String activationLink = "http://localhost:4200/activate?token=" + activationToken + "&role=" + role;
 
         String body = "<html>"
                 + "<body>"
@@ -87,7 +87,7 @@ public class EmailService {
 
         // Send the activation email again
         try {
-            sendActivationEmail(user.getEmail(), user.getActivationToken());
+            sendActivationEmail(user.getEmail(), user.getActivationToken(), user.getClass().getSimpleName());
             System.out.println("Activation email resent successfully.");
             return true;
         } catch (MessagingException e) {
