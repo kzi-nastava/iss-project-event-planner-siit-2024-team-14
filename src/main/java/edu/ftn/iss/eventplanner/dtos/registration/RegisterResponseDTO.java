@@ -12,13 +12,11 @@ public class RegisterResponseDTO {
     // Getters and Setters
     private String message;
     private boolean success;
-    private String role;
 
     // Constructor
-    public RegisterResponseDTO(String message, boolean success, String role) {
+    public RegisterResponseDTO(String message, boolean success) {
         this.message = message;
         this.success = success;
-        this.role = role;
     }
 
 }

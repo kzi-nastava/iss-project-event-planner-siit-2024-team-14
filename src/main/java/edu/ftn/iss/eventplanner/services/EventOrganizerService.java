@@ -25,21 +25,21 @@ public class EventOrganizerService {
     public ResponseEntity<RegisterResponseDTO> register(RegisterEoDTO dto) {
         try {
             if (!dto.getPassword().equals(dto.getConfirmPassword())) {
-                return ResponseEntity.badRequest().body(new RegisterResponseDTO("Passwords do not match!", false, null));
+                return ResponseEntity.badRequest().body(new RegisterResponseDTO("Passwords do not match!", false));
             }
 
             if (organizerRepository.findByEmail(dto.getEmail()).isPresent()) {
-                return ResponseEntity.badRequest().body(new RegisterResponseDTO("Email already in use!", false, null));
+                return ResponseEntity.badRequest().body(new RegisterResponseDTO("Email already in use!", false));
             }
 
             String activationToken = UUID.randomUUID().toString();
             create(dto, activationToken);
 
-            emailService.sendActivationEmail(dto.getEmail(), activationToken);
+            emailService.sendActivationEmail(dto.getEmail(), activationToken, "EventOrganizer");
 
-            return ResponseEntity.ok(new RegisterResponseDTO("Registration successful! Check your email to activate your account.", true, null));
+            return ResponseEntity.ok(new RegisterResponseDTO("Registration successful! Check your email to activate your account.", true));
         } catch (MessagingException e) {
-            return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to send activation email. Please try again later.", false, null));
+            return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to send activation email. Please try again later.", false));
         }
     }
 
@@ -65,15 +65,13 @@ public class EventOrganizerService {
     public ResponseEntity<RegisterResponseDTO> activate(String token) {
         EventOrganizer organizer = organizerRepository.findByActivationToken(token);
         if (organizer == null) {
-            return ResponseEntity.badRequest().body(new RegisterResponseDTO("Invalid or expired activation token!", false, null));
+            return ResponseEntity.badRequest().body(new RegisterResponseDTO("Invalid or expired activation token!", false));
         }
 
         LocalDateTime tokenCreationDate = organizer.getTokenCreationDate();
         if (tokenCreationDate.plusHours(24).isBefore(LocalDateTime.now())) {
-            return ResponseEntity.badRequest().body(new RegisterResponseDTO("Activation token has expired. Please register again.", false, null));
+            return ResponseEntity.badRequest().body(new RegisterResponseDTO("Activation token has expired. Please register again.", false));
         }
-
-        String role = organizer.getClass().getSimpleName();
 
         organizer.setActive(true);  // Mark as active
         organizer.setVerified(true);  // Mark as verified
@@ -81,6 +79,6 @@ public class EventOrganizerService {
         organizer.setTokenCreationDate(null);
         organizerRepository.save(organizer);
 
-        return ResponseEntity.ok(new RegisterResponseDTO("Your email is verified successfully!", true, role));
+        return ResponseEntity.ok(new RegisterResponseDTO("Your email is verified successfully!", true));
     }
 }
