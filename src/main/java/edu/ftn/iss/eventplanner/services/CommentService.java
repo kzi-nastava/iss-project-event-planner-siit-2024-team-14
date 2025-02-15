@@ -62,9 +62,9 @@ public class CommentService {
         if (savedComment.getCommenter() != null) {
             if (savedComment.getCommenter() instanceof EventOrganizer) {
                 EventOrganizer organizer = (EventOrganizer) savedComment.getCommenter();
-                commenterFirstName = organizer.getFirstName();
-                commenterLastName = organizer.getLastName();
-                commenterProfilePicture = organizer.getProfilePicture();
+                commenterFirstName = organizer.getName();
+                commenterLastName = organizer.getSurname();
+                commenterProfilePicture = organizer.getProfilePhoto();
             } else if (savedComment.getCommenter() instanceof ServiceAndProductProvider) {
                 ServiceAndProductProvider provider = (ServiceAndProductProvider) savedComment.getCommenter();
                 commenterFirstName = provider.getCompanyName();
@@ -107,9 +107,9 @@ public class CommentService {
         if (updatedComment.getCommenter() != null) {
             if (updatedComment.getCommenter() instanceof EventOrganizer) {
                 EventOrganizer organizer = (EventOrganizer) updatedComment.getCommenter();
-                commenterFirstName = organizer.getFirstName();
-                commenterLastName = organizer.getLastName();
-                commenterProfilePicture = organizer.getProfilePicture();
+                commenterFirstName = organizer.getName();
+                commenterLastName = organizer.getSurname();
+                commenterProfilePicture = organizer.getProfilePhoto();
             } else if (updatedComment.getCommenter() instanceof ServiceAndProductProvider) {
                 ServiceAndProductProvider provider = (ServiceAndProductProvider) updatedComment.getCommenter();
                 commenterFirstName = provider.getCompanyName();  // Kompanija kao ime
@@ -146,9 +146,9 @@ public class CommentService {
                     if (comment.getCommenter() != null) {
                         if (comment.getCommenter() instanceof EventOrganizer) {
                             EventOrganizer organizer = (EventOrganizer) comment.getCommenter();
-                            commenterFirstName = organizer.getFirstName();
-                            commenterLastName = organizer.getLastName();
-                            commenterProfilePicture = organizer.getProfilePicture();
+                            commenterFirstName = organizer.getName();
+                            commenterLastName = organizer.getSurname();
+                            commenterProfilePicture = organizer.getProfilePhoto();
                         } else if (comment.getCommenter() instanceof ServiceAndProductProvider) {
                             ServiceAndProductProvider provider = (ServiceAndProductProvider) comment.getCommenter();
                             commenterFirstName = provider.getCompanyName();  // Kompanija kao "ime"
@@ -187,9 +187,9 @@ public class CommentService {
                     if (comment.getCommenter() != null) {
                         if (comment.getCommenter() instanceof EventOrganizer) {
                             EventOrganizer organizer = (EventOrganizer) comment.getCommenter();
-                            commenterFirstName = organizer.getFirstName();
-                            commenterLastName = organizer.getLastName();
-                            commenterProfilePicture = organizer.getProfilePicture();
+                            commenterFirstName = organizer.getName();
+                            commenterLastName = organizer.getSurname();
+                            commenterProfilePicture = organizer.getProfilePhoto();
                         } else if (comment.getCommenter() instanceof ServiceAndProductProvider) {
                             ServiceAndProductProvider provider = (ServiceAndProductProvider) comment.getCommenter();
                             commenterFirstName = provider.getCompanyName();  // Kompanija kao "ime"
@@ -229,9 +229,9 @@ public class CommentService {
                     if (comment.getCommenter() != null) {
                         if (comment.getCommenter() instanceof EventOrganizer) {
                             EventOrganizer organizer = (EventOrganizer) comment.getCommenter();
-                            commenterFirstName = organizer.getFirstName();
-                            commenterLastName = organizer.getLastName();
-                            commenterProfilePicture = organizer.getProfilePicture();
+                            commenterFirstName = organizer.getName();
+                            commenterLastName = organizer.getSurname();
+                            commenterProfilePicture = organizer.getProfilePhoto();
                         } else if (comment.getCommenter() instanceof ServiceAndProductProvider) {
                             ServiceAndProductProvider provider = (ServiceAndProductProvider) comment.getCommenter();
                             commenterFirstName = provider.getCompanyName();  // Kompanija kao ime

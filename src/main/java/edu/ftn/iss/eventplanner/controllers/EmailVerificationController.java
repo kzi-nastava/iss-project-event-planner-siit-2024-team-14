@@ -1,6 +1,7 @@
 package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.EmailVerificationDTO;
+import edu.ftn.iss.eventplanner.services.EmailService;
 import edu.ftn.iss.eventplanner.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class EmailVerificationController {
 
     @Autowired
-    private UserService userService;
+    private EmailService emailService;
 
     @PostMapping("/verify")
     public ResponseEntity<String> verifyEmail(@RequestBody EmailVerificationDTO verificationDTO) {
@@ -23,7 +24,7 @@ public class EmailVerificationController {
         }
 
         // Call userService to validate the token and activate user
-        boolean isValid = userService.verifyActivationToken(verificationDTO.getToken());
+        boolean isValid = emailService.verifyActivationToken(verificationDTO.getToken());
 
         if (isValid) {
             return new ResponseEntity<>("Email verified successfully!", HttpStatus.OK);
@@ -37,7 +38,7 @@ public class EmailVerificationController {
         System.out.println("Resending verification email to token: " + verificationDTO.getToken());
 
         // Call userService to resend email
-        boolean isResent = userService.resendActivationEmail(verificationDTO.getToken());
+        boolean isResent = emailService.resendActivationEmail(verificationDTO.getToken());
 
         if (isResent) {
             return new ResponseEntity<>("Verification email resent successfully!", HttpStatus.OK);
