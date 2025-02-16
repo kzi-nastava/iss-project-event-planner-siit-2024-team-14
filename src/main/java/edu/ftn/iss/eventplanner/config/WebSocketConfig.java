@@ -12,14 +12,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
-        config.setApplicationDestinationPrefixes("/app");
+        config.enableSimpleBroker("/topic"); // Korisnik sluša na /topic/notifications
+        config.setApplicationDestinationPrefixes("/app"); // Klijent šalje poruke ka /app
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")
-                .setAllowedOrigins("*")
+        registry.addEndpoint("/ws")  // WebSocket endpoint
+                .setAllowedOrigins("http://localhost:4200") // Angular frontend
                 .withSockJS();
     }
 }

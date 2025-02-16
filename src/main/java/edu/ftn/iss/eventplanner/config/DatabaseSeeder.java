@@ -190,6 +190,8 @@ public class DatabaseSeeder {
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("Prestige Champagne");
                         newProvider.setDescription("Sparkling wine");
+                        newProvider.setActive(true);
+                        newProvider.setVerified(true);
                         newProvider.setPhotos(List.of("assets/images/profile2.png"));
                         return userRepository.save(newProvider);
                     });
@@ -201,6 +203,8 @@ public class DatabaseSeeder {
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("Freedom Riders");
                         newProvider.setDescription("Galop beyond limits");
+                        newProvider.setActive(true);
+                        newProvider.setVerified(true);
                         newProvider.setPhotos(List.of("assets/images/profile3.png", "lights2.png"));
                         return userRepository.save(newProvider);
                     });
@@ -213,6 +217,8 @@ public class DatabaseSeeder {
                         newProvider.setCompanyName("VibeX");
                         newProvider.setDescription("DJ and live band services for weddings and parties.");
                         newProvider.setPhotos(List.of("dj1.png", "band1.png"));
+                        newProvider.setActive(true);
+                        newProvider.setVerified(true);
                         return userRepository.save(newProvider);
                     });
 
@@ -224,6 +230,8 @@ public class DatabaseSeeder {
                         newProvider.setCompanyName("Majestic bites");
                         newProvider.setDescription("Taste the Majesty, savor the moment");
                         newProvider.setPhotos(List.of("dj1.png", "band1.png"));
+                        newProvider.setActive(true);
+                        newProvider.setVerified(true);
                         return userRepository.save(newProvider);
                     });
 
@@ -391,13 +399,6 @@ public class DatabaseSeeder {
             comment2.setProduct(photobooth);
             comment2.setCommenter(organizer); // Koristimo organizatora kao komentatora
             commentRepository.save(comment2);
-
-            Notification notification = new Notification();
-            notification.setUser(organizer);
-            notification.setDate(LocalDate.now());
-            notification.setMessage("lalalalala");
-            notification.setRead(false);
-            notificationRepository.save(notification);
 
             System.out.println("✅ Podaci uspešno dodati u bazu.");
         };

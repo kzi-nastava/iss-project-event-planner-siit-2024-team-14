@@ -39,7 +39,6 @@ public class NotificationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-
         Comment comment = (commentId != null) ? commentRepository.findById(commentId).orElse(null) : null;
         Event event = (eventId != null) ? eventRepository.findById(eventId).orElse(null) : null;
 
@@ -92,7 +91,8 @@ public class NotificationService {
     }
 
     public void markNotificationAsRead(Integer notificationId) {
-        Notification notification = notificationRepository.findById(notificationId).orElseThrow();
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
         notification.setRead(true);
         notificationRepository.save(notification);
     }

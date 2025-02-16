@@ -3,13 +3,18 @@ package edu.ftn.iss.eventplanner.services;
 import edu.ftn.iss.eventplanner.dtos.ApproveCommentDTO;
 import edu.ftn.iss.eventplanner.dtos.CommentResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.CreateCommentDTO;
+import edu.ftn.iss.eventplanner.dtos.NotificationDTO;
 import edu.ftn.iss.eventplanner.entities.*;
 import edu.ftn.iss.eventplanner.enums.Status;
 import edu.ftn.iss.eventplanner.repositories.CommentRepository;
 import edu.ftn.iss.eventplanner.repositories.ProductRepository;
 import edu.ftn.iss.eventplanner.repositories.ServiceRepository;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
+import edu.ftn.iss.eventplanner.services.NotificationWebSocketService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,6 +28,10 @@ public class CommentService {
     private final ProductRepository productRepository;
     private final ServiceRepository serviceRepository;
     private final UserRepository userRepository;
+    private final NotificationWebSocketService notificationWebSocketService;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     // Kreiranje novog komentara sa statusom 'PENDING'
     public CommentResponseDTO createComment(CreateCommentDTO createCommentDTO) {
@@ -110,36 +119,45 @@ public class CommentService {
         }
 
         // Notifikacija za osobu koja je napisala komentar
-        notificationService.createNotification(
+        NotificationDTO commenterNotification = notificationService.createNotification(
                 updatedComment.getCommenter().getId(),
                 message,
                 updatedComment.getId(),
                 null
         );
+        String commenterDestination = "/topic/notifications/" + updatedComment.getCommenter().getId();
+        messagingTemplate.convertAndSend(commenterDestination, commenterNotification);
+        notificationWebSocketService.sendWebSocketNotification(updatedComment.getCommenter().getId(), commenterNotification);
 
         // Ako je komentar vezan za događaj, obavesti i organizatora
         if (updatedComment.getProduct() != null) {
             Product product = updatedComment.getProduct();
             if (product.getProvider() != null) {
-                notificationService.createNotification(
+                NotificationDTO providerNotification = notificationService.createNotification(
                         product.getProvider().getId(),
                         "A comment has been " + (approveCommentDTO.isApproved() ? "approved" : "rejected") + " on your event!",
                         updatedComment.getId(),
                         product.getId()
                 );
+                String providerDestination = "/topic/notifications/" + product.getProvider().getId();
+                messagingTemplate.convertAndSend(providerDestination, providerNotification);
+                notificationWebSocketService.sendWebSocketNotification(updatedComment.getProduct().getProvider().getId(), providerNotification);
+
             }
-        }
-        else if (updatedComment.getService() != null) {
+        } else if (updatedComment.getService() != null) {
             Service service = updatedComment.getService();
             if (service.getProvider() != null) {
-                notificationService.createNotification(
+                NotificationDTO providerNotification = notificationService.createNotification(
                         service.getProvider().getId(),
                         "A comment has been " + (approveCommentDTO.isApproved() ? "approved" : "rejected") + " on your event!",
                         updatedComment.getId(),
                         service.getId()
                 );
-            }
+                String providerDestination = "/topic/notifications/" + service.getProvider().getId();
+                messagingTemplate.convertAndSend(providerDestination, providerNotification);
+                notificationWebSocketService.sendWebSocketNotification(updatedComment.getService().getProvider().getId(), providerNotification);
 
+            }
         }
 
         // Priprema informacija o komentatoru
@@ -175,7 +193,6 @@ public class CommentService {
                         updatedComment.getService().getProvider().getCompanyName() : "N/A"
         );
     }
-
 
     // Dohvatanje svih komentara (za admina)
     public List<CommentResponseDTO> getAllComments() {

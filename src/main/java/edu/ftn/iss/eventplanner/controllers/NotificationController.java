@@ -26,16 +26,15 @@ public class NotificationController {
         return ResponseEntity.ok(notificationDTO);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<NotificationDTO>> getUserNotifications(@PathVariable Integer userId) {
-        List<NotificationDTO> notifications = notificationService.getUserNotifications(userId);
-        return ResponseEntity.ok(notifications);
+    // Endpoint za preuzimanje notifikacija
+    @GetMapping
+    public List<NotificationDTO> getNotifications(@RequestParam("userId") Integer userId) {
+        // Poziva servis koji vraća notifikacije za određenog korisnika
+        return notificationService.getUserNotifications(userId);
     }
 
     @PostMapping("/markAsRead/{notificationId}")
     public void markAsRead(@PathVariable Integer notificationId) {
         notificationService.markNotificationAsRead(notificationId);
     }
-
-
 }
