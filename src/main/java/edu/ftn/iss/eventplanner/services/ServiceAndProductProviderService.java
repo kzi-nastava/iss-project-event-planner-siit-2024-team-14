@@ -1,9 +1,9 @@
 package edu.ftn.iss.eventplanner.services;
 
+import edu.ftn.iss.eventplanner.dtos.GetUserDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
-import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.repositories.ServiceAndProductProviderRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +28,11 @@ public class ServiceAndProductProviderService {
         System.out.println("DTO: " + dto);
         try {
             if (!dto.getPassword().equals(dto.getConfirmPassword())) {
-                return ResponseEntity.badRequest().body(new RegisterResponseDTO("Passwords do not match!", false));
+                return ResponseEntity.badRequest().body(new RegisterResponseDTO("Passwords do not match!", false, null));
             }
 
             if (providerRepository.findByEmail(dto.getEmail()).isPresent()) {
-                return ResponseEntity.badRequest().body(new RegisterResponseDTO("Email already in use!", false));
+                return ResponseEntity.badRequest().body(new RegisterResponseDTO("Email already in use!", false, null));
             }
 
             String activationToken = UUID.randomUUID().toString();
@@ -40,9 +40,9 @@ public class ServiceAndProductProviderService {
 
             emailService.sendActivationEmail(dto.getEmail(), activationToken);
 
-            return ResponseEntity.ok(new RegisterResponseDTO("Registration successful! Check your email to activate your account.", true));
+            return ResponseEntity.ok(new RegisterResponseDTO("Registration successful! Check your email to activate your account.", true, null));
         } catch (MessagingException e) {
-            return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to send activation email. Please try again later.", false));
+            return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to send activation email. Please try again later.", false, null));
         }
     }
 
@@ -69,13 +69,15 @@ public class ServiceAndProductProviderService {
         System.out.println("ENTERED ACTIVATE ---------------------------------------------------------------------------");
         ServiceAndProductProvider provider = providerRepository.findByActivationToken(token);
         if (provider == null) {
-            return ResponseEntity.badRequest().body(new RegisterResponseDTO("Invalid or expired activation token!", false));
+            return ResponseEntity.badRequest().body(new RegisterResponseDTO("Invalid or expired activation token!", false, null));
         }
 
         LocalDateTime tokenCreationDate = provider.getTokenCreationDate();
         if (tokenCreationDate.plusHours(24).isBefore(LocalDateTime.now())) {
-            return ResponseEntity.badRequest().body(new RegisterResponseDTO("Activation token has expired. Please register again.", false));
+            return ResponseEntity.badRequest().body(new RegisterResponseDTO("Activation token has expired. Please register again.", false, null));
         }
+
+        String role = provider.getClass().getSimpleName();
 
         provider.setActive(true);  // Mark as active
         provider.setVerified(true);  // Mark as verified
@@ -83,6 +85,6 @@ public class ServiceAndProductProviderService {
         provider.setTokenCreationDate(null);
         providerRepository.save(provider);
 
-        return ResponseEntity.ok(new RegisterResponseDTO("Your email is verified successfully!", true));
+        return ResponseEntity.ok(new RegisterResponseDTO("Your email is verified successfully!", true, role));
     }
 }

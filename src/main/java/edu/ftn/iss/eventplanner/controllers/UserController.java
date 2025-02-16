@@ -1,7 +1,7 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
-import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.LoginDTO;
+import edu.ftn.iss.eventplanner.dtos.login.LoginResponseDTO;
 import edu.ftn.iss.eventplanner.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +14,10 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterSppDTO dto) {
-        return userService.registerSpp(dto);
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) {
+        System.out.println("Received login data: " + loginDTO);
+        return userService.login(loginDTO); // Directly returning RegisterResponseDTO
     }
 
-    @GetMapping("/activate")
-    public ResponseEntity<RegisterResponseDTO> activate(@RequestParam("token") String token) {
-        return userService.activate(token);
-    }
 }

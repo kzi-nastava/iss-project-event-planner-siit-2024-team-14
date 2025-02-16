@@ -15,5 +15,3 @@ public class NotificationWebSocketService {
         messagingTemplate.convertAndSend(destination, message);
     }
 }
-
-

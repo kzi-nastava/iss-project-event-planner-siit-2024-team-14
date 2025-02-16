@@ -30,16 +30,28 @@ public class DatabaseSeeder {
             EventType theatreType = eventTypeRepository.findByName("Theatre")
                     .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Theatre", "Performing arts", true, null)));
 
+            Admin admin = (Admin) userRepository.findByEmail("admin@gmail.com").orElseGet(() -> {
+                Admin newAdmin = new Admin();
+                newAdmin.setEmail("admin@gmail.com");
+                newAdmin.setFirstName("Admin");
+                newAdmin.setLastName("Admin");
+                newAdmin.setPassword("admin");
+                newAdmin.setVerified(true);
+                newAdmin.setActive(true);
+                return userRepository.save(newAdmin);
+            });
 
             EventOrganizer organizer = (EventOrganizer) userRepository.findByEmail("anajovanovic@example.com")
                     .orElseGet(() -> {
                         EventOrganizer newOrganizer = new EventOrganizer();
                         newOrganizer.setEmail("anajovanovic@example.com");
                         newOrganizer.setPassword("ana123");
-                        newOrganizer.setFirstName("Ana");
-                        newOrganizer.setLastName("Jovanovic");
-                        newOrganizer.setProfilePicture("assets/images/profile1.png");
+                        newOrganizer.setName("Ana");
+                        newOrganizer.setSurname("Jovanovic");
+                        newOrganizer.setProfilePhoto("assets/images/profile1.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
+                        newOrganizer.setCity("Belgrade");
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
@@ -49,10 +61,12 @@ public class DatabaseSeeder {
                         EventOrganizer newOrganizer = new EventOrganizer();
                         newOrganizer.setEmail("milosnikolic@example.com");
                         newOrganizer.setPassword("milos123");
-                        newOrganizer.setFirstName("Milos");
-                        newOrganizer.setLastName("Nikolic");
-                        newOrganizer.setProfilePicture("assets/images/profile2.png");
+                        newOrganizer.setName("Milos");
+                        newOrganizer.setSurname("Nikolic");
+                        newOrganizer.setProfilePhoto("assets/images/profile2.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
+                        newOrganizer.setCity("Novi Sad");
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
@@ -62,10 +76,11 @@ public class DatabaseSeeder {
                         EventOrganizer newOrganizer = new EventOrganizer();
                         newOrganizer.setEmail("nikolinapetrovic@example.com");
                         newOrganizer.setPassword("nikolina123");
-                        newOrganizer.setFirstName("Nikolina");
-                        newOrganizer.setLastName("Petrovic");
-                        newOrganizer.setProfilePicture("assets/images/profile3.png");
+                        newOrganizer.setName("Nikolina");
+                        newOrganizer.setSurname("Petrovic");
+                        newOrganizer.setProfilePhoto("assets/images/profile3.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
@@ -75,10 +90,11 @@ public class DatabaseSeeder {
                         EventOrganizer newOrganizer = new EventOrganizer();
                         newOrganizer.setEmail("draganamilivojevic@example.com");
                         newOrganizer.setPassword("dragana123");
-                        newOrganizer.setFirstName("Dragana");
-                        newOrganizer.setLastName("Milivojevic");
-                        newOrganizer.setProfilePicture("assets/images/profile4.png");
+                        newOrganizer.setName("Dragana");
+                        newOrganizer.setSurname("Milivojevic");
+                        newOrganizer.setProfilePhoto("assets/images/profile4.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
@@ -88,17 +104,18 @@ public class DatabaseSeeder {
                         EventOrganizer newOrganizer = new EventOrganizer();
                         newOrganizer.setEmail("nikolamatijevic@example.com");
                         newOrganizer.setPassword("nikola123");
-                        newOrganizer.setFirstName("Nikola");
-                        newOrganizer.setLastName("Matijevic");
-                        newOrganizer.setProfilePicture("assets/images/profile5.png");
+                        newOrganizer.setName("Nikola");
+                        newOrganizer.setSurname("Matijevic");
+                        newOrganizer.setProfilePhoto("assets/images/profile5.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
 
             // Dodavanje događaja
             if (eventRepository.findByName("Birthday Party").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, "open", "Beograd",
+                eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, "open", "Belgrade",
                         LocalDate.of(2025, 6, 2), LocalDate.of(2025, 6, 2), "assets/images/event1.png", partyType));
             }
 
