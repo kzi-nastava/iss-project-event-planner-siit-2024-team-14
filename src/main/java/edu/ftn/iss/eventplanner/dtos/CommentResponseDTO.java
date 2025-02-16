@@ -13,9 +13,10 @@ public class CommentResponseDTO {
     private int rating;
     private LocalDate date;
     private String status;
+    private Integer commentId;
     private String commenterFirstName;
     private String commenterLastName;
     private String commenterProfilePicture;
-    private String solution;  // Naziv rešenja (ako je primenljivo)
-    private String solutionProvider;  // Dobavljač rešenja (ako je primenljivo)
+    private String solution;
+    private String solutionProvider;
 }

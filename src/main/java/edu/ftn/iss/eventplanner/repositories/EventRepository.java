@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface EventRepository extends JpaRepository<Event, Long> {
+public interface EventRepository extends JpaRepository<Event, Integer> {
 
     // Pronaći prva 5 događaja po lokaciji
     List<Event> findFirst5ByLocationOrderByStartDateDesc(String location);

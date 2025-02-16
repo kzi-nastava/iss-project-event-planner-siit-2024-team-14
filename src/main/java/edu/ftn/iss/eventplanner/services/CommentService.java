@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
+    private final NotificationService notificationService;
     private final ProductRepository productRepository;
     private final ServiceRepository serviceRepository;
     private final UserRepository userRepository;
@@ -45,7 +46,7 @@ public class CommentService {
             comment.setService(service);
         }
 
-        // Povezivanje komentatora (pretpostavljamo da postoji commenterId)
+        // Povezivanje komentatora
         if (createCommentDTO.getCommenterId() != null) {
             User commenter = userRepository.findById(createCommentDTO.getCommenterId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
@@ -77,6 +78,7 @@ public class CommentService {
                 savedComment.getRating(),
                 savedComment.getDate(),
                 savedComment.getStatus().name().toLowerCase(),
+                savedComment.getCommenter().getId(),
                 commenterFirstName,
                 commenterLastName,
                 commenterProfilePicture,
@@ -99,6 +101,47 @@ public class CommentService {
 
         Comment updatedComment = commentRepository.save(comment);
 
+        // Kreiranje notifikacija
+        String message;
+        if (approveCommentDTO.isApproved()) {
+            message = "Your comment has been approved!";
+        } else {
+            message = "Your comment has been rejected!";
+        }
+
+        // Notifikacija za osobu koja je napisala komentar
+        notificationService.createNotification(
+                updatedComment.getCommenter().getId(),
+                message,
+                updatedComment.getId(),
+                null
+        );
+
+        // Ako je komentar vezan za događaj, obavesti i organizatora
+        if (updatedComment.getProduct() != null) {
+            Product product = updatedComment.getProduct();
+            if (product.getProvider() != null) {
+                notificationService.createNotification(
+                        product.getProvider().getId(),
+                        "A comment has been " + (approveCommentDTO.isApproved() ? "approved" : "rejected") + " on your event!",
+                        updatedComment.getId(),
+                        product.getId()
+                );
+            }
+        }
+        else if (updatedComment.getService() != null) {
+            Service service = updatedComment.getService();
+            if (service.getProvider() != null) {
+                notificationService.createNotification(
+                        service.getProvider().getId(),
+                        "A comment has been " + (approveCommentDTO.isApproved() ? "approved" : "rejected") + " on your event!",
+                        updatedComment.getId(),
+                        service.getId()
+                );
+            }
+
+        }
+
         // Priprema informacija o komentatoru
         String commenterFirstName = "Anonymous";
         String commenterLastName = "";
@@ -112,7 +155,7 @@ public class CommentService {
                 commenterProfilePicture = organizer.getProfilePhoto();
             } else if (updatedComment.getCommenter() instanceof ServiceAndProductProvider) {
                 ServiceAndProductProvider provider = (ServiceAndProductProvider) updatedComment.getCommenter();
-                commenterFirstName = provider.getCompanyName();  // Kompanija kao ime
+                commenterFirstName = provider.getCompanyName();
                 commenterLastName = "";  // Nema prezime
             }
         }
@@ -123,6 +166,7 @@ public class CommentService {
                 updatedComment.getRating(),
                 updatedComment.getDate(),
                 updatedComment.getStatus().name().toLowerCase(),
+                updatedComment.getCommenter().getId(),
                 commenterFirstName,
                 commenterLastName,
                 commenterProfilePicture,
@@ -162,6 +206,7 @@ public class CommentService {
                             comment.getRating(),
                             comment.getDate(),
                             comment.getStatus().name().toLowerCase(),
+                            comment.getCommenter().getId(),
                             commenterFirstName,
                             commenterLastName,
                             commenterProfilePicture,
@@ -203,6 +248,7 @@ public class CommentService {
                             comment.getRating(),
                             comment.getDate(),
                             comment.getStatus().name().toLowerCase(),
+                            comment.getCommenter().getId(),
                             commenterFirstName,
                             commenterLastName,
                             commenterProfilePicture,
@@ -246,6 +292,7 @@ public class CommentService {
                             comment.getRating(),
                             comment.getDate(),
                             comment.getStatus().name().toLowerCase(),
+                            comment.getCommenter().getId(),
                             commenterFirstName,
                             commenterLastName,
                             commenterProfilePicture,

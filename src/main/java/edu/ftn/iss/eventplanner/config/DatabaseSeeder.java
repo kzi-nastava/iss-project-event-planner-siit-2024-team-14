@@ -30,6 +30,16 @@ public class DatabaseSeeder {
             EventType theatreType = eventTypeRepository.findByName("Theatre")
                     .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Theatre", "Performing arts", true, null)));
 
+            Admin admin = (Admin) userRepository.findByEmail("admin@gmail.com").orElseGet(() -> {
+                Admin newAdmin = new Admin();
+                newAdmin.setEmail("admin@gmail.com");
+                newAdmin.setFirstName("Admin");
+                newAdmin.setLastName("Admin");
+                newAdmin.setPassword("admin");
+                newAdmin.setVerified(true);
+                newAdmin.setActive(true);
+                return userRepository.save(newAdmin);
+            });
 
             EventOrganizer organizer = (EventOrganizer) userRepository.findByEmail("anajovanovic@example.com")
                     .orElseGet(() -> {
@@ -40,6 +50,7 @@ public class DatabaseSeeder {
                         newOrganizer.setSurname("Jovanovic");
                         newOrganizer.setProfilePhoto("assets/images/profile1.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
                         newOrganizer.setCity("Belgrade");
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
@@ -54,6 +65,7 @@ public class DatabaseSeeder {
                         newOrganizer.setSurname("Nikolic");
                         newOrganizer.setProfilePhoto("assets/images/profile2.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
                         newOrganizer.setCity("Novi Sad");
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
@@ -68,6 +80,7 @@ public class DatabaseSeeder {
                         newOrganizer.setSurname("Petrovic");
                         newOrganizer.setProfilePhoto("assets/images/profile3.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
@@ -81,6 +94,7 @@ public class DatabaseSeeder {
                         newOrganizer.setSurname("Milivojevic");
                         newOrganizer.setProfilePhoto("assets/images/profile4.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
@@ -94,6 +108,7 @@ public class DatabaseSeeder {
                         newOrganizer.setSurname("Matijevic");
                         newOrganizer.setProfilePhoto("assets/images/profile5.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
