@@ -26,8 +26,15 @@ public class CommentController {
 
     // Endpoint za odobravanje ili logičko brisanje komentara (Admin)
     @PutMapping("/approve")
-    public ResponseEntity<CommentResponseDTO> approveOrDeleteComment(@Valid @RequestBody ApproveCommentDTO approveCommentDTO) {
-        CommentResponseDTO response = commentService.approveOrDeleteComment(approveCommentDTO);
+    public ResponseEntity<CommentResponseDTO> approveComment(@Valid @RequestBody ApproveCommentDTO approveCommentDTO) {
+        CommentResponseDTO response = commentService.approveComment(approveCommentDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    // Endpoint za odobravanje ili logičko brisanje komentara (Admin)
+    @PutMapping("/delete")
+    public ResponseEntity<CommentResponseDTO> deleteComment(@Valid @RequestBody ApproveCommentDTO approveCommentDTO) {
+        CommentResponseDTO response = commentService.deleteComment(approveCommentDTO);
         return ResponseEntity.ok(response);
     }
 

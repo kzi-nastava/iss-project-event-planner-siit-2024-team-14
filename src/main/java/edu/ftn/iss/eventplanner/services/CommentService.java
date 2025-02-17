@@ -1,28 +1,22 @@
 package edu.ftn.iss.eventplanner.services;
 
-import edu.ftn.iss.eventplanner.dtos.ApproveCommentDTO;
-import edu.ftn.iss.eventplanner.dtos.CommentResponseDTO;
-import edu.ftn.iss.eventplanner.dtos.CreateCommentDTO;
-import edu.ftn.iss.eventplanner.dtos.NotificationDTO;
+import edu.ftn.iss.eventplanner.dtos.*;
 import edu.ftn.iss.eventplanner.entities.*;
 import edu.ftn.iss.eventplanner.enums.Status;
-import edu.ftn.iss.eventplanner.repositories.CommentRepository;
-import edu.ftn.iss.eventplanner.repositories.ProductRepository;
-import edu.ftn.iss.eventplanner.repositories.ServiceRepository;
-import edu.ftn.iss.eventplanner.repositories.UserRepository;
-import edu.ftn.iss.eventplanner.services.NotificationWebSocketService;
+import edu.ftn.iss.eventplanner.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@org.springframework.stereotype.Service
+@Service
 @RequiredArgsConstructor
 public class CommentService {
+
     private final CommentRepository commentRepository;
     private final NotificationService notificationService;
     private final ProductRepository productRepository;
@@ -33,294 +27,158 @@ public class CommentService {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    // Kreiranje novog komentara sa statusom 'PENDING'
-    public CommentResponseDTO createComment(CreateCommentDTO createCommentDTO) {
+    public CommentResponseDTO createComment(CreateCommentDTO dto) {
         Comment comment = new Comment();
-        comment.setContent(createCommentDTO.getContent());
-        comment.setRating(createCommentDTO.getRating());
+        comment.setContent(dto.getContent());
+        comment.setRating(dto.getRating());
         comment.setDate(LocalDate.now());
         comment.setStatus(Status.PENDING);
 
-        // Povezivanje sa proizvodom ako postoji productId
-        if (createCommentDTO.getProductId() != null) {
-            Product product = productRepository.findById(createCommentDTO.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
-            comment.setProduct(product);
+        if (dto.getProductId() != null) {
+            comment.setProduct(findProductById(dto.getProductId()));
         }
-
-        // Povezivanje sa uslugom ako postoji serviceId
-        if (createCommentDTO.getServiceId() != null) {
-            Service service = serviceRepository.findById(createCommentDTO.getServiceId())
-                    .orElseThrow(() -> new RuntimeException("Service not found"));
-            comment.setService(service);
+        if (dto.getServiceId() != null) {
+            comment.setService(findServiceById(dto.getServiceId()));
         }
-
-        // Povezivanje komentatora
-        if (createCommentDTO.getCommenterId() != null) {
-            User commenter = userRepository.findById(createCommentDTO.getCommenterId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            comment.setCommenter(commenter);
+        if (dto.getCommenterId() != null) {
+            comment.setCommenter(findUserById(dto.getCommenterId()));
         }
 
         Comment savedComment = commentRepository.save(comment);
+        CommenterInfo commenterInfo = getCommenterInfo(savedComment.getCommenter());
 
-        // Priprema informacija o komentatoru
-        String commenterFirstName = "Anonymous";
-        String commenterLastName = "";
-        String commenterProfilePicture = null;
-
-        if (savedComment.getCommenter() != null) {
-            if (savedComment.getCommenter() instanceof EventOrganizer) {
-                EventOrganizer organizer = (EventOrganizer) savedComment.getCommenter();
-                commenterFirstName = organizer.getName();
-                commenterLastName = organizer.getSurname();
-                commenterProfilePicture = organizer.getProfilePhoto();
-            } else if (savedComment.getCommenter() instanceof ServiceAndProductProvider) {
-                ServiceAndProductProvider provider = (ServiceAndProductProvider) savedComment.getCommenter();
-                commenterFirstName = provider.getCompanyName();
-            }
-        }
-
-        return new CommentResponseDTO(
-                savedComment.getId().longValue(),
-                savedComment.getContent(),
-                savedComment.getRating(),
-                savedComment.getDate(),
-                savedComment.getStatus().name().toLowerCase(),
-                savedComment.getCommenter().getId(),
-                commenterFirstName,
-                commenterLastName,
-                commenterProfilePicture,
-                savedComment.getService() != null ? savedComment.getService().getName() : "N/A",
-                savedComment.getService() != null && savedComment.getService().getProvider() != null ?
-                        savedComment.getService().getProvider().getCompanyName() : "N/A"
-        );
+        return buildCommentResponse(savedComment, commenterInfo);
     }
 
-    // Odobravanje ili logičko brisanje komentara
-    public CommentResponseDTO approveOrDeleteComment(ApproveCommentDTO approveCommentDTO) {
-        Comment comment = commentRepository.findById(approveCommentDTO.getCommentId().intValue())
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+    public CommentResponseDTO deleteComment(ApproveCommentDTO dto) {
+        Comment comment = findCommentById(dto.getCommentId().intValue());
+        comment.setStatus(Status.DELETED);
+        commentRepository.save(comment);
 
-        if (approveCommentDTO.isApproved()) {
-            comment.setStatus(Status.APPROVED);
-        } else {
-            comment.setStatus(Status.DELETED);  // Logičko brisanje
-        }
+        String message = "Your comment: '" + comment.getContent() + "' for '" + getEntityName(comment) + "' has been rejected!";
+        sendNotification(comment.getCommenter().getId(), message, comment.getId());
 
-        Comment updatedComment = commentRepository.save(comment);
-
-        // Kreiranje notifikacija
-        String message;
-        if (approveCommentDTO.isApproved()) {
-            message = "Your comment has been approved!";
-        } else {
-            message = "Your comment has been rejected!";
-        }
-
-        // Notifikacija za osobu koja je napisala komentar
-        NotificationDTO commenterNotification = notificationService.createNotification(
-                updatedComment.getCommenter().getId(),
-                message,
-                updatedComment.getId(),
-                null
-        );
-        String commenterDestination = "/topic/notifications/" + updatedComment.getCommenter().getId();
-        messagingTemplate.convertAndSend(commenterDestination, commenterNotification);
-        notificationWebSocketService.sendWebSocketNotification(updatedComment.getCommenter().getId(), commenterNotification);
-
-        // Ako je komentar vezan za događaj, obavesti i organizatora
-        if (updatedComment.getProduct() != null) {
-            Product product = updatedComment.getProduct();
-            if (product.getProvider() != null) {
-                NotificationDTO providerNotification = notificationService.createNotification(
-                        product.getProvider().getId(),
-                        "A comment has been " + (approveCommentDTO.isApproved() ? "approved" : "rejected") + " on your event!",
-                        updatedComment.getId(),
-                        product.getId()
-                );
-                String providerDestination = "/topic/notifications/" + product.getProvider().getId();
-                messagingTemplate.convertAndSend(providerDestination, providerNotification);
-                notificationWebSocketService.sendWebSocketNotification(updatedComment.getProduct().getProvider().getId(), providerNotification);
-
-            }
-        } else if (updatedComment.getService() != null) {
-            Service service = updatedComment.getService();
-            if (service.getProvider() != null) {
-                NotificationDTO providerNotification = notificationService.createNotification(
-                        service.getProvider().getId(),
-                        "A comment has been " + (approveCommentDTO.isApproved() ? "approved" : "rejected") + " on your event!",
-                        updatedComment.getId(),
-                        service.getId()
-                );
-                String providerDestination = "/topic/notifications/" + service.getProvider().getId();
-                messagingTemplate.convertAndSend(providerDestination, providerNotification);
-                notificationWebSocketService.sendWebSocketNotification(updatedComment.getService().getProvider().getId(), providerNotification);
-
-            }
-        }
-
-        // Priprema informacija o komentatoru
-        String commenterFirstName = "Anonymous";
-        String commenterLastName = "";
-        String commenterProfilePicture = null;
-
-        if (updatedComment.getCommenter() != null) {
-            if (updatedComment.getCommenter() instanceof EventOrganizer) {
-                EventOrganizer organizer = (EventOrganizer) updatedComment.getCommenter();
-                commenterFirstName = organizer.getName();
-                commenterLastName = organizer.getSurname();
-                commenterProfilePicture = organizer.getProfilePhoto();
-            } else if (updatedComment.getCommenter() instanceof ServiceAndProductProvider) {
-                ServiceAndProductProvider provider = (ServiceAndProductProvider) updatedComment.getCommenter();
-                commenterFirstName = provider.getCompanyName();
-                commenterLastName = "";  // Nema prezime
-            }
-        }
-
-        return new CommentResponseDTO(
-                updatedComment.getId().longValue(),
-                updatedComment.getContent(),
-                updatedComment.getRating(),
-                updatedComment.getDate(),
-                updatedComment.getStatus().name().toLowerCase(),
-                updatedComment.getCommenter().getId(),
-                commenterFirstName,
-                commenterLastName,
-                commenterProfilePicture,
-                updatedComment.getService() != null ? updatedComment.getService().getName() : "N/A",
-                updatedComment.getService() != null && updatedComment.getService().getProvider() != null ?
-                        updatedComment.getService().getProvider().getCompanyName() : "N/A"
-        );
+        CommenterInfo commenterInfo = getCommenterInfo(comment.getCommenter());
+        return buildCommentResponse(comment, commenterInfo);
     }
 
-    // Dohvatanje svih komentara (za admina)
+    public CommentResponseDTO approveComment(ApproveCommentDTO dto) {
+        Comment comment = findCommentById(dto.getCommentId().intValue());
+        comment.setStatus(Status.APPROVED);
+        commentRepository.save(comment);
+
+        String entityName = getEntityName(comment);
+        String message = "Your comment: '" + comment.getContent() + "' for '" + entityName + "' has been approved!";
+        sendNotification(comment.getCommenter().getId(), message, comment.getId());
+
+        notifyProvider(comment, entityName);
+        CommenterInfo commenterInfo = getCommenterInfo(comment.getCommenter());
+
+        return buildCommentResponse(comment, commenterInfo);
+    }
+
     public List<CommentResponseDTO> getAllComments() {
-        List<Comment> comments = commentRepository.findAll();
-
-        return comments.stream()
-                .map(comment -> {
-                    String commenterFirstName = "Anonymous";
-                    String commenterLastName = "";
-                    String commenterProfilePicture = null;
-
-                    if (comment.getCommenter() != null) {
-                        if (comment.getCommenter() instanceof EventOrganizer) {
-                            EventOrganizer organizer = (EventOrganizer) comment.getCommenter();
-                            commenterFirstName = organizer.getName();
-                            commenterLastName = organizer.getSurname();
-                            commenterProfilePicture = organizer.getProfilePhoto();
-                        } else if (comment.getCommenter() instanceof ServiceAndProductProvider) {
-                            ServiceAndProductProvider provider = (ServiceAndProductProvider) comment.getCommenter();
-                            commenterFirstName = provider.getCompanyName();  // Kompanija kao "ime"
-                            commenterLastName = "";  // Nema prezime
-                        }
-                    }
-
-                    return new CommentResponseDTO(
-                            comment.getId().longValue(),
-                            comment.getContent(),
-                            comment.getRating(),
-                            comment.getDate(),
-                            comment.getStatus().name().toLowerCase(),
-                            comment.getCommenter().getId(),
-                            commenterFirstName,
-                            commenterLastName,
-                            commenterProfilePicture,
-                            comment.getService() != null ? comment.getService().getName() : "N/A",
-                            comment.getService() != null && comment.getService().getProvider() != null ?
-                                    comment.getService().getProvider().getCompanyName() : "N/A"
-                    );
-                })
-
-
+        return commentRepository.findAll().stream()
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
     public List<CommentResponseDTO> getPendingComments() {
-        List<Comment> comments = commentRepository.findByStatus(Status.PENDING);
-
-        return comments.stream()
-                .map(comment -> {
-                    String commenterFirstName = "Anonymous";
-                    String commenterLastName = "";
-                    String commenterProfilePicture = null;
-
-                    if (comment.getCommenter() != null) {
-                        if (comment.getCommenter() instanceof EventOrganizer) {
-                            EventOrganizer organizer = (EventOrganizer) comment.getCommenter();
-                            commenterFirstName = organizer.getName();
-                            commenterLastName = organizer.getSurname();
-                            commenterProfilePicture = organizer.getProfilePhoto();
-                        } else if (comment.getCommenter() instanceof ServiceAndProductProvider) {
-                            ServiceAndProductProvider provider = (ServiceAndProductProvider) comment.getCommenter();
-                            commenterFirstName = provider.getCompanyName();  // Kompanija kao "ime"
-                            commenterLastName = "";  // Nema prezime
-                        }
-                    }
-
-                    return new CommentResponseDTO(
-                            comment.getId().longValue(),
-                            comment.getContent(),
-                            comment.getRating(),
-                            comment.getDate(),
-                            comment.getStatus().name().toLowerCase(),
-                            comment.getCommenter().getId(),
-                            commenterFirstName,
-                            commenterLastName,
-                            commenterProfilePicture,
-                            comment.getService() != null ? comment.getService().getName() : "N/A",
-                            comment.getService() != null && comment.getService().getProvider() != null ?
-                                    comment.getService().getProvider().getCompanyName() : "N/A"
-                    );
-                })
-
-
+        return commentRepository.findByStatus(Status.PENDING).stream()
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
-    // Dohvatanje komentara koji su odobreni (za korisnike)
     public List<CommentResponseDTO> getApprovedComments() {
-        List<Comment> comments = commentRepository.findByStatus(Status.APPROVED);
-
-        return comments.stream()
-                .map(comment -> {
-                    String commenterFirstName = "Anonymous";
-                    String commenterLastName = "";
-                    String commenterProfilePicture = null;
-
-                    if (comment.getCommenter() != null) {
-                        if (comment.getCommenter() instanceof EventOrganizer) {
-                            EventOrganizer organizer = (EventOrganizer) comment.getCommenter();
-                            commenterFirstName = organizer.getName();
-                            commenterLastName = organizer.getSurname();
-                            commenterProfilePicture = organizer.getProfilePhoto();
-                        } else if (comment.getCommenter() instanceof ServiceAndProductProvider) {
-                            ServiceAndProductProvider provider = (ServiceAndProductProvider) comment.getCommenter();
-                            commenterFirstName = provider.getCompanyName();  // Kompanija kao ime
-                            commenterLastName = "";  // Nema prezime
-                        }
-
-                    }
-
-                    return new CommentResponseDTO(
-                            comment.getId().longValue(),
-                            comment.getContent(),
-                            comment.getRating(),
-                            comment.getDate(),
-                            comment.getStatus().name().toLowerCase(),
-                            comment.getCommenter().getId(),
-                            commenterFirstName,
-                            commenterLastName,
-                            commenterProfilePicture,
-                            comment.getService() != null ? comment.getService().getName() : "N/A",
-                            comment.getService() != null && comment.getService().getProvider() != null ?
-                                    comment.getService().getProvider().getCompanyName() : "N/A"
-                    );
-                })
+        return commentRepository.findByStatus(Status.APPROVED).stream()
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
+    // --- POMOĆNE METODE ---
+
+    private Comment findCommentById(int id) {
+        return commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+    }
+
+    private Product findProductById(Integer id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+    }
+
+    private edu.ftn.iss.eventplanner.entities.Service findServiceById(Integer id) {
+        return serviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Service not found"));
+    }
+
+    private User findUserById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    private void sendNotification(Integer userId, String message, Integer commentId) {
+        NotificationDTO notification = notificationService.createNotification(userId, message, commentId, null);
+        String destination = "/topic/notifications/" + userId;
+        messagingTemplate.convertAndSend(destination, notification);
+        notificationWebSocketService.sendWebSocketNotification(userId, notification);
+    }
+
+    private void notifyProvider(Comment comment, String entityName) {
+        User provider = (comment.getProduct() != null) ? comment.getProduct().getProvider()
+                : (comment.getService() != null) ? comment.getService().getProvider()
+                : null;
+
+        if (provider != null) {
+            String message = "User: " + comment.getCommenter().getEmail() + " commented on your " + entityName + ": '" + comment.getContent() + "'";
+            sendNotification(provider.getId(), message, comment.getId());
+        }
+    }
+
+    private String getEntityName(Comment comment) {
+        if (comment.getProduct() != null) return comment.getProduct().getName();
+        if (comment.getService() != null) return comment.getService().getName();
+        return "N/A";
+    }
+
+    private CommenterInfo getCommenterInfo(User commenter) {
+        if (commenter == null) {
+            return new CommenterInfo("Anonymous", "", null);
+        }
+
+        if (commenter instanceof EventOrganizer organizer) {
+            return new CommenterInfo(organizer.getName(), organizer.getSurname(), organizer.getProfilePhoto());
+        } else if (commenter instanceof ServiceAndProductProvider provider) {
+            return new CommenterInfo(provider.getCompanyName(), "", null);
+        }
+
+        return new CommenterInfo("Unknown", "", null);
+    }
 
 
+    private CommentResponseDTO mapToDTO(Comment comment) {
+        CommenterInfo commenterInfo = getCommenterInfo(comment.getCommenter());
+        return buildCommentResponse(comment, commenterInfo);
+    }
+
+    private CommentResponseDTO buildCommentResponse(Comment comment, CommenterInfo commenterInfo) {
+        return new CommentResponseDTO(
+                comment.getId(),
+                comment.getContent(),
+                comment.getRating(),
+                comment.getDate(),
+                comment.getStatus().name().toLowerCase(),
+                comment.getCommenter() != null ? comment.getCommenter().getId() : null,
+                commenterInfo.firstName,
+                commenterInfo.lastName,
+                commenterInfo.profilePicture,
+                comment.getService() != null ? comment.getService().getName() : "N/A",
+                comment.getService() != null && comment.getService().getProvider() != null
+                        ? comment.getService().getProvider().getCompanyName()
+                        : "N/A"
+        );
+    }
+
+    private record CommenterInfo(String firstName, String lastName, String profilePicture) {
+    }
 }

@@ -15,8 +15,8 @@ public class CreateCommentDTO {
     @NotNull
     private int rating;
     private LocalDate date;
-    private Long productId;
-    private Long serviceId;
+    private Integer productId;
+    private Integer serviceId;
     private Integer commenterId;
 }
 
