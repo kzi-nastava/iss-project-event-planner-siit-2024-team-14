@@ -90,10 +90,14 @@ public class NotificationService {
                 .collect(Collectors.toList());
     }
 
-    public void markNotificationAsRead(Integer notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
-        notification.setRead(true);
-        notificationRepository.save(notification);
+    public void markAllAsRead(Integer userId) {
+        List<Notification> notifications = notificationRepository.findByUserId(userId);
+        for (Notification notification : notifications) {
+            notification.setRead(true);
+        }
+        notificationRepository.saveAll(notifications);
     }
+
+
+
 }

@@ -20,12 +20,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors().and()
                 .csrf().disable()  // Disabling CSRF if not needed (adjust as per your need)
                 .authorizeHttpRequests()
-                .requestMatchers("/api/providers/**", "/api/users/**", "/api/organizers/**", "/api/notifications",
-                        "/api/events/filter", "/api/events/top5", "/api/events/categories", "/api/events/locations",
-                        "/api/events/all", "/api/solutions/top5", "/api/solutions/all", "/api/solutions/filter",
-                        "/api/solutions/categories", "/api/solutions/locations", "/api/comments/*",
+                .requestMatchers("/api/providers/**", "/api/users/**", "/api/organizers/**",
+                        "/api/events/*", "/api/solutions/*", "/api/comments/*", "/api/notifications/*", "/api/notifications",
                         "/api/providers/register", "/api/providers/activate", "/api/users/register",
                         "/api/users/activate", "/api/users/login", "/ws/**").permitAll()  // Dodata podrška za WebSocket
                 .anyRequest().authenticated()  // Ostale rute zahtevaju autentifikaciju

@@ -11,4 +11,5 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
 
     List<Notification> findByUserIdOrderByDateDesc(Integer userId);  // Zadržite samo jedan metod za pretragu
 
+    List<Notification> findByUserId(Integer userId);
 }

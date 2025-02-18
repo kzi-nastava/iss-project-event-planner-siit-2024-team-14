@@ -38,6 +38,7 @@ public class DatabaseSeeder {
                 newAdmin.setPassword("admin");
                 newAdmin.setVerified(true);
                 newAdmin.setActive(true);
+                newAdmin.setActivationToken("7e2b4df2-9fe6-44df-9d93-3d20d5e246fc");
                 return userRepository.save(newAdmin);
             });
 
@@ -53,6 +54,7 @@ public class DatabaseSeeder {
                         newOrganizer.setActive(true);
                         newOrganizer.setCity("Belgrade");
                         newOrganizer.setSuspended(false);
+                        newOrganizer.setActivationToken("7e2b4df2-9fe6-44df-9d93-3d50d5e246fe");
                         return userRepository.save(newOrganizer);
                     });
 

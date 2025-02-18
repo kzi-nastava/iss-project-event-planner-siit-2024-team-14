@@ -4,6 +4,8 @@ import edu.ftn.iss.eventplanner.dtos.NotificationDTO;
 import edu.ftn.iss.eventplanner.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +16,16 @@ public class NotificationController {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
+    // Ova metoda će slati notifikaciju na određeni kanal
+    @MessageMapping("/sendNotification")
+    public void sendNotification(String notification) {
+        // Šalje poruku na kanal "/topic/notifications"
+        messagingTemplate.convertAndSend("/topic/notifications", notification);
+    }
 
     @PostMapping
     public ResponseEntity<NotificationDTO> createNotification(
@@ -33,8 +45,9 @@ public class NotificationController {
         return notificationService.getUserNotifications(userId);
     }
 
-    @PostMapping("/markAsRead/{notificationId}")
-    public void markAsRead(@PathVariable Integer notificationId) {
-        notificationService.markNotificationAsRead(notificationId);
+    @PutMapping("/mark-all-as-read")
+    public ResponseEntity<Void> markAllAsRead(@RequestParam Integer userId) {
+        notificationService.markAllAsRead(userId);
+        return ResponseEntity.ok().build();
     }
 }

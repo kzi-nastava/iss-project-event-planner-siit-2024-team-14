@@ -51,7 +51,7 @@ public class CommentService {
     }
 
     public CommentResponseDTO deleteComment(ApproveCommentDTO dto) {
-        Comment comment = findCommentById(dto.getCommentId().intValue());
+        Comment comment = findCommentById(dto.getCommentId());
         comment.setStatus(Status.DELETED);
         commentRepository.save(comment);
 
@@ -63,7 +63,7 @@ public class CommentService {
     }
 
     public CommentResponseDTO approveComment(ApproveCommentDTO dto) {
-        Comment comment = findCommentById(dto.getCommentId().intValue());
+        Comment comment = findCommentById(dto.getCommentId());
         comment.setStatus(Status.APPROVED);
         commentRepository.save(comment);
 

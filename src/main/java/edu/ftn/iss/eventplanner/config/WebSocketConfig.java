@@ -11,15 +11,15 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic"); // Korisnik sluša na /topic/notifications
-        config.setApplicationDestinationPrefixes("/app"); // Klijent šalje poruke ka /app
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        // Registruje endpoint za povezivanje sa WebSocket-om
+        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:4200").withSockJS();
     }
 
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")  // WebSocket endpoint
-                .setAllowedOrigins("http://localhost:4200") // Angular frontend
-                .withSockJS();
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        // Podešavanje message brokera za odredišne tačke
+        config.enableSimpleBroker("/topic");
+        config.setApplicationDestinationPrefixes("/app");
     }
 }
