@@ -20,7 +20,7 @@ public class DatabaseSeeder {
                                    SolutionRepository solutionRepository,
                                    CategoryRepository solutionCategoryRepository,
                                    ServiceAndProductProviderRepository providerRepository,
-                                   CommentRepository commentRepository) {
+                                   CommentRepository commentRepository, NotificationRepository notificationRepository) {
         return args -> {
             System.out.println("🔍 Provera podataka u bazi...");
 
@@ -30,6 +30,17 @@ public class DatabaseSeeder {
             EventType theatreType = eventTypeRepository.findByName("Theatre")
                     .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Theatre", "Performing arts", true, null)));
 
+            Admin admin = (Admin) userRepository.findByEmail("admin@gmail.com").orElseGet(() -> {
+                Admin newAdmin = new Admin();
+                newAdmin.setEmail("admin@gmail.com");
+                newAdmin.setFirstName("Admin");
+                newAdmin.setLastName("Admin");
+                newAdmin.setPassword("admin");
+                newAdmin.setVerified(true);
+                newAdmin.setActive(true);
+                newAdmin.setActivationToken("7e2b4df2-9fe6-44df-9d93-3d20d5e246fc");
+                return userRepository.save(newAdmin);
+            });
 
             EventOrganizer organizer = (EventOrganizer) userRepository.findByEmail("anajovanovic@example.com")
                     .orElseGet(() -> {
@@ -40,8 +51,10 @@ public class DatabaseSeeder {
                         newOrganizer.setSurname("Jovanovic");
                         newOrganizer.setProfilePhoto("assets/images/profile1.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
                         newOrganizer.setCity("Belgrade");
                         newOrganizer.setSuspended(false);
+                        newOrganizer.setActivationToken("7e2b4df2-9fe6-44df-9d93-3d50d5e246fe");
                         return userRepository.save(newOrganizer);
                     });
 
@@ -54,6 +67,7 @@ public class DatabaseSeeder {
                         newOrganizer.setSurname("Nikolic");
                         newOrganizer.setProfilePhoto("assets/images/profile2.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
                         newOrganizer.setCity("Novi Sad");
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
@@ -68,6 +82,7 @@ public class DatabaseSeeder {
                         newOrganizer.setSurname("Petrovic");
                         newOrganizer.setProfilePhoto("assets/images/profile3.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
@@ -81,6 +96,7 @@ public class DatabaseSeeder {
                         newOrganizer.setSurname("Milivojevic");
                         newOrganizer.setProfilePhoto("assets/images/profile4.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
@@ -94,6 +110,7 @@ public class DatabaseSeeder {
                         newOrganizer.setSurname("Matijevic");
                         newOrganizer.setProfilePhoto("assets/images/profile5.png");
                         newOrganizer.setVerified(true);
+                        newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
                         return userRepository.save(newOrganizer);
                     });
@@ -175,6 +192,8 @@ public class DatabaseSeeder {
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("Prestige Champagne");
                         newProvider.setDescription("Sparkling wine");
+                        newProvider.setActive(true);
+                        newProvider.setVerified(true);
                         newProvider.setPhotos(List.of("assets/images/profile2.png"));
                         return userRepository.save(newProvider);
                     });
@@ -186,6 +205,8 @@ public class DatabaseSeeder {
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("Freedom Riders");
                         newProvider.setDescription("Galop beyond limits");
+                        newProvider.setActive(true);
+                        newProvider.setVerified(true);
                         newProvider.setPhotos(List.of("assets/images/profile3.png", "lights2.png"));
                         return userRepository.save(newProvider);
                     });
@@ -198,6 +219,8 @@ public class DatabaseSeeder {
                         newProvider.setCompanyName("VibeX");
                         newProvider.setDescription("DJ and live band services for weddings and parties.");
                         newProvider.setPhotos(List.of("dj1.png", "band1.png"));
+                        newProvider.setActive(true);
+                        newProvider.setVerified(true);
                         return userRepository.save(newProvider);
                     });
 
@@ -209,6 +232,8 @@ public class DatabaseSeeder {
                         newProvider.setCompanyName("Majestic bites");
                         newProvider.setDescription("Taste the Majesty, savor the moment");
                         newProvider.setPhotos(List.of("dj1.png", "band1.png"));
+                        newProvider.setActive(true);
+                        newProvider.setVerified(true);
                         return userRepository.save(newProvider);
                     });
 
@@ -376,6 +401,7 @@ public class DatabaseSeeder {
             comment2.setProduct(photobooth);
             comment2.setCommenter(organizer); // Koristimo organizatora kao komentatora
             commentRepository.save(comment2);
+
             System.out.println("✅ Podaci uspešno dodati u bazu.");
         };
     }

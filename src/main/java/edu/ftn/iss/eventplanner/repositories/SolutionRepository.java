@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SolutionRepository extends JpaRepository<Solution, Long> {
+public interface SolutionRepository extends JpaRepository<Solution, Integer> {
     // Pronaći prva 5 događaja po lokaciji
     List<Solution> findFirst5ByLocation(String location);
 

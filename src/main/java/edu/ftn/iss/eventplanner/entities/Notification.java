@@ -33,5 +33,10 @@ public class Notification {
     @ManyToOne
     @JoinColumn(name = "event_id")      // notification about event changes
     private Event event;
+
+    public void setRead(boolean isRead) {
+        this.isRead = isRead;
+    }
+
 }
 

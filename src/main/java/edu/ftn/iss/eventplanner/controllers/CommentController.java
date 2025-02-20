@@ -1,15 +1,14 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.ApproveCommentDTO;
-import edu.ftn.iss.eventplanner.dtos.CommentResponseDTO;
-import edu.ftn.iss.eventplanner.dtos.CreateCommentDTO;
+import edu.ftn.iss.eventplanner.dtos.comments.ApproveCommentDTO;
+import edu.ftn.iss.eventplanner.dtos.comments.CommentResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.comments.CreateCommentDTO;
 import edu.ftn.iss.eventplanner.services.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -26,8 +25,15 @@ public class CommentController {
 
     // Endpoint za odobravanje ili logičko brisanje komentara (Admin)
     @PutMapping("/approve")
-    public ResponseEntity<CommentResponseDTO> approveOrDeleteComment(@Valid @RequestBody ApproveCommentDTO approveCommentDTO) {
-        CommentResponseDTO response = commentService.approveOrDeleteComment(approveCommentDTO);
+    public ResponseEntity<CommentResponseDTO> approveComment(@Valid @RequestBody ApproveCommentDTO approveCommentDTO) {
+        CommentResponseDTO response = commentService.approveComment(approveCommentDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    // Endpoint za odobravanje ili logičko brisanje komentara (Admin)
+    @PutMapping("/delete")
+    public ResponseEntity<CommentResponseDTO> deleteComment(@Valid @RequestBody ApproveCommentDTO approveCommentDTO) {
+        CommentResponseDTO response = commentService.deleteComment(approveCommentDTO);
         return ResponseEntity.ok(response);
     }
 
