@@ -5,7 +5,7 @@ import edu.ftn.iss.eventplanner.dtos.CreateCategoryDTO;
 import edu.ftn.iss.eventplanner.dtos.UpdateCategoryDTO;
 import edu.ftn.iss.eventplanner.entities.SolutionCategory;
 import edu.ftn.iss.eventplanner.mappers.CategoryDTOMapper;
-import edu.ftn.iss.eventplanner.services.impl.CategoryService;
+import edu.ftn.iss.eventplanner.services.CategoryService;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;

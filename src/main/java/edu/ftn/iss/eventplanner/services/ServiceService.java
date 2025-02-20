@@ -2,23 +2,60 @@ package edu.ftn.iss.eventplanner.services;
 
 import edu.ftn.iss.eventplanner.entities.Service;
 import edu.ftn.iss.eventplanner.enums.Role;
-import jakarta.validation.constraints.NotNull;
+import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
+import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
+import edu.ftn.iss.eventplanner.repositories.ServiceRepository;
 
 import java.util.Collection;
-import java.util.Optional;
 
-public interface ServiceService {
 
-    Collection<Service> getAllServices();
-    Collection<Service> getAllProviderServices(int providerId);
-    Collection<Service> getAllServicesFor(Role role);
+@org.springframework.stereotype.Service
+public class ServiceService {
 
-    @NotNull Service getServiceById(int id);
+    private ServiceRepository services;
 
-    @NotNull Service createService(@NotNull Service serviceRequest);
-    @NotNull Service updateService(@NotNull Service serviceUpdateRequest);
 
-    void deleteService(int serviceId);
-    default void deleteAllServices() { throw new UnsupportedOperationException(); };
+    public Collection<Service> getAllServices() {
+        return services.getAllByDeletedIsFalse();
+    }
 
+
+    public Collection<Service> getAllServicesFor(Role role) {
+        switch (role) {
+            case ADMIN:
+            {
+                return getAllServices();
+            }
+            default: {
+                return services.getByVisibleIsTrueAndDeletedIsFalse();
+            }
+        }
+    }
+
+
+    public Collection<Service> getAllProviderServices(int providerId) {
+        return services.getByProvider_IdAndDeletedIsFalse(providerId);
+    }
+
+
+    public Service getServiceById(int id) {
+        return services.findByIdAndDeletedIsFalse(id)
+                .orElseThrow(() -> new NotFoundException(""));
+    }
+
+
+    public Service createService(Service serviceRequest) {
+        throw new InternalServerError();
+    }
+
+
+    public Service updateService(Service serviceUpdateRequest) {
+        throw new InternalServerError();
+    }
+
+
+    public void deleteService(int serviceId) {
+        // TODO: Prevent deletion if there are any reservations
+        services.softDeleteById(serviceId);
+    }
 }
