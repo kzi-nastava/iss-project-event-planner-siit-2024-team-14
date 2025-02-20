@@ -183,4 +183,40 @@ public class EventOrganizerService {
         }
     }
 
+    public ResponseEntity<RegisterResponseDTO> updateProfilePhoto(int userId, MultipartFile photo) {
+        System.out.println("ENTERED updateProfilePhoto() ---------------------------------");
+        try {
+            EventOrganizer organizer = organizerRepository.findById(userId);
+
+            if (organizer == null) {
+                return ResponseEntity.status(404).body(new RegisterResponseDTO("Organizer not found!", false));
+            }
+
+            // Delete the old photo if it exists (optional, to avoid unnecessary storage)
+            String oldPhoto = organizer.getProfilePhoto();
+            if (oldPhoto != null) {
+                Path oldPhotoPath = Paths.get("src/main/resources/static/profile-photos/" + oldPhoto);
+                Files.deleteIfExists(oldPhotoPath);
+            }
+
+            // Generate a new photo filename (you can use a UUID to ensure unique file names)
+            String photoFilename = organizer.getEmail() + ".png";  // Or generate a unique filename
+            String uploadDir = "src/main/resources/static/profile-photos/";
+
+            // Ensure the directory exists
+            Path filePath = Paths.get(uploadDir + photoFilename);
+            Files.createDirectories(filePath.getParent());
+
+            // Save the new file
+            Files.write(filePath, photo.getBytes());
+
+            // Update the organizer with the new photo filename
+            organizer.setProfilePhoto(photoFilename);
+            organizerRepository.save(organizer);
+
+            return ResponseEntity.ok(new RegisterResponseDTO("Profile photo updated successfully!", true));
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to update profile photo!", false));
+        }
+    }
 }

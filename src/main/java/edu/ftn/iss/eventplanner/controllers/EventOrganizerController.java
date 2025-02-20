@@ -52,5 +52,9 @@ public class EventOrganizerController {
         return ResponseEntity.ok(updatedOrganizer);
     }
 
-
+    @PutMapping("/update-photo/{id}")
+    public ResponseEntity<RegisterResponseDTO> updateProfilePhoto(@PathVariable("id") int id,
+                                                                  @RequestParam("photo") MultipartFile photo) {
+        return organizerService.updateProfilePhoto(id, photo);
+    }
 }
