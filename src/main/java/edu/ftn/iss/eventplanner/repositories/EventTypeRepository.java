@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface EventTypeRepository extends JpaRepository<EventType, Long> {
+public interface EventTypeRepository extends JpaRepository<EventType, Integer> {
     // Ovde možeš dodati dodatne metode po potrebi
     Optional<EventType> findByName(String name);
 }
