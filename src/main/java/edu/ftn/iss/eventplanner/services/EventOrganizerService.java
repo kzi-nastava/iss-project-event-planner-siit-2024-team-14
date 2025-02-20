@@ -10,9 +10,19 @@ import edu.ftn.iss.eventplanner.entities.EventOrganizer;
 import edu.ftn.iss.eventplanner.repositories.EventOrganizerRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,7 +36,7 @@ public class EventOrganizerService {
     @Autowired
     private EmailService emailService;
 
-    public ResponseEntity<RegisterResponseDTO> register(RegisterEoDTO dto) {
+    public ResponseEntity<RegisterResponseDTO> register(RegisterEoDTO dto, MultipartFile photo) {
         try {
             if (!dto.getPassword().equals(dto.getConfirmPassword())) {
                 return ResponseEntity.badRequest().body(new RegisterResponseDTO("Passwords do not match!", false));
@@ -36,16 +46,38 @@ public class EventOrganizerService {
                 return ResponseEntity.badRequest().body(new RegisterResponseDTO("Email already in use!", false));
             }
 
+            try {
+                int parsedPhoneNumber = Integer.parseInt(String.valueOf(dto.getPhoneNumber()));
+                dto.setPhoneNumber(parsedPhoneNumber);
+            } catch (NumberFormatException e) {
+                return ResponseEntity.badRequest().body(new RegisterResponseDTO("Invalid phone number format!", false));
+            }
+
+            String photoFilename = dto.getEmail() + ".png"; // Name photo as email.png
+            String uploadDir = "src/main/resources/static/profile-photos/";
+            Path filePath = Paths.get(uploadDir + photoFilename);
+
+            // Ensure directory exists
+            Files.createDirectories(filePath.getParent());
+
+            // Save file
+            Files.write(filePath, photo.getBytes());
+
+            // Set the filename in DTO
+            dto.setPhoto(photoFilename);
+
             String activationToken = UUID.randomUUID().toString();
             create(dto, activationToken);
-
             emailService.sendActivationEmail(dto.getEmail(), activationToken, "EventOrganizer");
 
             return ResponseEntity.ok(new RegisterResponseDTO("Registration successful! Check your email to activate your account.", true));
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to upload photo!", false));
         } catch (MessagingException e) {
-            return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to send activation email. Please try again later.", false));
+            return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to send activation email!", false));
         }
     }
+
 
     private void create(RegisterEoDTO dto, String activationToken) {
         EventOrganizer organizer = new EventOrganizer();
@@ -56,7 +88,7 @@ public class EventOrganizerService {
         organizer.setAddress(dto.getAddress());
         organizer.setCity(dto.getCity());
         organizer.setPhoneNumber(dto.getPhoneNumber());
-        organizer.setProfilePhoto(dto.getPhoto());
+        organizer.setProfilePhoto(String.valueOf(dto.getPhoto()));
         organizer.setActive(false);         // for deactivation
         organizer.setVerified(false);       // for account activation
         organizer.setSuspended(false);
@@ -103,12 +135,25 @@ public class EventOrganizerService {
         organizerDTO.setAddress(organizer.getAddress());
         organizerDTO.setPhoneNumber(String.valueOf(organizer.getPhoneNumber()));
         organizerDTO.setRole("EventOrganizer");
+        organizerDTO.setProfilePhoto(organizer.getProfilePhoto());
 
         GetOrganizerDTO getOrganizerDTO = new GetOrganizerDTO();
         getOrganizerDTO.setMessage("ok");
         getOrganizerDTO.setOrganizer(organizerDTO);
 
         return ResponseEntity.ok(getOrganizerDTO);  // Return the DTO
+    }
+
+    public ResponseEntity<Resource> getProfilePhoto(String filename) throws MalformedURLException {
+        Path path = Paths.get("src/main/resources/static/profile-photos/" + filename);
+        Resource resource = new UrlResource(path.toUri());
+
+        // Return the image as a Resource
+        if (resource.exists() || resource.isReadable()) {
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource); // Adjust type if JPEG
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     public UpdatedOrganizerDTO update(Integer userId, UpdateOrganizerDTO updateDTO) {
