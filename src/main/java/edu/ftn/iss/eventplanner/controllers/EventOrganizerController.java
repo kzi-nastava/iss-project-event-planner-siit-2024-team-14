@@ -5,11 +5,15 @@ import edu.ftn.iss.eventplanner.dtos.registration.RegisterEoDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdateOrganizerDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdatedOrganizerDTO;
-import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.services.EventOrganizerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.net.MalformedURLException;
 
 @RestController
 @RequestMapping("/api/organizers")
@@ -18,9 +22,10 @@ public class EventOrganizerController {
     @Autowired
     private EventOrganizerService organizerService;
 
-    @PostMapping("/register")
-    public ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterEoDTO dto) {
-        return organizerService.register(dto);
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<RegisterResponseDTO> register(@RequestPart("dto") RegisterEoDTO dto,
+                                                        @RequestPart("photo") MultipartFile photo) {
+        return organizerService.register(dto, photo);
     }
 
     @GetMapping("/activate")
@@ -31,6 +36,11 @@ public class EventOrganizerController {
     @GetMapping("/get/{id}")
     public ResponseEntity<GetOrganizerDTO> get(@PathVariable("id") int id) {
         return organizerService.get(id);
+    }
+
+    @GetMapping("/get-photo/{filename}")
+    public ResponseEntity<Resource> getProfilePhoto(@PathVariable String filename) throws MalformedURLException {
+        return organizerService.getProfilePhoto(filename);
     }
 
     @PutMapping("/update")
