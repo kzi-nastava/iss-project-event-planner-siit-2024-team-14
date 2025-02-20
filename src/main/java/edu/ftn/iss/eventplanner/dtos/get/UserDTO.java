@@ -1,9 +1,9 @@
-package edu.ftn.iss.eventplanner.dtos;
+package edu.ftn.iss.eventplanner.dtos.get;
 
 import lombok.Data;
 
 @Data
-public class GetUserDTO {
+public class UserDTO {
     private Integer id;
     private String email;
     private String role;

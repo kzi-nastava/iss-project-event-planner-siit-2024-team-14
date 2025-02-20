@@ -1,17 +1,17 @@
 package edu.ftn.iss.eventplanner.dtos.login;
 
-import edu.ftn.iss.eventplanner.dtos.GetUserDTO;
+import edu.ftn.iss.eventplanner.dtos.get.UserDTO;
 import lombok.Data;
 
 @Data
 public class LoginResponseDTO {
     private String token;
-    private GetUserDTO user;
+    private UserDTO user;
     private String message;
     private boolean success;
 
     // Add constructor that takes parameters
-    public LoginResponseDTO(String token, GetUserDTO user, String message, boolean success) {
+    public LoginResponseDTO(String token, UserDTO user, String message, boolean success) {
         this.token = token;
         this.user = user;
         this.message = message;

@@ -1,6 +1,5 @@
 package edu.ftn.iss.eventplanner.dtos.registration;
 
-import edu.ftn.iss.eventplanner.dtos.GetUserDTO;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

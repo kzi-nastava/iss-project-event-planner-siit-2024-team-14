@@ -1,11 +1,16 @@
 package edu.ftn.iss.eventplanner.services;
 
-import edu.ftn.iss.eventplanner.dtos.*;
+import edu.ftn.iss.eventplanner.dtos.get.UserDTO;
+import edu.ftn.iss.eventplanner.dtos.login.LoginDTO;
 import edu.ftn.iss.eventplanner.dtos.login.LoginResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.update.ChangePasswordDTO;
+import edu.ftn.iss.eventplanner.dtos.update.ChangedPasswordDTO;
 import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import edu.ftn.iss.eventplanner.security.JWTUtil;
 
@@ -16,6 +21,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;  // Fix here!
 
     public ResponseEntity<LoginResponseDTO> login(LoginDTO loginDTO) {
         Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail());
@@ -52,7 +60,7 @@ public class UserService {
         String token = JWTUtil.generateToken(user.getEmail());
 
         // Prepare User DTO
-        GetUserDTO userDTO = new GetUserDTO();
+        UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setEmail(user.getEmail());
         userDTO.setRole(user.getClass().getSimpleName());
@@ -68,4 +76,31 @@ public class UserService {
         return ResponseEntity.ok(userLoginDTO);
     }
 
+    public ResponseEntity<ChangedPasswordDTO> changePassword(ChangePasswordDTO dto) {
+        Optional<User> userOptional = userRepository.findById(dto.getId());
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            System.out.println("User found with email: " + user.getEmail());
+            System.out.println("Old password: " + user.getPassword() + ", given password: " + dto.getOldPassword());
+
+            if (!dto.getOldPassword().equals(user.getPassword())) {
+                ChangedPasswordDTO response = new ChangedPasswordDTO();
+                response.setMessage("Old password is incorrect");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            user.setPassword(dto.getPassword());
+
+            userRepository.save(user);
+
+            ChangedPasswordDTO response = new ChangedPasswordDTO();
+            response.setMessage("Password successfully changed");
+            return ResponseEntity.ok(response);
+        } else {
+            ChangedPasswordDTO response = new ChangedPasswordDTO();
+            response.setMessage("User not found");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
 }
