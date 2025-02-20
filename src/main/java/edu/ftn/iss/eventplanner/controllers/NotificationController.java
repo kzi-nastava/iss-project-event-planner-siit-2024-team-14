@@ -59,5 +59,10 @@ public class NotificationController {
         return ResponseEntity.ok(isMuted);
     }
 
+    @GetMapping("/unread-count")
+    public ResponseEntity<Integer> getUnreadNotificationsCount(@RequestParam Integer userId) {
+        Integer unreadCount = notificationService.getUnreadNotificationCount(userId);
+        return ResponseEntity.ok(unreadCount);
+    }
 
 }

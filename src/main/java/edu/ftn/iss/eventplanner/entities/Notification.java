@@ -18,7 +18,9 @@ public class Notification {
 
     private String message;
     private LocalDate date;
-    private boolean isRead;
+
+    @Column(nullable = false)
+    private boolean read;
 
     // to whom is sent?
     @ManyToOne
@@ -33,10 +35,6 @@ public class Notification {
     @ManyToOne
     @JoinColumn(name = "event_id")      // notification about event changes
     private Event event;
-
-    public void setRead(boolean isRead) {
-        this.isRead = isRead;
-    }
 
 }
 

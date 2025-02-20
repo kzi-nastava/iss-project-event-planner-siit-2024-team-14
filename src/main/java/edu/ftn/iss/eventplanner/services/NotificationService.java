@@ -113,4 +113,9 @@ public class NotificationService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return user.isMuted();
     }
+
+    public Integer getUnreadNotificationCount(Integer userId) {
+        List<Notification> notifications = notificationRepository.findByUserId(userId);
+        return (int) notifications.stream().filter(n -> !n.isRead()).count();
+    }
 }
