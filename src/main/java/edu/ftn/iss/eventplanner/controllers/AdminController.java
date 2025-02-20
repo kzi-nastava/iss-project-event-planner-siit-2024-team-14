@@ -6,13 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import edu.ftn.iss.eventplanner.dtos.LoginDTO;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import edu.ftn.iss.eventplanner.dtos.login.LoginDTO;
 
 @RestController
 @RequestMapping("/api/admins")
@@ -49,6 +43,7 @@ public class AdminController {
         return new ResponseEntity<UpdatedAdminDTO>(updatedAdmin, HttpStatus.OK);
     }
 
+    /*
     @PutMapping(value = "/{id}/change-password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChangedPasswordDTO> changePassword(@PathVariable Long id, @RequestBody ChangePasswordDTO password) throws Exception {
         ChangedPasswordDTO changedPassword = new ChangedPasswordDTO();
@@ -60,6 +55,7 @@ public class AdminController {
 
         return new ResponseEntity<ChangedPasswordDTO>(changedPassword, HttpStatus.OK);
     }
+     */
 
     @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deactivateAdmin(@PathVariable Long id) {

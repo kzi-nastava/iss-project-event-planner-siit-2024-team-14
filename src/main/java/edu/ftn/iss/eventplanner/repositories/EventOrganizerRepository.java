@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface EventOrganizerRepository extends JpaRepository<EventOrganizer, Integer> {
     Optional<EventOrganizer> findByEmail(String email);
     EventOrganizer findByActivationToken(String token);
-
+    EventOrganizer findById(int id);
 }
