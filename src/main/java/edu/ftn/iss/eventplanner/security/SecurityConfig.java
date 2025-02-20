@@ -24,7 +24,7 @@ public class SecurityConfig {
                 .csrf().disable()  // Disabling CSRF if not needed (adjust as per your need)
                 .authorizeHttpRequests()
                 .requestMatchers("/api/providers/**", "/api/users/**", "/api/organizers/**",
-                        "/api/events/*", "/api/solutions/*", "/api/comments/*", "/api/notifications/*", "/api/notifications",
+                        "/api/events/*", "/api/solutions/*", "/api/comments/*", "/api/notifications/*", "/api/notifications", "/api/notifications/**",
                         "/api/providers/register", "/api/providers/activate", "/api/users/register",
                         "/api/users/activate", "/api/users/login", "/ws/**").permitAll()  // Dodata podrška za WebSocket
                 .anyRequest().authenticated()  // Ostale rute zahtevaju autentifikaciju

@@ -1,6 +1,5 @@
-package edu.ftn.iss.eventplanner.dtos;
+package edu.ftn.iss.eventplanner.dtos.notifications;
 
-import edu.ftn.iss.eventplanner.entities.User;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -16,9 +15,6 @@ public class NotificationDTO {
     private String message;
     private LocalDate date;
     private boolean isRead;
-    public void setRead(boolean isRead) {
-        this.isRead = isRead;
-    }
     private Integer userId;
     private Integer commentId;
     private Integer eventId;

@@ -1,6 +1,6 @@
 package edu.ftn.iss.eventplanner.services;
 
-import edu.ftn.iss.eventplanner.dtos.NotificationDTO;
+import edu.ftn.iss.eventplanner.dtos.notifications.NotificationDTO;
 import edu.ftn.iss.eventplanner.entities.Comment;
 import edu.ftn.iss.eventplanner.entities.Event;
 import edu.ftn.iss.eventplanner.entities.Notification;
@@ -12,6 +12,7 @@ import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -98,6 +99,18 @@ public class NotificationService {
         notificationRepository.saveAll(notifications);
     }
 
+    @Transactional
+    public void toggleMuteNotifications(Integer userId, boolean isMuted) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        user.setMuted(isMuted);
+        userRepository.save(user);
+    }
 
+    public boolean getMuteNotificationsStatus(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return user.isMuted();
+    }
 }

@@ -1,15 +1,14 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.ApproveCommentDTO;
-import edu.ftn.iss.eventplanner.dtos.CommentResponseDTO;
-import edu.ftn.iss.eventplanner.dtos.CreateCommentDTO;
+import edu.ftn.iss.eventplanner.dtos.comments.ApproveCommentDTO;
+import edu.ftn.iss.eventplanner.dtos.comments.CommentResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.comments.CreateCommentDTO;
 import edu.ftn.iss.eventplanner.services.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController

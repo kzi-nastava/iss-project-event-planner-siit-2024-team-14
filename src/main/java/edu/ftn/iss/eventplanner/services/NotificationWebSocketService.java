@@ -1,6 +1,6 @@
 package edu.ftn.iss.eventplanner.services;
 
-import edu.ftn.iss.eventplanner.dtos.NotificationDTO;
+import edu.ftn.iss.eventplanner.dtos.notifications.NotificationDTO;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

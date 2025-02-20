@@ -1,6 +1,9 @@
 package edu.ftn.iss.eventplanner.services;
 
-import edu.ftn.iss.eventplanner.dtos.*;
+import edu.ftn.iss.eventplanner.dtos.comments.ApproveCommentDTO;
+import edu.ftn.iss.eventplanner.dtos.comments.CommentResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.comments.CreateCommentDTO;
+import edu.ftn.iss.eventplanner.dtos.notifications.NotificationDTO;
 import edu.ftn.iss.eventplanner.entities.*;
 import edu.ftn.iss.eventplanner.enums.Status;
 import edu.ftn.iss.eventplanner.repositories.*;

@@ -1,6 +1,6 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.NotificationDTO;
+import edu.ftn.iss.eventplanner.dtos.notifications.NotificationDTO;
 import edu.ftn.iss.eventplanner.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +20,8 @@ public class NotificationController {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    // Ova metoda će slati notifikaciju na određeni kanal
     @MessageMapping("/sendNotification")
     public void sendNotification(String notification) {
-        // Šalje poruku na kanal "/topic/notifications"
         messagingTemplate.convertAndSend("/topic/notifications", notification);
     }
 
@@ -38,10 +36,8 @@ public class NotificationController {
         return ResponseEntity.ok(notificationDTO);
     }
 
-    // Endpoint za preuzimanje notifikacija
     @GetMapping
     public List<NotificationDTO> getNotifications(@RequestParam("userId") Integer userId) {
-        // Poziva servis koji vraća notifikacije za određenog korisnika
         return notificationService.getUserNotifications(userId);
     }
 
@@ -50,4 +46,18 @@ public class NotificationController {
         notificationService.markAllAsRead(userId);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/mute-notifications")
+    public ResponseEntity<Void> toggleMuteNotifications(@RequestParam Integer userId, @RequestParam Boolean muted) {
+        notificationService.toggleMuteNotifications(userId, muted);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/mute-notifications/status")
+    public ResponseEntity<Boolean> getMuteNotificationsStatus(@RequestParam Integer userId) {
+        boolean isMuted = notificationService.getMuteNotificationsStatus(userId);
+        return ResponseEntity.ok(isMuted);
+    }
+
+
 }
