@@ -31,6 +31,8 @@ public class User {
     private int phoneNumber;
     private boolean isVerified;     // for account activation
     private boolean isSuspended;
+    @Column(nullable = false)
+    private boolean muted;  //for notifications
 
     @ManyToMany
     @JoinTable(
