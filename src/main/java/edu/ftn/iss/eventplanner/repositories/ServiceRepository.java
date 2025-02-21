@@ -19,8 +19,4 @@ public interface ServiceRepository extends JpaRepository<Service, Integer> {
 
     List<Service> findByCategory_Id(int categoryId);
     Page<Service> findByCategory_Id(int categoryId, Pageable pageable);
-
-    @Modifying
-    @Query("UPDATE Service s SET s.isDeleted = true WHERE s.id = :id")
-    void softDeleteById(@Param("id") int id);
 }

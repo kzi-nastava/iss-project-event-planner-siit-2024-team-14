@@ -73,6 +73,6 @@ public class ServiceService {
 
     public void deleteService(int serviceId) {
         // TODO: Prevent deletion if there are any reservations
-        services.softDeleteById(serviceId);
+        services.deleteById(serviceId);
     }
 }
