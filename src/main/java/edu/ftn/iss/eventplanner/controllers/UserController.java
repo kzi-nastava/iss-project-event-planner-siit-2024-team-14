@@ -1,9 +1,12 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.LoginDTO;
+import edu.ftn.iss.eventplanner.dtos.login.LoginDTO;
 import edu.ftn.iss.eventplanner.dtos.login.LoginResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.update.ChangePasswordDTO;
+import edu.ftn.iss.eventplanner.dtos.update.ChangedPasswordDTO;
 import edu.ftn.iss.eventplanner.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,4 +23,8 @@ public class UserController {
         return userService.login(loginDTO); // Directly returning RegisterResponseDTO
     }
 
+    @PutMapping("/changePassword")
+    public ResponseEntity<ChangedPasswordDTO> changePassword(@RequestBody ChangePasswordDTO dto) {
+        return userService.changePassword(dto);
+    }
 }

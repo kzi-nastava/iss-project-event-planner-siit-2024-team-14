@@ -1,8 +1,7 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.EmailVerificationDTO;
+import edu.ftn.iss.eventplanner.dtos.registration.EmailVerificationDTO;
 import edu.ftn.iss.eventplanner.services.EmailService;
-import edu.ftn.iss.eventplanner.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
