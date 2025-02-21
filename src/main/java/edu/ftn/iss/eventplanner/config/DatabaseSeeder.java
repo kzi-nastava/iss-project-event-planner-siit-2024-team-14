@@ -1,12 +1,14 @@
 package edu.ftn.iss.eventplanner.config;
 
 import edu.ftn.iss.eventplanner.entities.*;
+import edu.ftn.iss.eventplanner.enums.ReservationType;
 import edu.ftn.iss.eventplanner.enums.Status;
 import edu.ftn.iss.eventplanner.repositories.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -24,11 +26,21 @@ public class DatabaseSeeder {
         return args -> {
             System.out.println("🔍 Provera podataka u bazi...");
 
+            // Dodavanje SolutionCategory
+            SolutionCategory decorationCategory = solutionCategoryRepository.findByName("Decoration")
+                    .orElseGet(() -> solutionCategoryRepository.save(new SolutionCategory(
+                            null,
+                            "Decoration",
+                            "Event decoration services",
+                            null,
+                            Status.APPROVED
+                    )));
+
             // Proveri i dodaj EventType
             EventType partyType = eventTypeRepository.findByName("Party")
-                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Party", "Social gathering", true, null)));
+                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Party", "Social gathering", true, decorationCategory)));
             EventType theatreType = eventTypeRepository.findByName("Theatre")
-                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Theatre", "Performing arts", true, null)));
+                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Theatre", "Performing arts", true, decorationCategory)));
 
             Admin admin = (Admin) userRepository.findByEmail("admin@gmail.com").orElseGet(() -> {
                 Admin newAdmin = new Admin();
@@ -147,15 +159,7 @@ public class DatabaseSeeder {
             }
 
 
-            // Dodavanje SolutionCategory
-            SolutionCategory decorationCategory = solutionCategoryRepository.findByName("Decoration")
-                    .orElseGet(() -> solutionCategoryRepository.save(new SolutionCategory(
-                            null,
-                            "Decoration",
-                            "Event decoration services",
-                            null,
-                            Status.APPROVED
-                    )));
+
 
             SolutionCategory cateringCategory = solutionCategoryRepository.findByName("Catering")
                     .orElseGet(() -> solutionCategoryRepository.save(new SolutionCategory(
@@ -324,6 +328,12 @@ public class DatabaseSeeder {
                 weddingDJ.setAvailable(true);
                 weddingDJ.setVisible(true);
                 weddingDJ.setDeleted(false);
+                weddingDJ.setDuration(Duration.ofHours(2));
+                weddingDJ.setCancellationPeriod(Duration.ofHours(1));
+                weddingDJ.setReservationPeriod(Duration.ofHours(4));
+                weddingDJ.setMaxDuration(Duration.ofHours(3));
+                weddingDJ.setMinDuration(Duration.ofHours(1));
+                weddingDJ.setReservationType(ReservationType.MANUAL);
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);
                 weddingDJ.setProvider(provider3);
@@ -341,6 +351,12 @@ public class DatabaseSeeder {
                 weddingDJ.setAvailable(true);
                 weddingDJ.setVisible(true);
                 weddingDJ.setDeleted(false);
+                weddingDJ.setDuration(Duration.ofHours(2));
+                weddingDJ.setCancellationPeriod(Duration.ofHours(1));
+                weddingDJ.setReservationPeriod(Duration.ofHours(4));
+                weddingDJ.setMaxDuration(Duration.ofHours(3));
+                weddingDJ.setMinDuration(Duration.ofHours(1));
+                weddingDJ.setReservationType(ReservationType.MANUAL);
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);
                 weddingDJ.setProvider(provider3);
@@ -359,6 +375,12 @@ public class DatabaseSeeder {
                 weddingDJ.setAvailable(true);
                 weddingDJ.setVisible(true);
                 weddingDJ.setDeleted(false);
+                weddingDJ.setDuration(Duration.ofHours(2));
+                weddingDJ.setCancellationPeriod(Duration.ofHours(1));
+                weddingDJ.setReservationPeriod(Duration.ofHours(4));
+                weddingDJ.setMaxDuration(Duration.ofHours(3));
+                weddingDJ.setMinDuration(Duration.ofHours(1));
+                weddingDJ.setReservationType(ReservationType.MANUAL);
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);
                 weddingDJ.setProvider(provider2);
@@ -377,6 +399,12 @@ public class DatabaseSeeder {
                 weddingDJ.setAvailable(true);
                 weddingDJ.setVisible(true);
                 weddingDJ.setDeleted(false);
+                weddingDJ.setDuration(Duration.ofHours(2));
+                weddingDJ.setCancellationPeriod(Duration.ofHours(1));
+                weddingDJ.setReservationPeriod(Duration.ofHours(4));
+                weddingDJ.setMaxDuration(Duration.ofHours(3));
+                weddingDJ.setMinDuration(Duration.ofHours(1));
+                weddingDJ.setReservationType(ReservationType.MANUAL);
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);
                 weddingDJ.setProvider(provider3);

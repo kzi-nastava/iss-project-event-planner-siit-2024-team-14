@@ -14,18 +14,9 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class ServiceReservationRequestDTO {
 
-    @NotNull(message = "Service ID cannot be null")
-    private Long serviceId;
-
-    @NotNull(message = "Event ID cannot be null")
-    private Long eventId;
-
-    @NotNull(message = "Reservation date cannot be null")
-    @Future(message = "Reservation date must be in the future")
-    private LocalDate reservationDate;
-
-    @NotNull(message = "Start time cannot be null")
-    private LocalTime startTime;
-
-    private LocalTime endTime; // Optional, calculated on the server if null
+    private Integer serviceId;
+    private Integer eventId;
+    private LocalDate date;
+    private String startTime;
+    private String endTime;
 }
