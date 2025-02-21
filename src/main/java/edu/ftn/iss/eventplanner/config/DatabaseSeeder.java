@@ -36,6 +36,7 @@ public class DatabaseSeeder {
                 newAdmin.setFirstName("Admin");
                 newAdmin.setLastName("Admin");
                 newAdmin.setPassword("admin");
+                newAdmin.setCity("Novi Sad");
                 newAdmin.setVerified(true);
                 newAdmin.setActive(true);
                 newAdmin.setActivationToken("7e2b4df2-9fe6-44df-9d93-3d20d5e246fc");
@@ -50,6 +51,7 @@ public class DatabaseSeeder {
                         newOrganizer.setName("Ana");
                         newOrganizer.setSurname("Jovanovic");
                         newOrganizer.setProfilePhoto("assets/images/profile1.png");
+                        newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
                         newOrganizer.setCity("Belgrade");
@@ -66,6 +68,7 @@ public class DatabaseSeeder {
                         newOrganizer.setName("Milos");
                         newOrganizer.setSurname("Nikolic");
                         newOrganizer.setProfilePhoto("assets/images/profile2.png");
+                        newOrganizer.setCity("Belgrade");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
                         newOrganizer.setCity("Novi Sad");
@@ -81,6 +84,7 @@ public class DatabaseSeeder {
                         newOrganizer.setName("Nikolina");
                         newOrganizer.setSurname("Petrovic");
                         newOrganizer.setProfilePhoto("assets/images/profile3.png");
+                        newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
@@ -95,6 +99,7 @@ public class DatabaseSeeder {
                         newOrganizer.setName("Dragana");
                         newOrganizer.setSurname("Milivojevic");
                         newOrganizer.setProfilePhoto("assets/images/profile4.png");
+                        newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
@@ -109,6 +114,7 @@ public class DatabaseSeeder {
                         newOrganizer.setName("Nikola");
                         newOrganizer.setSurname("Matijevic");
                         newOrganizer.setProfilePhoto("assets/images/profile5.png");
+                        newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
@@ -192,6 +198,7 @@ public class DatabaseSeeder {
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("Prestige Champagne");
                         newProvider.setDescription("Sparkling wine");
+                        newProvider.setCity("Novi Sad");
                         newProvider.setActive(true);
                         newProvider.setVerified(true);
                         newProvider.setPhotos(List.of("assets/images/profile2.png"));
@@ -204,6 +211,7 @@ public class DatabaseSeeder {
                         newProvider.setEmail("lighting1@example.com");
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("Freedom Riders");
+                        newProvider.setCity("Novi Sad");
                         newProvider.setDescription("Galop beyond limits");
                         newProvider.setActive(true);
                         newProvider.setVerified(true);
@@ -217,6 +225,7 @@ public class DatabaseSeeder {
                         newProvider.setEmail("music@example.com");
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("VibeX");
+                        newProvider.setCity("Novi Sad");
                         newProvider.setDescription("DJ and live band services for weddings and parties.");
                         newProvider.setPhotos(List.of("dj1.png", "band1.png"));
                         newProvider.setActive(true);
@@ -230,6 +239,7 @@ public class DatabaseSeeder {
                         newProvider.setEmail("food@example.com");
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("Majestic bites");
+                        newProvider.setCity("Novi Sad");
                         newProvider.setDescription("Taste the Majesty, savor the moment");
                         newProvider.setPhotos(List.of("dj1.png", "band1.png"));
                         newProvider.setActive(true);
