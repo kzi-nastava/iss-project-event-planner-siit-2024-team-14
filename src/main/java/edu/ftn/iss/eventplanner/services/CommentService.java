@@ -144,6 +144,17 @@ public class CommentService {
         return "N/A";
     }
 
+    private String getProvider(Comment comment) {
+        if (comment.getService() != null && comment.getService().getProvider() != null) {
+            return comment.getService().getProvider().getCompanyName();
+        }
+        if (comment.getProduct() != null && comment.getProduct().getProvider() != null) {
+            return comment.getProduct().getProvider().getCompanyName();
+        }
+        return "N/A";
+    }
+
+
     private CommenterInfo getCommenterInfo(User commenter) {
         if (commenter == null) {
             return new CommenterInfo("Anonymous", "", null);
@@ -175,10 +186,8 @@ public class CommentService {
                 commenterInfo.firstName,
                 commenterInfo.lastName,
                 commenterInfo.profilePicture,
-                comment.getService() != null ? comment.getService().getName() : "N/A",
-                comment.getService() != null && comment.getService().getProvider() != null
-                        ? comment.getService().getProvider().getCompanyName()
-                        : "N/A"
+                getEntityName(comment),
+                getProvider(comment)
         );
     }
 
