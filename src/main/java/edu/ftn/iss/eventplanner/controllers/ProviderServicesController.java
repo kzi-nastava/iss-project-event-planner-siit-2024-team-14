@@ -2,6 +2,7 @@ package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.CreateServiceDTO;
 import edu.ftn.iss.eventplanner.dtos.ServiceDTO;
+import edu.ftn.iss.eventplanner.entities.Service;
 import edu.ftn.iss.eventplanner.mappers.ServiceDTOMapper;
 import edu.ftn.iss.eventplanner.services.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.Set;
 
 
@@ -36,10 +38,15 @@ public class ProviderServicesController {
     ResponseEntity<Page<ServiceDTO>> getProviderServices(
             @PathVariable(name = "providerId") int providerId,
             @RequestParam MultiValueMap<String, String> params,
-            Pageable pageable
+            Pageable pageable,
+            Principal principal
     ) {
         params.keySet().removeAll(Set.of("page", "size", "sort"));
-        return ResponseEntity.ok(Page.empty());
+        Page<Service> services = serviceService.getAllProviderServices(providerId, pageable, principal == null ? null : principal.getName());
+
+        return ResponseEntity.ok(
+                services.map(this.modelMapper::toServiceDTO)
+        );
     }
 
     // POST provider[Is identified by id 1]|admin@*/api/providers/1/services

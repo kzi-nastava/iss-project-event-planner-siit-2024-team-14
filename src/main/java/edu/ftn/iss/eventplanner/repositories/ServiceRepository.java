@@ -1,25 +1,24 @@
 package edu.ftn.iss.eventplanner.repositories;
 
 import edu.ftn.iss.eventplanner.entities.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
-public interface ServiceRepository extends JpaRepository<Service, Integer> { // TODO: See if logically deleted services can be left out
+public interface ServiceRepository extends JpaRepository<Service, Integer> {
 
-    Optional<Service> findByIdAndDeletedIsFalse(int id);
+    List<Service> findByProvider_Id(int providerId);
+    Page<Service> findByProvider_Id(int providerId, Pageable pageable);
 
-    Collection<Service> getAllByDeletedIsFalse();
-    Collection<Service> getByProvider_IdAndDeletedIsFalse(int providerId);
-
-    Collection<Service> getByCategory_IdAndDeletedIsFalse(int categoryId);
-    Collection<Service> getByCategory_NameAndDeletedIsFalse(String name);
-
-    Collection<Service> getByVisibleIsTrueAndDeletedIsFalse();
+    List<Service> findByCategory_Id(int categoryId);
+    Page<Service> findByCategory_Id(int categoryId, Pageable pageable);
 
     @Modifying
     @Query("UPDATE Service s SET s.isDeleted = true WHERE s.id = :id")

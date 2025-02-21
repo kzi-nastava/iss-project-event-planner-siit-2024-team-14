@@ -10,7 +10,7 @@ import java.time.Duration;
 @Data
 public class ServiceDTO {
     private long id;
-    private /* URL */ String provider;
+    private GetProviderDTO provider;
 
     private String name;
     private String description;
@@ -21,16 +21,18 @@ public class ServiceDTO {
 
     private /* URL[] */ String[] images;
 
+    private CategoryDTO category;
+    private EventTypeDTO[] applicableEventTypes;
+
     // --- Reservation info (could be grouped into ReservationProperties) // this comment should be in the model, not here :)
     private boolean available;
-    private ReservationType reservationPolicy;
+    private OfferingVisibility visibility;
+    private ReservationType reservationType;
     private Duration sessionDuration;
+    private Duration minDuration;
+    private Duration maxDuration;
     private Duration reservationPeriod;
     private Duration cancellationPeriod;
-    // ---
 
-    private /* URL */ String category;
-    private /* URL[] */ String[] applicableEventTypes;
-
-    private OfferingVisibility visibility;
+    // TODO: Model and DTO field names should match in order for clients to know sort parameters
 }

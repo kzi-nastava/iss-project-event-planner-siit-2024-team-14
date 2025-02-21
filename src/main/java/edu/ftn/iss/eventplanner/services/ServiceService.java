@@ -5,42 +5,59 @@ import edu.ftn.iss.eventplanner.enums.Role;
 import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ServiceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @org.springframework.stereotype.Service
 public class ServiceService {
 
-    private ServiceRepository services;
+    private final ServiceRepository services;
 
-
-    public Collection<Service> getAllServices() {
-        return services.getAllByDeletedIsFalse();
+    @Autowired
+    public ServiceService(ServiceRepository services) {
+        this.services = services;
     }
 
 
-    public Collection<Service> getAllServicesFor(Role role) {
-        switch (role) {
-            case ADMIN:
-            {
-                return getAllServices();
-            }
-            default: {
-                return services.getByVisibleIsTrueAndDeletedIsFalse();
-            }
-        }
+    public List<Service> getAllServices() {
+        return services.findAll();
+    }
+
+    public Page<Service> getAllServices(Pageable pageable) {
+        return services.findAll(pageable);
+    }
+
+    public Page<Service> getAllServices(Pageable pageable, String username) {
+        // TODO: filter services based on user and role
+        return services.findAll(pageable);
     }
 
 
-    public Collection<Service> getAllProviderServices(int providerId) {
-        return services.getByProvider_IdAndDeletedIsFalse(providerId);
+    public List<Service> getAllProviderServices(int providerId) {
+        return services.findByProvider_Id(providerId);
+    }
+
+    public Page<Service> getAllProviderServices(int providerId, Pageable pageable) {
+        return services.findByProvider_Id(providerId, pageable);
+    }
+
+    public Page<Service> getAllProviderServices(int providerId, Pageable pageable, String username) {
+        // TODO: filter services based on user and role
+        return getAllProviderServices(providerId, pageable);
     }
 
 
     public Service getServiceById(int id) {
-        return services.findByIdAndDeletedIsFalse(id)
-                .orElseThrow(() -> new NotFoundException(""));
+        return services.findById(id)
+                .orElseThrow(() -> new NotFoundException("Service with id " + id + " not found"));
     }
 
 
