@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class BookingServices {
+public class BookingService {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
