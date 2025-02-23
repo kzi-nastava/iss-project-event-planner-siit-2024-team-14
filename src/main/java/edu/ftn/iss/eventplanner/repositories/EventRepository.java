@@ -30,6 +30,8 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     @Query("SELECT DISTINCT e.eventType.name FROM Event e")
     List<String> findAllCategories();
 
+    List<Event> findByOrganizerId(Integer organizerId);
+
     @Query("SELECT e FROM Event e WHERE " +
             "(:category IS NULL OR e.eventType.name = :category) AND " +
             "(:minDate IS NULL OR e.startDate >= :minDate) AND " +

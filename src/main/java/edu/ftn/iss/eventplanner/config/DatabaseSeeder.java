@@ -140,7 +140,7 @@ public class DatabaseSeeder {
             }
 
             if (eventRepository.findByName("Horse Riding").isEmpty()) {
-                eventRepository.save(new Event(null, organizer2, "Horse Riding", "For horse lovers, free entry", 30, "open", "Novi Sad",
+                eventRepository.save(new Event(null, organizer, "Horse Riding", "For horse lovers, free entry", 30, "open", "Novi Sad",
                         LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event2.png", partyType));
             }
 
@@ -150,7 +150,7 @@ public class DatabaseSeeder {
             }
 
             if (eventRepository.findByName("Rooftop theatre").isEmpty()) {
-                eventRepository.save(new Event(null, organizer4, "Rooftop theatre", "Free entry, bring popcorn and drinks!", 30, "open", "Novi Sad",
+                eventRepository.save(new Event(null, organizer, "Rooftop theatre", "Free entry, bring popcorn and drinks!", 30, "open", "Novi Sad",
                         LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25),"assets/images/event3.png", partyType));
             }
 
@@ -341,8 +341,6 @@ public class DatabaseSeeder {
                 weddingDJ.setDuration(Duration.ofHours(2));
                 weddingDJ.setCancellationPeriod(Duration.ofHours(1));
                 weddingDJ.setReservationPeriod(Duration.ofHours(4));
-                weddingDJ.setMaxDuration(Duration.ofHours(3));
-                weddingDJ.setMinDuration(Duration.ofHours(1));
                 weddingDJ.setReservationType(ReservationType.MANUAL);
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);
@@ -361,7 +359,6 @@ public class DatabaseSeeder {
                 weddingDJ.setAvailable(true);
                 weddingDJ.setVisible(true);
                 weddingDJ.setDeleted(false);
-                weddingDJ.setDuration(Duration.ofHours(2));
                 weddingDJ.setCancellationPeriod(Duration.ofHours(1));
                 weddingDJ.setReservationPeriod(Duration.ofHours(4));
                 weddingDJ.setMaxDuration(Duration.ofHours(3));
@@ -388,8 +385,6 @@ public class DatabaseSeeder {
                 weddingDJ.setDuration(Duration.ofHours(2));
                 weddingDJ.setCancellationPeriod(Duration.ofHours(1));
                 weddingDJ.setReservationPeriod(Duration.ofHours(4));
-                weddingDJ.setMaxDuration(Duration.ofHours(3));
-                weddingDJ.setMinDuration(Duration.ofHours(1));
                 weddingDJ.setReservationType(ReservationType.MANUAL);
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);
@@ -412,8 +407,6 @@ public class DatabaseSeeder {
                 weddingDJ.setDuration(Duration.ofHours(2));
                 weddingDJ.setCancellationPeriod(Duration.ofHours(1));
                 weddingDJ.setReservationPeriod(Duration.ofHours(4));
-                weddingDJ.setMaxDuration(Duration.ofHours(3));
-                weddingDJ.setMinDuration(Duration.ofHours(1));
                 weddingDJ.setReservationType(ReservationType.MANUAL);
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);

@@ -23,5 +23,4 @@ public class Service extends Solution {
     private ReservationType reservationType;
     private Duration reservationPeriod;
     private Duration cancellationPeriod;
-
 }

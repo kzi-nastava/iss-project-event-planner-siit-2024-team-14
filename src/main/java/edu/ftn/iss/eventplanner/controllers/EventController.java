@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,6 +45,12 @@ public class EventController {
     @GetMapping("api/events/categories")
     public ResponseEntity<List<String>> getAllCategories() {
         return ResponseEntity.ok(eventService.getAllCategories());
+    }
+
+    @GetMapping("api/events/by-organizer/{organizerId}")
+    public ResponseEntity<List<EventDTO>> getEventsByOrganizer(@PathVariable Integer organizerId) {
+        List<EventDTO> events = eventService.findEventsByOrganizer(organizerId);
+        return ResponseEntity.ok(events);
     }
 
     // Endpoint za pretragu i filtriranje događaja
