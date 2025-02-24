@@ -32,7 +32,7 @@ public class SolutionCategory {
     @NotNull
     @Size(max = 500)
     @Column(name = "description", nullable = false, length = 500)
-    private String description;
+    private String description = "";
 
     @OneToMany(mappedBy = "solutionCategory")
     private List<EventType> eventTypes;

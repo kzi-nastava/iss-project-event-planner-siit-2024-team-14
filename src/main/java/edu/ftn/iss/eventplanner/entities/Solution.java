@@ -18,6 +18,7 @@ public abstract class Solution {
 
     private String name;
     private String description;
+    private String specificities;
     private double price;
     private double discount;
     private String imageUrl;
@@ -36,4 +37,7 @@ public abstract class Solution {
     @ManyToOne
     @JoinColumn(name = "provider_id")
     private ServiceAndProductProvider provider;
+
+    @OneToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    private List<EventType> applicableEventTypes;
 }
