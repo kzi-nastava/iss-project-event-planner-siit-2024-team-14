@@ -2,9 +2,11 @@ package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.CreateServiceDTO;
 import edu.ftn.iss.eventplanner.dtos.ServiceDTO;
+import edu.ftn.iss.eventplanner.entities.CreateServiceRequest;
 import edu.ftn.iss.eventplanner.entities.Service;
 import edu.ftn.iss.eventplanner.mappers.ServiceDTOMapper;
 import edu.ftn.iss.eventplanner.services.ServiceService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.security.Principal;
@@ -35,7 +38,7 @@ public class ProviderServicesController {
 
     // GET */api/providers/1/services (Result differs across roles)
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Page<ServiceDTO>> getProviderServices(
+    public ResponseEntity<Page<ServiceDTO>> getProviderServices(
             @PathVariable(name = "providerId") int providerId,
             @RequestParam MultiValueMap<String, String> params,
             Pageable pageable,
@@ -51,16 +54,16 @@ public class ProviderServicesController {
 
     // POST provider[Is identified by id 1]|admin@*/api/providers/1/services
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<ServiceDTO> createService(
-            @PathVariable(name = "providerId") int providerId, // or just get it from token ??
-            @RequestBody @Validated CreateServiceDTO service
+    public ResponseEntity<ServiceDTO> createService(
+            @PathVariable(name = "providerId") int providerId,
+            @RequestBody @Valid CreateServiceDTO serviceRequestDTO,
+            UriComponentsBuilder uriBuilder
     ) {
-        ServiceDTO createdService = /* TODO: implement */ new ServiceDTO();
-
-        URI location = URI.create("api/services/" + createdService.getId());
+        CreateServiceRequest request = modelMapper.toCreateServiceRequest(serviceRequestDTO, providerId);
+        Service createdService = serviceService.createService(request);
 
         return ResponseEntity
-                .created(location)
-                .body(createdService);
+                .created(uriBuilder.path("/api/services/{id}").buildAndExpand(createdService.getId()).toUri())
+                .body(modelMapper.toServiceDTO(createdService));
     }
 }
