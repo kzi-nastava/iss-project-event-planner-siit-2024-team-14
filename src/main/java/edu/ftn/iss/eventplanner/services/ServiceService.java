@@ -1,18 +1,28 @@
 package edu.ftn.iss.eventplanner.services;
 
-import edu.ftn.iss.eventplanner.entities.Service;
+import edu.ftn.iss.eventplanner.entities.*;
+import edu.ftn.iss.eventplanner.enums.OfferingVisibility;
 import edu.ftn.iss.eventplanner.enums.Role;
+import edu.ftn.iss.eventplanner.enums.Status;
+import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
 import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ServiceRepository;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -20,10 +30,17 @@ import java.util.stream.Collectors;
 public class ServiceService {
 
     private final ServiceRepository services;
+    private final ProviderService providerService;
+    private final CategoryService categoryService;
+    private final EventTypeService eventTypeService;
+
 
     @Autowired
-    public ServiceService(ServiceRepository services) {
+    public ServiceService(ServiceRepository services, CategoryService categoryService, ProviderService providerService, EventTypeService eventTypeService) {
         this.services = services;
+        this.categoryService = categoryService;
+        this.providerService = providerService;
+        this.eventTypeService = eventTypeService;
     }
 
 
@@ -61,9 +78,36 @@ public class ServiceService {
     }
 
 
-    public Service createService(Service serviceRequest) {
-        throw new InternalServerError();
+    public Service createService(@Valid CreateServiceRequest serviceRequest) {
+        try {
+            Service service = mapRequestToService(serviceRequest);
+
+            service.setProvider( providerService.getProviderById(serviceRequest.getProviderId()) );
+            if (serviceRequest.requestsNewCategory()) {
+                service.setCategory(requestNewCategory(serviceRequest));
+                service.setStatus(Status.PENDING);
+            } else {
+                service.setCategory(categoryService.getCategoryById(serviceRequest.getCategoryId()));
+                service.setStatus(Status.APPROVED);
+            }
+
+            List<EventType> applicableEventTypes = serviceRequest.getApplicableEventTypeIds()
+                    .stream()
+                    .map(eventTypeService::getEventTypeById)
+                   .collect(Collectors.toList());
+
+            service.setApplicableEventTypes(applicableEventTypes);
+
+            return services.save(service);
+        } catch (NotFoundException e) {
+            throw new NotFoundException("Failed to create new service: " + e.getMessage());
+        } catch (DataIntegrityViolationException | ConstraintViolationException | IllegalArgumentException e) {
+            throw new BadRequestException("Failed to create a new service: " + e.getMessage());
+        } catch (Exception e) {
+            throw new InternalServerError("Failed to create new service. An unexpected error has occurred.");
+        }
     }
+
 
 
     public Service updateService(Service serviceUpdateRequest) {
@@ -74,5 +118,43 @@ public class ServiceService {
     public void deleteService(int serviceId) {
         // TODO: Prevent deletion if there are any reservations
         services.deleteById(serviceId);
+    }
+
+
+    public void deleteAllServices() {
+        services.deleteAll();
+    }
+
+
+    private Service mapRequestToService(CreateServiceRequest serviceRequest) {
+        // blah, some problems with mapper
+        Service service = new Service();
+        service.setName(serviceRequest.getName());
+        service.setDescription(serviceRequest.getDescription());
+        service.setSpecificities(serviceRequest.getSpecificities());
+        service.setPrice(serviceRequest.getPrice());
+        service.setDiscount(serviceRequest.getDiscount());
+        if (serviceRequest.getImages() != null && !serviceRequest.getImages().isEmpty()) {
+            service.setImageUrl(serviceRequest.getImages().get(0));
+        }
+        service.setVisible(serviceRequest.getVisibility() == OfferingVisibility.PUBLIC);
+        service.setAvailable(serviceRequest.isAvailable());
+        service.setReservationType(serviceRequest.getReservationType());
+        service.setDuration(serviceRequest.getSessionDuration());
+        service.setMinDuration(serviceRequest.getMinDuration());
+        service.setMaxDuration(serviceRequest.getMaxDuration());
+        service.setReservationPeriod(serviceRequest.getReservationPeriod());
+        service.setCancellationPeriod(serviceRequest.getCancellationPeriod());
+        return service;
+    }
+
+    private SolutionCategory requestNewCategory(CreateServiceRequest request) {
+        // TODO: Add a method for requesting categories
+        SolutionCategory category = new SolutionCategory();
+        category.setName(request.getCategoryName());
+        category.setDescription(request.getCategoryDescription());
+        category.setStatus(Status.PENDING);
+        // TODO: Notify admin of category request
+        return categoryService.insertCategory(category);
     }
 }
