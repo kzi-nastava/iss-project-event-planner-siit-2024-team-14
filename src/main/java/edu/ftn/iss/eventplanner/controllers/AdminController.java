@@ -6,13 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import edu.ftn.iss.eventplanner.dtos.LoginDTO;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import edu.ftn.iss.eventplanner.dtos.login.LoginDTO;
 
 @RestController
 @RequestMapping("/api/admins")
@@ -37,44 +31,6 @@ public class AdminController {
         return new ResponseEntity<>("Admin login successful!", HttpStatus.OK);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<GetAdminDTO>> getAdmins() {
-        Collection<GetAdminDTO> admins = new ArrayList<>();
-
-        GetAdminDTO admin1 = new GetAdminDTO();
-        admin1.setFirstName("Admin1");
-        admin1.setLastName("Surname1");
-        admin1.setEmail("admin1@email.com");
-        admin1.setProfilePicture("admin-1-picture");
-
-        GetAdminDTO admin2 = new GetAdminDTO();
-        admin2.setFirstName("Admin2");
-        admin2.setLastName("Surname2");
-        admin2.setEmail("admin2@email.com");
-        admin2.setProfilePicture("admin-2-picture");
-
-        admins.add(admin1);
-        admins.add(admin2);
-
-        return new ResponseEntity<Collection<GetAdminDTO>>(admins, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetAdminDTO> getAdmin(@PathVariable("id") Long id) {
-        GetAdminDTO admin = new GetAdminDTO();
-
-        if (admin == null) {
-            return new ResponseEntity<GetAdminDTO>(HttpStatus.NOT_FOUND);
-        }
-
-        admin.setFirstName("Admin");
-        admin.setLastName("Surname");
-        admin.setEmail("admin@email.com");
-        admin.setProfilePicture("admin-picture");
-
-        return new ResponseEntity<GetAdminDTO>(admin, HttpStatus.OK);
-    }
-
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UpdatedAdminDTO> updateAdmin(@PathVariable Long id, @RequestBody UpdateAdminDTO admin) throws Exception{
         UpdatedAdminDTO updatedAdmin = new UpdatedAdminDTO();
@@ -87,6 +43,7 @@ public class AdminController {
         return new ResponseEntity<UpdatedAdminDTO>(updatedAdmin, HttpStatus.OK);
     }
 
+    /*
     @PutMapping(value = "/{id}/change-password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChangedPasswordDTO> changePassword(@PathVariable Long id, @RequestBody ChangePasswordDTO password) throws Exception {
         ChangedPasswordDTO changedPassword = new ChangedPasswordDTO();
@@ -98,6 +55,7 @@ public class AdminController {
 
         return new ResponseEntity<ChangedPasswordDTO>(changedPassword, HttpStatus.OK);
     }
+     */
 
     @DeleteMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deactivateAdmin(@PathVariable Long id) {

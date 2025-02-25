@@ -6,8 +6,6 @@ import java.util.List;
 
 @Data
 public class GetProviderDTO {
-    private int id;
-    private String email;
     private String companyName;
     private String description;
     private String address;

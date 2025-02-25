@@ -1,87 +1,63 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.UpdateServiceDTO;
-import edu.ftn.iss.eventplanner.entities.Service;
-import edu.ftn.iss.eventplanner.mappers.ServiceDTOMapper;
-import edu.ftn.iss.eventplanner.services.ServiceService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
+import edu.ftn.iss.eventplanner.dtos.CreateServiceForProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.serviceDetails.ServiceDTO;
+import edu.ftn.iss.eventplanner.dtos.UpdateServiceDTO;
+import edu.ftn.iss.eventplanner.services.ServiceService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-import java.util.Set;
-
+import java.net.URI;
+import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = {"api/services"})
 public class ServiceController {
 
     private final ServiceService serviceService;
-    private final ServiceDTOMapper modelMapper;
 
-    @Autowired
-    public ServiceController(ServiceService serviceService, ServiceDTOMapper modelMapper) {
+    public ServiceController(ServiceService serviceService) {
         this.serviceService = serviceService;
-        this.modelMapper = modelMapper;
     }
 
-
-    // GET */api/services (Result differs across user roles)
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Page<ServiceDTO>> getAllServices(
-            @RequestParam MultiValueMap<String, String> params,
-            Pageable pageable,
-            Principal principal
-    ) {
-        params.keySet().removeAll(Set.of("page", "size", "sort"));
-        Page<Service> services = serviceService.getAllServices(pageable, principal == null ? null : principal.getName());
-
-        return ResponseEntity.ok(
-                services.map(this.modelMapper::toServiceDTO)
-        );
+    ResponseEntity<Collection<ServiceDTO>> getAllServices() {
+        return ResponseEntity.ok(List.of());
     }
 
-    // GET @*/api/services/1
-    @GetMapping(path = "/{id:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<ServiceDTO> getServiceById(
-            @PathVariable(name = "id") int id
-    ) {
-        Service service = serviceService.getServiceById(id); // maybe hide services that are not publicly visible
-        return ResponseEntity.ok(modelMapper.toServiceDTO(service));
+    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ServiceDTO> getServiceById(
+            @PathVariable(name = "id") Integer id) {
+        ServiceDTO serviceDTO = serviceService.getServiceById(id);
+        return ResponseEntity.ok(serviceDTO);
     }
 
 
-    // PUT provider[Provides the service]|admin@*/api/services
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<ServiceDTO> createService(
+            @RequestBody @Validated CreateServiceForProviderDTO service
+    ) {
+        ServiceDTO createdService = new ServiceDTO();
+        return ResponseEntity
+                .created(URI.create("services/" + createdService.getId()))
+                .body(createdService);
+    }
+
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<ServiceDTO> putUpdateService(
-            @RequestBody @Validated UpdateServiceDTO updateServiceDTO
+            @RequestBody @Validated UpdateServiceDTO service
     ) {
-        Service service = serviceService.updateService(modelMapper.toUpdateServiceRequest(updateServiceDTO));
-        return ResponseEntity.ok(modelMapper.toServiceDTO(service));
+        return ResponseEntity.accepted().build();
     }
 
-    // DELETE provider[Provides the service]|admin@*/api/services/1
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping(path = "/{id:\\d+}")
-    void deleteService(
-            @PathVariable(name = "id") int id
+    @DeleteMapping(path = "/{id}")
+    ResponseEntity<Void> deleteService(
+            @PathVariable(name = "id") long id
     ) {
-        serviceService.deleteService(id);
-    }
-
-
-    // DELETE admin@*/api/services
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping
-    void deleteAllServices() {
-        serviceService.deleteAllServices();
+        return ResponseEntity.noContent().build();
     }
 
 }
