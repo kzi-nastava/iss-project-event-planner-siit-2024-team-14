@@ -38,7 +38,7 @@ public class CreateServiceRequest {
     private boolean available = true;
     private ReservationType reservationType = ReservationType.MANUAL;
 
-    private Duration sessionDuration;
+    private Duration duration;
     private Duration minDuration;
     private Duration maxDuration;
 

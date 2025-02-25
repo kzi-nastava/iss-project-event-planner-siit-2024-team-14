@@ -41,7 +41,7 @@ public class CreateServiceDTO {
     private ReservationType reservationType;
 
     @Positive(message = "Session duration must be positive")
-    private Long sessionDurationMinutes;
+    private Long durationMinutes;
     @PositiveOrZero(message = "Min duration cannot be negative")
     private Long minDurationMinutes;
     @Positive(message = "Max duration must be positive")
@@ -56,7 +56,7 @@ public class CreateServiceDTO {
 
     @AssertTrue(message = "Cannot specify min and max duration if session duration is specified")
     boolean areDurationsValid() {
-        return sessionDurationMinutes == null || (minDurationMinutes == null && maxDurationMinutes == null);
+        return durationMinutes == null || (minDurationMinutes == null && maxDurationMinutes == null);
     }
 
     @Data

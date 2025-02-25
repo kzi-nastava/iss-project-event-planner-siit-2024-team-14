@@ -59,12 +59,13 @@ public class ServiceController {
     }
 
 
-    // PUT provider[Provides the service]|admin@*/api/services/1
+    // PUT provider[Provides the service]|admin@*/api/services
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<ServiceDTO> putUpdateService(
-            @RequestBody @Validated UpdateServiceDTO service
+            @RequestBody @Validated UpdateServiceDTO updateServiceDTO
     ) {
-        return ResponseEntity.accepted().build();
+        Service service = serviceService.updateService(modelMapper.toUpdateServiceRequest(updateServiceDTO));
+        return ResponseEntity.ok(modelMapper.toServiceDTO(service));
     }
 
     // DELETE provider[Provides the service]|admin@*/api/services/1
@@ -78,9 +79,11 @@ public class ServiceController {
 
 
     // DELETE admin@*/api/services
-    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping
-    void deleteAllServices() { }
+    void deleteAllServices() {
+        serviceService.deleteAllServices();
+    }
 
 }
 

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,15 +33,17 @@ public class ServiceService {
     private final ServiceRepository services;
     private final ProviderService providerService;
     private final CategoryService categoryService;
+    private final ModelMapper modelMapper;
     private final EventTypeService eventTypeService;
 
 
     @Autowired
-    public ServiceService(ServiceRepository services, CategoryService categoryService, ProviderService providerService, EventTypeService eventTypeService) {
+    public ServiceService(ServiceRepository services, CategoryService categoryService, ProviderService providerService, EventTypeService eventTypeService, ModelMapper modelMapper) {
         this.services = services;
         this.categoryService = categoryService;
         this.providerService = providerService;
         this.eventTypeService = eventTypeService;
+        this.modelMapper = modelMapper;
     }
 
 
@@ -109,9 +112,31 @@ public class ServiceService {
     }
 
 
+    @Transactional
+    public Service updateService(UpdateServiceRequest request) {
+        try {
+            Service service = getServiceById(request.getId());
+            modelMapper.map(request, service); // doesn't map null
 
-    public Service updateService(Service serviceUpdateRequest) {
-        throw new InternalServerError();
+            if (request.getImages() != null && !request.getImages().isEmpty()) {
+                service.setImageUrl(request.getImages().get(0));
+            }
+
+            List<EventType> applicableEventTypes = request.getApplicableEventTypeIds()
+                    .stream()
+                    .map(eventTypeService::getEventTypeById)
+                   .collect(Collectors.toList());
+
+            service.setApplicableEventTypes(applicableEventTypes);
+
+            return service;
+        } catch (NotFoundException e) {
+            throw new NotFoundException("Failed to update service: " + e.getMessage());
+        } catch (DataIntegrityViolationException | ConstraintViolationException | IllegalArgumentException e) {
+            throw new BadRequestException("Failed to update service: " + e.getMessage());
+        } catch (Exception e) {
+            throw new InternalServerError("Failed to update service. An unexpected error has occurred.");
+        }
     }
 
 
@@ -140,7 +165,7 @@ public class ServiceService {
         service.setVisible(serviceRequest.getVisibility() == OfferingVisibility.PUBLIC);
         service.setAvailable(serviceRequest.isAvailable());
         service.setReservationType(serviceRequest.getReservationType());
-        service.setDuration(serviceRequest.getSessionDuration());
+        service.setDuration(serviceRequest.getDuration());
         service.setMinDuration(serviceRequest.getMinDuration());
         service.setMaxDuration(serviceRequest.getMaxDuration());
         service.setReservationPeriod(serviceRequest.getReservationPeriod());

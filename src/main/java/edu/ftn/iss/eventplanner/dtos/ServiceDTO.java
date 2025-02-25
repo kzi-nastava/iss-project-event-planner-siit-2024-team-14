@@ -28,11 +28,20 @@ public class ServiceDTO {
     private boolean available;
     private OfferingVisibility visibility;
     private ReservationType reservationType;
-    private Duration sessionDuration;
+
+    private Duration duration;
     private Duration minDuration;
     private Duration maxDuration;
     private Duration reservationPeriod;
     private Duration cancellationPeriod;
+
+    public Long getDurationMinutes() { return duration == null ? null : duration.toMinutes(); }
+    public Long getMinDurationMinutes() { return minDuration == null ? null : minDuration.toMinutes(); }
+    public Long getMaxDurationMinutes() { return maxDuration == null ? null : maxDuration.toMinutes(); }
+    public Long getReservationPeriodDays() { return reservationPeriod == null ? null : reservationPeriod.toDays(); }
+    public Long getCancellationPeriodDays() { return cancellationPeriod == null ? null : cancellationPeriod.toDays(); }
+    //public boolean isVisible() { return visibility == null || visibility == OfferingVisibility.PUBLIC; }
+    //public boolean isIsVisible() { return visibility == null || visibility == OfferingVisibility.PUBLIC; }
 
     // TODO: Model and DTO field names should match in order for clients to know sort parameters
 }
