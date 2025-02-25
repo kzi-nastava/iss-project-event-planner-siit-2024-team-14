@@ -19,6 +19,7 @@ public abstract class Solution {
     private String name;
     private String description;
     private String specificities;
+    private String location;
     private double price;
     private double discount;
     private String imageUrl;

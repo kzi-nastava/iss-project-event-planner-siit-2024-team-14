@@ -1,7 +1,7 @@
 package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.CreateServiceDTO;
-import edu.ftn.iss.eventplanner.dtos.ServiceDTO;
+import edu.ftn.iss.eventplanner.dtos.serviceDetails.ServiceDTO;
 import edu.ftn.iss.eventplanner.entities.CreateServiceRequest;
 import edu.ftn.iss.eventplanner.entities.Service;
 import edu.ftn.iss.eventplanner.mappers.ServiceDTOMapper;
@@ -13,11 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.security.Principal;
 import java.util.Set;
 

@@ -1,15 +1,14 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.ServiceDTO;
 import edu.ftn.iss.eventplanner.dtos.UpdateServiceDTO;
 import edu.ftn.iss.eventplanner.entities.Service;
 import edu.ftn.iss.eventplanner.mappers.ServiceDTOMapper;
 import edu.ftn.iss.eventplanner.services.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import edu.ftn.iss.eventplanner.dtos.serviceDetails.ServiceDTO;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;

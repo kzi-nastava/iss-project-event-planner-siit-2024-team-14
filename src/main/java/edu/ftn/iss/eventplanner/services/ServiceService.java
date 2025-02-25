@@ -31,14 +31,14 @@ import java.util.stream.Collectors;
 public class ServiceService {
 
     private final ServiceRepository services;
-    private final ProviderService providerService;
+    private final ServiceAndProductProviderService providerService;
     private final CategoryService categoryService;
     private final ModelMapper modelMapper;
     private final EventTypeService eventTypeService;
 
 
     @Autowired
-    public ServiceService(ServiceRepository services, CategoryService categoryService, ProviderService providerService, EventTypeService eventTypeService, ModelMapper modelMapper) {
+    public ServiceService(ServiceRepository services, CategoryService categoryService, ServiceAndProductProviderService providerService, EventTypeService eventTypeService, ModelMapper modelMapper) {
         this.services = services;
         this.categoryService = categoryService;
         this.providerService = providerService;
@@ -97,7 +97,7 @@ public class ServiceService {
             List<EventType> applicableEventTypes = serviceRequest.getApplicableEventTypeIds()
                     .stream()
                     .map(eventTypeService::getEventTypeById)
-                   .collect(Collectors.toList());
+                    .collect(Collectors.toList());
 
             service.setApplicableEventTypes(applicableEventTypes);
 
@@ -125,7 +125,7 @@ public class ServiceService {
             List<EventType> applicableEventTypes = request.getApplicableEventTypeIds()
                     .stream()
                     .map(eventTypeService::getEventTypeById)
-                   .collect(Collectors.toList());
+                    .collect(Collectors.toList());
 
             service.setApplicableEventTypes(applicableEventTypes);
 
