@@ -116,14 +116,11 @@ public class BookingServiceService {
             System.err.println("Failed to send booking notification email: " + e.getMessage());
         }
 
-        // Zakazivanje notifikacije 1h pre termina
-        this.createNotificationsForUpcomingBookings();
-
         return booking;
     }
 
     // Zakazani task koji se izvršava na svakih 5 minuta i kreira notifikacije za rezervacije koje su 1h pre početka
-    @Scheduled(fixedRate = 300000) // Provera na svakih 5 minuta (300.000 ms)
+    @Scheduled(fixedRate = 300000) // Provera na svakih 5 minuta
     public void createNotificationsForUpcomingBookings() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime oneHourLater = now.plusHours(1);

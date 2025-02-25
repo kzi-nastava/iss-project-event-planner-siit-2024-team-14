@@ -58,7 +58,7 @@ public class DatabaseSeeder {
             EventOrganizer organizer = (EventOrganizer) userRepository.findByEmail("anajovanovic@example.com")
                     .orElseGet(() -> {
                         EventOrganizer newOrganizer = new EventOrganizer();
-                        newOrganizer.setEmail("anajovanovic@example.com");
+                        newOrganizer.setEmail("milicabosancic03@gmail.com");
                         newOrganizer.setPassword("ana123");
                         newOrganizer.setName("Ana");
                         newOrganizer.setSurname("Jovanovic");
@@ -133,6 +133,7 @@ public class DatabaseSeeder {
                         return userRepository.save(newOrganizer);
                     });
 
+
             // Dodavanje događaja
             if (eventRepository.findByName("Birthday Party").isEmpty()) {
                 eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, "open", "Belgrade",
@@ -163,6 +164,13 @@ public class DatabaseSeeder {
                 eventRepository.save(new Event(null, organizer2, "EXIT Festival", "Together, always", 30, "open", "Novi Sad",
                         LocalDate.of(2025, 7, 7), LocalDate.of(2025, 7, 10), "assets/images/event8.png", partyType));
             }
+
+            if (eventRepository.findByName("Proba").isEmpty()) {
+                eventRepository.save(new Event(null, organizer, "Proba", "For horse lovers, free entry", 30, "open", "Novi Sad",
+                        LocalDate.of(2025, 2, 25), LocalDate.of(2025, 2, 25), "assets/images/event2.png", partyType));
+            }
+
+
 
 
 
@@ -226,7 +234,7 @@ public class DatabaseSeeder {
             ServiceAndProductProvider provider3 = (ServiceAndProductProvider) userRepository.findByEmail("music@example.com")
                     .orElseGet(() -> {
                         ServiceAndProductProvider newProvider = new ServiceAndProductProvider();
-                        newProvider.setEmail("music@example.com");
+                        newProvider.setEmail("milicabosancic1612@gmail.com");
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("VibeX");
                         newProvider.setCity("Novi Sad");
@@ -434,6 +442,7 @@ public class DatabaseSeeder {
             commentRepository.save(comment2);
 
             System.out.println("✅ Podaci uspešno dodati u bazu.");
+
         };
     }
 }
