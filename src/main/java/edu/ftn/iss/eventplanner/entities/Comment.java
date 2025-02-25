@@ -28,9 +28,4 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "service_id")    // after booking service
     private Service service;
-
-    //ko je kom?
-    @ManyToOne
-    @JoinColumn(name = "commenter_id")
-    private User commenter;
 }

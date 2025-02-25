@@ -1,63 +1,48 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.comments.ApproveCommentDTO;
-import edu.ftn.iss.eventplanner.dtos.comments.CommentResponseDTO;
-import edu.ftn.iss.eventplanner.dtos.comments.CreateCommentDTO;
-import edu.ftn.iss.eventplanner.services.CommentService;
-import lombok.RequiredArgsConstructor;
+import edu.ftn.iss.eventplanner.dtos.ApproveCommentDTO;
+import edu.ftn.iss.eventplanner.dtos.CommentResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.CreateCommentDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/comments")
 public class CommentController {
-    private final CommentService commentService;
 
+    // Endpoint za kreiranje komentara
     @PostMapping
     public ResponseEntity<CommentResponseDTO> createComment(@Valid @RequestBody CreateCommentDTO createCommentDTO) {
-        CommentResponseDTO response = commentService.createComment(createCommentDTO);
+
+        CommentResponseDTO response = new CommentResponseDTO(
+                1L, createCommentDTO.getContent(), createCommentDTO.getRating(), createCommentDTO.getDate(), "pending", createCommentDTO.getProductId());
+
         return ResponseEntity.status(201).body(response);
     }
 
-    // Endpoint za odobravanje ili logičko brisanje komentara (Admin)
+    // Endpoint za odobravanje ili brisanje komentara
     @PutMapping("/approve")
-    public ResponseEntity<CommentResponseDTO> approveComment(@Valid @RequestBody ApproveCommentDTO approveCommentDTO) {
-        CommentResponseDTO response = commentService.approveComment(approveCommentDTO);
+    public ResponseEntity<CommentResponseDTO> approveOrDeleteComment(@Valid @RequestBody ApproveCommentDTO approveCommentDTO) {
+
+        CommentResponseDTO response = new CommentResponseDTO(approveCommentDTO.getCommentId(), "Approved", 5, LocalDate.now(), "approved", 1L);
+
         return ResponseEntity.ok(response);
     }
 
-    // Endpoint za odobravanje ili logičko brisanje komentara (Admin)
-    @PutMapping("/delete")
-    public ResponseEntity<CommentResponseDTO> deleteComment(@Valid @RequestBody ApproveCommentDTO approveCommentDTO) {
-        CommentResponseDTO response = commentService.deleteComment(approveCommentDTO);
-        return ResponseEntity.ok(response);
-    }
-
-    // Endpoint za dohvat svih komentara (Admin)
-    @GetMapping("/all")
+    // Endpoint za dohvat svih komentara
+    @GetMapping
     public ResponseEntity<List<CommentResponseDTO>> getAllComments() {
-        List<CommentResponseDTO> comments = commentService.getAllComments();
+
+        List<CommentResponseDTO> comments = List.of(
+                new CommentResponseDTO(1L, "Great product!", 5, LocalDate.now(), "approved", 1L),
+                new CommentResponseDTO(2L, "Not bad", 3, LocalDate.now(), "pending", 1L)
+        );
+
         return ResponseEntity.ok(comments);
     }
-
-    // Endpoint za dohvat komentara sa statusom 'PENDING' (Admin)
-    @GetMapping("/pending")
-    public ResponseEntity<List<CommentResponseDTO>> getPendingComments() {
-        List<CommentResponseDTO> comments = commentService.getPendingComments();
-        return ResponseEntity.ok(comments);
-    }
-
-
-    // Endpoint za dohvat odobrenih komentara (Korisnici)
-    @GetMapping("/approved")
-    public ResponseEntity<List<CommentResponseDTO>> getApprovedComments() {
-        List<CommentResponseDTO> comments = commentService.getApprovedComments();
-        return ResponseEntity.ok(comments);
-    }
-
 }
 

@@ -7,7 +7,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-@DiscriminatorValue("Product")
 
 public class Product extends Solution {
 

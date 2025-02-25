@@ -10,7 +10,7 @@ import jakarta.persistence.*;
 @DiscriminatorValue("ORGANIZER") // Maps to role = "ORGANIZER"
 public class EventOrganizer extends User {
 
-    private String profilePhoto;
-    private String name;
-    private String surname;
+    private String profilePicture;
+    private String firstName;
+    private String lastName;
 }

@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@DiscriminatorValue("Service")
 
 public class Service extends Solution {
 
@@ -23,4 +22,5 @@ public class Service extends Solution {
     private ReservationType reservationType;
     private Duration reservationPeriod;
     private Duration cancellationPeriod;
+
 }

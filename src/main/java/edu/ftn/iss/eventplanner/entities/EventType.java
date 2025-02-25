@@ -17,8 +17,9 @@ public class EventType {
     private String description;
     private boolean isActive;
 
-    // added because of Solution
+    // added because of
     @ManyToOne
     @JoinColumn(name = "solution_category_id")
     private SolutionCategory solutionCategory;
 }
+

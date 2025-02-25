@@ -1,14 +1,8 @@
 package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.EventDTO;
-import edu.ftn.iss.eventplanner.entities.Event;
-import edu.ftn.iss.eventplanner.services.EventService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,54 +13,71 @@ import java.util.List;
 @RestController
 public class EventController {
 
-    private final EventService eventService;
-
-    public EventController(EventService eventService) {
-        this.eventService = eventService;
-    }
-
     // Endpoint za Top 5 događaja
     @GetMapping("/api/events/top5")
     public ResponseEntity<List<EventDTO>> getTop5Events(
             @RequestParam String city) {
-        return ResponseEntity.ok(eventService.getTop5Events(city));
-    }
-
-    @GetMapping("api/events/all")
-    public ResponseEntity<List<EventDTO>> getAllEvents( @RequestParam String city) {
-        return ResponseEntity.ok(eventService.getEvents(city));
-    }
-
-    @GetMapping("api/events/locations")
-    public ResponseEntity<List<String>> getAllLocations() {
-        return ResponseEntity.ok(eventService.getAllLocations());
-    }
-
-    @GetMapping("api/events/categories")
-    public ResponseEntity<List<String>> getAllCategories() {
-        return ResponseEntity.ok(eventService.getAllCategories());
-    }
-
-    @GetMapping("api/events/by-organizer/{organizerId}")
-    public ResponseEntity<List<EventDTO>> getEventsByOrganizer(@PathVariable Integer organizerId) {
-        List<EventDTO> events = eventService.findEventsByOrganizer(organizerId);
-        return ResponseEntity.ok(events);
+        List<EventDTO> topEvents = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            EventDTO event = new EventDTO();
+            event.setId((long) i);
+            event.setName("Event " + i);
+            event.setDescription("Description for Event " + i);
+            event.setLocation(city);
+            event.setStartDate(LocalDate.now().plusDays(i));
+            event.setEndDate(LocalDate.now().plusDays(i + 1));
+            topEvents.add(event);
+        }
+        return ResponseEntity.ok(topEvents);
     }
 
     // Endpoint za pretragu i filtriranje događaja
-    @GetMapping("/api/events/filter")
-    public ResponseEntity<Page<EventDTO>> getFilteredEvents(
-            @RequestParam(value = "startDate", required = false) String startDate,
-            @RequestParam(value = "endDate", required = false) String endDate,
-            @RequestParam(value = "category", required = false) String category,
-            @RequestParam(value = "location", required = false) String location,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
+    @GetMapping("/api/events/search")
+    public ResponseEntity<List<EventDTO>> searchEvents(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String privacyType,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<EventDTO> eventDTOPage = eventService.getFilteredEvents(startDate, endDate, category, location, pageable);
-        return ResponseEntity.ok(eventDTOPage);
+        // Simulacija događaja za pretragu (generiše se 30 događaja)
+        List<EventDTO> allEvents = new ArrayList<>();
+        for (int i = 1; i <= 30; i++) {
+            EventDTO event = new EventDTO();
+            event.setId((long) i);
+            event.setName("Event " + i);
+            event.setDescription("Description for Event " + i);
+            event.setLocation(i % 2 == 0 ? "Belgrade" : "Novi Sad");
+            event.setPrivacyType(i % 2 == 0 ? "open" : "closed");
+            event.setStartDate(LocalDate.now().plusDays(i));
+            event.setEndDate(LocalDate.now().plusDays(i + 1));
+            event.setBudget(1000 + i * 10);
+            allEvents.add(event);
+        }
+
+        // Filtriranje po parametrima
+        List<EventDTO> filteredEvents = new ArrayList<>();
+        for (EventDTO event : allEvents) {
+            if ((name == null || event.getName().toLowerCase().contains(name.toLowerCase())) &&
+                    (location == null || event.getLocation().equalsIgnoreCase(location)) &&
+                    (privacyType == null || event.getPrivacyType().equalsIgnoreCase(privacyType)) &&
+                    (startDate == null || !event.getStartDate().isBefore(startDate)) &&
+                    (endDate == null || !event.getEndDate().isAfter(endDate))) {
+                filteredEvents.add(event);
+            }
+        }
+
+        // Paginacija
+        int start = page * size;
+        int end = Math.min(start + size, filteredEvents.size());
+        if (start > filteredEvents.size()) {
+            return ResponseEntity.ok(new ArrayList<>());
+        }
+
+        List<EventDTO> paginatedEvents = filteredEvents.subList(start, end);
+
+        return ResponseEntity.ok(paginatedEvents);
     }
-
-
 }

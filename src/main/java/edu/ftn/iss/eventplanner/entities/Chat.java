@@ -2,8 +2,6 @@ package edu.ftn.iss.eventplanner.entities;
 
 import lombok.*;
 import jakarta.persistence.*;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -24,6 +22,7 @@ public class Chat {
     @JoinColumn(name = "recipient_id")
     private User recipient;             // who got a message
 
-    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Message> messages = new ArrayList<>();     // list of messages in the chat
+    @OneToMany(mappedBy = "chat")
+    private List<Message> messages;     // list of messages in the chat
 }
+

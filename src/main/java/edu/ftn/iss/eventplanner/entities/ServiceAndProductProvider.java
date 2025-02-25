@@ -13,6 +13,8 @@ import java.util.List;
 public class ServiceAndProductProvider extends User {
 
     private String companyName;
+    private String contactInfo;
     private String description;
-    private List<String> photos;
+    private List<String> pictures;
 }
+

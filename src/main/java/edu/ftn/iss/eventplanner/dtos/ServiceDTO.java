@@ -1,12 +1,10 @@
-package edu.ftn.iss.eventplanner.dtos.serviceDetails;
+package edu.ftn.iss.eventplanner.dtos;
 
-import edu.ftn.iss.eventplanner.dtos.EventTypeDTO;
-import edu.ftn.iss.eventplanner.dtos.GetProviderDTO;
 import edu.ftn.iss.eventplanner.enums.OfferingVisibility;
 import edu.ftn.iss.eventplanner.enums.ReservationType;
 
 import lombok.Data;
-
+import java.net.URL;
 import java.time.Duration;
 
 @Data
