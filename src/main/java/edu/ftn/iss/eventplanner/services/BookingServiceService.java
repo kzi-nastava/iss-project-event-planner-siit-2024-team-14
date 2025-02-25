@@ -44,7 +44,7 @@ public class BookingServiceService {
 
         // Radno vreme servisa
         LocalTime startOfDay = LocalTime.of(8, 0);
-        LocalTime endOfDay = LocalTime.of(20, 0);
+        LocalTime endOfDay = LocalTime.of(23, 45);
 
         // Lista zauzetih intervala (početak i kraj) - tj. kada su zauzeti termini
         List<LocalTime[]> occupiedIntervals = bookedSlots.stream()
@@ -56,7 +56,7 @@ public class BookingServiceService {
 
         // Generišemo sve moguće start time-ove na svakih 30 minuta
         List<LocalTime> allSlots = new ArrayList<>();
-        for (LocalTime time = startOfDay; time.isBefore(endOfDay); time = time.plusMinutes(30)) {
+        for (LocalTime time = startOfDay; time.isBefore(endOfDay); time = time.plusMinutes(15)) {
             allSlots.add(time);
         }
 
@@ -95,7 +95,6 @@ public class BookingServiceService {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
-        System.out.println("nadjeno sve");
 
         // Kreiramo i čuvamo novu rezervaciju
         BookingService booking = new BookingService();
@@ -120,27 +119,33 @@ public class BookingServiceService {
     }
 
     // Zakazani task koji se izvršava na svakih 5 minuta i kreira notifikacije za rezervacije koje su 1h pre početka
-    @Scheduled(fixedRate = 300000) // Provera na svakih 5 minuta
+    @Scheduled(cron = "0 0,30 * * * *")
     public void createNotificationsForUpcomingBookings() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime oneHourLater = now.plusHours(1);
+        LocalTime now = LocalTime.now(); // Trenutno vreme
+        LocalTime oneHourLater = now.plusHours(1); // Vreme za 1h kasnije
+        LocalDate today = LocalDate.now(); // Trenutni datum
+
+        // Konvertujemo LocalTime u Time (SQL format)
+        Time sqlOneHourLater = Time.valueOf(oneHourLater);
 
         // Pronalazimo sve rezervacije koje počinju tačno za 1 sat
-        List<BookingService> upcomingBookings = bookingServiceRepository.findBookingsStartingAt(oneHourLater);
-
+        List<BookingService> upcomingBookings = bookingServiceRepository.findBookingsStartingAt(sqlOneHourLater);
         for (BookingService booking : upcomingBookings) {
             Event event = booking.getEvent();
             User organizer = event.getOrganizer();
+            System.out.println("Pronadjen event"+ event.getName());
 
             // Proveravamo da li notifikacija već postoji (da ne bismo duplirali)
             boolean alreadyExists = notificationRepository.existsByUserAndEventAndMessageContaining(organizer, event, "Reminder");
             if (!alreadyExists) {
+                System.out.println("Pravimo event"+ event.getName());
                 Notification notification = new Notification();
                 notification.setUser(organizer);
                 notification.setEvent(event);
                 notification.setMessage("Reminder: Your event '" + event.getName() + "' has a booking starting in 1 hour.");
-                notification.setDate(now.toLocalDate());
+                notification.setDate(today);
                 notification.setRead(false);
+                System.out.println("cuvanje"+ event.getName());
 
                 notificationRepository.save(notification);
                 System.out.println("Notifikacija kreirana za: " + organizer.getEmail());

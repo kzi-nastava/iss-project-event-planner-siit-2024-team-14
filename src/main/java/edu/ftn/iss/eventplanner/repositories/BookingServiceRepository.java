@@ -19,5 +19,5 @@ public interface BookingServiceRepository extends JpaRepository<BookingService, 
 
     @Query("SELECT b FROM BookingService b WHERE b.bookingDate = CURRENT_DATE " +
             "AND b.startTime = ?1 AND b.confirmed = true")
-    List<BookingService> findBookingsStartingAt(LocalDateTime oneHourLater);
+    List<BookingService> findBookingsStartingAt(Time oneHourLater);
 }
