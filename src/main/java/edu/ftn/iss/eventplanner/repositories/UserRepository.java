@@ -2,6 +2,7 @@ package edu.ftn.iss.eventplanner.repositories;
 
 import java.util.Optional;
 
+import edu.ftn.iss.eventplanner.entities.Event;
 import edu.ftn.iss.eventplanner.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

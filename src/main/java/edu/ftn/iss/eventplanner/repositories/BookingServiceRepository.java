@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -16,4 +17,7 @@ public interface BookingServiceRepository extends JpaRepository<BookingService, 
     @Query("SELECT b FROM BookingService b WHERE b.service.id = :serviceId AND b.bookingDate = :date AND b.confirmed = true")
     List<BookingService> findConfirmedBookings(@Param("serviceId") Integer serviceId, @Param("date") LocalDate date);
 
+    @Query("SELECT b FROM BookingService b WHERE b.bookingDate = CURRENT_DATE " +
+            "AND b.startTime = ?1 AND b.confirmed = true")
+    List<BookingService> findBookingsStartingAt(LocalDateTime oneHourLater);
 }

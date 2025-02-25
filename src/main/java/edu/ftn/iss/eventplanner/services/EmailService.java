@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
+import java.sql.Time;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -96,4 +99,28 @@ public class EmailService {
             return false;
         }
     }
+
+    public void sendBookingNotification(String to, String eventName, String serviceName, LocalDate date, Time startTime, Duration duration) throws MessagingException {
+        String subject = "New Booking Notification";
+
+        String body = "<html>"
+                + "<body>"
+                + "<h3>A new booking has been made</h3>"
+                + "<p><b>Event:</b> " + eventName + "</p>"
+                + "<p><b>Service:</b> " + serviceName + "</p>"
+                + "<p><b>Date:</b> " + date + "</p>"
+                + "<p><b>Start Time:</b> " + startTime + "</p>"
+                + "<p><b>Duration:</b> " + duration.toMinutes() + " minutes</p>"
+                + "</body>"
+                + "</html>";
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(body, true);  // true omogućava HTML sadržaj
+
+        mailSender.send(message);
+    }
+
 }

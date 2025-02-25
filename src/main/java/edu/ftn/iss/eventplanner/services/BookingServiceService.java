@@ -3,14 +3,20 @@ package edu.ftn.iss.eventplanner.services;
 import edu.ftn.iss.eventplanner.dtos.serviceBooking.BookingServiceRequestDTO;
 import edu.ftn.iss.eventplanner.entities.BookingService;
 import edu.ftn.iss.eventplanner.entities.Event;
+import edu.ftn.iss.eventplanner.entities.Notification;
+import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.repositories.BookingServiceRepository;
 import edu.ftn.iss.eventplanner.repositories.EventRepository;
+import edu.ftn.iss.eventplanner.repositories.NotificationRepository;
 import edu.ftn.iss.eventplanner.repositories.ServiceRepository;
+import jakarta.mail.MessagingException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +27,15 @@ public class BookingServiceService {
     private final BookingServiceRepository bookingServiceRepository;
     private final EventRepository eventRepository;
     private final ServiceRepository serviceRepository;
+    private final EmailService emailService;
+    private final NotificationRepository notificationRepository;
 
-    public BookingServiceService(BookingServiceRepository bookingServiceRepository, EventRepository eventRepository, ServiceRepository serviceRepository) {
+    public BookingServiceService(BookingServiceRepository bookingServiceRepository, EventRepository eventRepository, ServiceRepository serviceRepository, EmailService emailService, NotificationRepository notificationRepository) {
         this.bookingServiceRepository = bookingServiceRepository;
         this.eventRepository = eventRepository;
         this.serviceRepository = serviceRepository;
+        this.emailService = emailService;
+        this.notificationRepository = notificationRepository;
     }
 
     public List<String> getAvailableStartTimes(Integer serviceId, LocalDate date, Integer optionalDuration) {
@@ -80,7 +90,6 @@ public class BookingServiceService {
 
     public BookingService createBooking(Integer serviceId, Integer eventId, LocalDate bookingDate, Time startTime, Duration duration) {
         // Dohvatamo servis i događaj iz baze
-        System.out.println("usao service");
         edu.ftn.iss.eventplanner.entities.Service service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new IllegalArgumentException("Service not found"));
 
@@ -95,8 +104,50 @@ public class BookingServiceService {
         booking.setBookingDate(bookingDate);
         booking.setStartTime(startTime);  // Čuvamo kao Time
         booking.setDuration(duration);  // Čuvamo kao Duration
-        booking.setConfirmed(true);  // Može kasnije da se potvrdi
+        booking.setConfirmed(true);
 
-        return bookingServiceRepository.save(booking);
+        bookingServiceRepository.save(booking);
+
+        // Slanje obaveštenja putem mejla
+        try {
+            emailService.sendBookingNotification(event.getOrganizer().getEmail(), event.getName(), service.getName(), bookingDate, startTime, duration);
+            emailService.sendBookingNotification(service.getProvider().getEmail(), event.getName(), service.getName(), bookingDate, startTime, duration);
+        } catch (MessagingException e) {
+            System.err.println("Failed to send booking notification email: " + e.getMessage());
+        }
+
+        // Zakazivanje notifikacije 1h pre termina
+        this.createNotificationsForUpcomingBookings();
+
+        return booking;
+    }
+
+    // Zakazani task koji se izvršava na svakih 5 minuta i kreira notifikacije za rezervacije koje su 1h pre početka
+    @Scheduled(fixedRate = 300000) // Provera na svakih 5 minuta (300.000 ms)
+    public void createNotificationsForUpcomingBookings() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime oneHourLater = now.plusHours(1);
+
+        // Pronalazimo sve rezervacije koje počinju tačno za 1 sat
+        List<BookingService> upcomingBookings = bookingServiceRepository.findBookingsStartingAt(oneHourLater);
+
+        for (BookingService booking : upcomingBookings) {
+            Event event = booking.getEvent();
+            User organizer = event.getOrganizer();
+
+            // Proveravamo da li notifikacija već postoji (da ne bismo duplirali)
+            boolean alreadyExists = notificationRepository.existsByUserAndEventAndMessageContaining(organizer, event, "Reminder");
+            if (!alreadyExists) {
+                Notification notification = new Notification();
+                notification.setUser(organizer);
+                notification.setEvent(event);
+                notification.setMessage("Reminder: Your event '" + event.getName() + "' has a booking starting in 1 hour.");
+                notification.setDate(now.toLocalDate());
+                notification.setRead(false);
+
+                notificationRepository.save(notification);
+                System.out.println("Notifikacija kreirana za: " + organizer.getEmail());
+            }
+        }
     }
 }
