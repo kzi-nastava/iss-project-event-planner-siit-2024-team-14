@@ -38,14 +38,17 @@ public class EventOrganizerService {
 
     public ResponseEntity<RegisterResponseDTO> register(RegisterEoDTO dto, MultipartFile photo) {
         try {
+            // Check if passwords match
             if (!dto.getPassword().equals(dto.getConfirmPassword())) {
                 return ResponseEntity.badRequest().body(new RegisterResponseDTO("Passwords do not match!", false));
             }
 
+            // Check if email is already in use
             if (organizerRepository.findByEmail(dto.getEmail()).isPresent()) {
                 return ResponseEntity.badRequest().body(new RegisterResponseDTO("Email already in use!", false));
             }
 
+            // Validate phone number format
             try {
                 int parsedPhoneNumber = Integer.parseInt(String.valueOf(dto.getPhoneNumber()));
                 dto.setPhoneNumber(parsedPhoneNumber);
@@ -53,19 +56,20 @@ public class EventOrganizerService {
                 return ResponseEntity.badRequest().body(new RegisterResponseDTO("Invalid phone number format!", false));
             }
 
-            String photoFilename = dto.getEmail() + ".png"; // Name photo as email.png
-            String uploadDir = "src/main/resources/static/profile-photos/";
-            Path filePath = Paths.get(uploadDir + photoFilename);
+            // If photo is provided, save it
+            if (photo != null && !photo.isEmpty()) {
+                String photoFilename = dto.getEmail() + ".png"; // Name photo as email.png
+                String uploadDir = "src/main/resources/static/profile-photos/";
+                Path filePath = Paths.get(uploadDir + photoFilename);
 
-            // Ensure directory exists
-            Files.createDirectories(filePath.getParent());
+                Files.createDirectories(filePath.getParent());  // Create directories if they don't exist
 
-            // Save file
-            Files.write(filePath, photo.getBytes());
+                Files.write(filePath, photo.getBytes());  // Write photo to file
 
-            // Set the filename in DTO
-            dto.setPhoto(photoFilename);
+                dto.setPhoto(photoFilename);  // Set photo filename
+            }
 
+            // Generate activation token and send activation email
             String activationToken = UUID.randomUUID().toString();
             create(dto, activationToken);
             emailService.sendActivationEmail(dto.getEmail(), activationToken, "EventOrganizer");
@@ -77,6 +81,7 @@ public class EventOrganizerService {
             return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to send activation email!", false));
         }
     }
+
 
 
     private void create(RegisterEoDTO dto, String activationToken) {
