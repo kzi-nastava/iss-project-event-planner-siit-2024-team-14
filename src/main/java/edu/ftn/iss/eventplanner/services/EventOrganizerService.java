@@ -38,17 +38,14 @@ public class EventOrganizerService {
 
     public ResponseEntity<RegisterResponseDTO> register(RegisterEoDTO dto, MultipartFile photo) {
         try {
-            // Check if passwords match
             if (!dto.getPassword().equals(dto.getConfirmPassword())) {
                 return ResponseEntity.badRequest().body(new RegisterResponseDTO("Passwords do not match!", false));
             }
 
-            // Check if email is already in use
             if (organizerRepository.findByEmail(dto.getEmail()).isPresent()) {
                 return ResponseEntity.badRequest().body(new RegisterResponseDTO("Email already in use!", false));
             }
 
-            // Validate phone number format
             try {
                 int parsedPhoneNumber = Integer.parseInt(String.valueOf(dto.getPhoneNumber()));
                 dto.setPhoneNumber(parsedPhoneNumber);
@@ -81,8 +78,6 @@ public class EventOrganizerService {
             return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to send activation email!", false));
         }
     }
-
-
 
     private void create(RegisterEoDTO dto, String activationToken) {
         EventOrganizer organizer = new EventOrganizer();

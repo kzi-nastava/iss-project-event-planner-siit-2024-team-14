@@ -2,6 +2,8 @@ package edu.ftn.iss.eventplanner.dtos.registration;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class RegisterSppDTO {
     private String email;
@@ -12,5 +14,5 @@ public class RegisterSppDTO {
     private String address;
     private String city;
     private int phoneNumber;
-    private String photo;
+    private List<String> photos;
 }

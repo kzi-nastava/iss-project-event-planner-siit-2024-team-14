@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface ServiceAndProductProviderRepository extends JpaRepository<ServiceAndProductProvider, Integer> {
     Optional<ServiceAndProductProvider> findByEmail(String email);
     ServiceAndProductProvider findByActivationToken(String token);
+    ServiceAndProductProvider findById(int id);
 }
