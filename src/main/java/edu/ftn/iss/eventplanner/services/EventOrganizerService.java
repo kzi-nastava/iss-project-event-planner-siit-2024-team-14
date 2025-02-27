@@ -53,19 +53,20 @@ public class EventOrganizerService {
                 return ResponseEntity.badRequest().body(new RegisterResponseDTO("Invalid phone number format!", false));
             }
 
-            String photoFilename = dto.getEmail() + ".png"; // Name photo as email.png
-            String uploadDir = "src/main/resources/static/profile-photos/";
-            Path filePath = Paths.get(uploadDir + photoFilename);
+            // If photo is provided, save it
+            if (photo != null && !photo.isEmpty()) {
+                String photoFilename = dto.getEmail() + ".png"; // Name photo as email.png
+                String uploadDir = "src/main/resources/static/profile-photos/";
+                Path filePath = Paths.get(uploadDir + photoFilename);
 
-            // Ensure directory exists
-            Files.createDirectories(filePath.getParent());
+                Files.createDirectories(filePath.getParent());  // Create directories if they don't exist
 
-            // Save file
-            Files.write(filePath, photo.getBytes());
+                Files.write(filePath, photo.getBytes());  // Write photo to file
 
-            // Set the filename in DTO
-            dto.setPhoto(photoFilename);
+                dto.setPhoto(photoFilename);  // Set photo filename
+            }
 
+            // Generate activation token and send activation email
             String activationToken = UUID.randomUUID().toString();
             create(dto, activationToken);
             emailService.sendActivationEmail(dto.getEmail(), activationToken, "EventOrganizer");
@@ -77,7 +78,6 @@ public class EventOrganizerService {
             return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to send activation email!", false));
         }
     }
-
 
     private void create(RegisterEoDTO dto, String activationToken) {
         EventOrganizer organizer = new EventOrganizer();

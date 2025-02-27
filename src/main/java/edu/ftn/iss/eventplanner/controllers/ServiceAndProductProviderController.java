@@ -4,8 +4,12 @@ import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.services.ServiceAndProductProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/providers")
@@ -14,9 +18,10 @@ public class ServiceAndProductProviderController {
     @Autowired
     private ServiceAndProductProviderService providerService;
 
-    @PostMapping("/register")
-    public ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterSppDTO dto) {
-        return providerService.register(dto);
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<RegisterResponseDTO> register(@RequestPart("dto") RegisterSppDTO dto,
+                                                        @RequestPart(value = "photos", required = false) List<MultipartFile> photos) {
+        return providerService.register(dto, photos);
     }
 
     @GetMapping("/activate")
