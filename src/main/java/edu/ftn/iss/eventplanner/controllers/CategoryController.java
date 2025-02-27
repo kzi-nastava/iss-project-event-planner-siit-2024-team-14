@@ -1,6 +1,6 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.CategoryDTO;
+import edu.ftn.iss.eventplanner.dtos.serviceDetails.CategoryDTO;
 import edu.ftn.iss.eventplanner.dtos.CreateCategoryDTO;
 import edu.ftn.iss.eventplanner.dtos.UpdateCategoryDTO;
 import edu.ftn.iss.eventplanner.entities.SolutionCategory;

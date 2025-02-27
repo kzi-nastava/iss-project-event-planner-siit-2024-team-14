@@ -1,12 +1,14 @@
 package edu.ftn.iss.eventplanner.config;
 
 import edu.ftn.iss.eventplanner.entities.*;
+import edu.ftn.iss.eventplanner.enums.ReservationType;
 import edu.ftn.iss.eventplanner.enums.Status;
 import edu.ftn.iss.eventplanner.repositories.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -24,11 +26,21 @@ public class DatabaseSeeder {
         return args -> {
             System.out.println("🔍 Provera podataka u bazi...");
 
+            // Dodavanje SolutionCategory
+            SolutionCategory decorationCategory = solutionCategoryRepository.findByName("Decoration")
+                    .orElseGet(() -> solutionCategoryRepository.save(new SolutionCategory(
+                            null,
+                            "Decoration",
+                            "Event decoration services",
+                            null,
+                            Status.APPROVED
+                    )));
+
             // Proveri i dodaj EventType
             EventType partyType = eventTypeRepository.findByName("Party")
-                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Party", "Social gathering", true, null)));
+                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Party", "Social gathering", true, decorationCategory)));
             EventType theatreType = eventTypeRepository.findByName("Theatre")
-                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Theatre", "Performing arts", true, null)));
+                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Theatre", "Performing arts", true, decorationCategory)));
 
             Admin admin = (Admin) userRepository.findByEmail("admin@gmail.com").orElseGet(() -> {
                 Admin newAdmin = new Admin();
@@ -36,6 +48,7 @@ public class DatabaseSeeder {
                 newAdmin.setFirstName("Admin");
                 newAdmin.setLastName("Admin");
                 newAdmin.setPassword("admin");
+                newAdmin.setCity("Novi Sad");
                 newAdmin.setVerified(true);
                 newAdmin.setActive(true);
                 newAdmin.setActivationToken("7e2b4df2-9fe6-44df-9d93-3d20d5e246fc");
@@ -50,6 +63,7 @@ public class DatabaseSeeder {
                         newOrganizer.setName("Ana");
                         newOrganizer.setSurname("Jovanovic");
                         newOrganizer.setProfilePhoto("assets/images/profile1.png");
+                        newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
                         newOrganizer.setCity("Belgrade");
@@ -66,6 +80,7 @@ public class DatabaseSeeder {
                         newOrganizer.setName("Milos");
                         newOrganizer.setSurname("Nikolic");
                         newOrganizer.setProfilePhoto("assets/images/profile2.png");
+                        newOrganizer.setCity("Belgrade");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
                         newOrganizer.setCity("Novi Sad");
@@ -81,6 +96,7 @@ public class DatabaseSeeder {
                         newOrganizer.setName("Nikolina");
                         newOrganizer.setSurname("Petrovic");
                         newOrganizer.setProfilePhoto("assets/images/profile3.png");
+                        newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
@@ -95,6 +111,7 @@ public class DatabaseSeeder {
                         newOrganizer.setName("Dragana");
                         newOrganizer.setSurname("Milivojevic");
                         newOrganizer.setProfilePhoto("assets/images/profile4.png");
+                        newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
@@ -109,6 +126,7 @@ public class DatabaseSeeder {
                         newOrganizer.setName("Nikola");
                         newOrganizer.setSurname("Matijevic");
                         newOrganizer.setProfilePhoto("assets/images/profile5.png");
+                        newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
                         newOrganizer.setSuspended(false);
@@ -122,7 +140,7 @@ public class DatabaseSeeder {
             }
 
             if (eventRepository.findByName("Horse Riding").isEmpty()) {
-                eventRepository.save(new Event(null, organizer2, "Horse Riding", "For horse lovers, free entry", 30, "open", "Novi Sad",
+                eventRepository.save(new Event(null, organizer, "Horse Riding", "For horse lovers, free entry", 30, "open", "Novi Sad",
                         LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event2.png", partyType));
             }
 
@@ -132,7 +150,7 @@ public class DatabaseSeeder {
             }
 
             if (eventRepository.findByName("Rooftop theatre").isEmpty()) {
-                eventRepository.save(new Event(null, organizer4, "Rooftop theatre", "Free entry, bring popcorn and drinks!", 30, "open", "Novi Sad",
+                eventRepository.save(new Event(null, organizer, "Rooftop theatre", "Free entry, bring popcorn and drinks!", 30, "open", "Novi Sad",
                         LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25),"assets/images/event3.png", partyType));
             }
 
@@ -147,15 +165,7 @@ public class DatabaseSeeder {
             }
 
 
-            // Dodavanje SolutionCategory
-            SolutionCategory decorationCategory = solutionCategoryRepository.findByName("Decoration")
-                    .orElseGet(() -> solutionCategoryRepository.save(new SolutionCategory(
-                            null,
-                            "Decoration",
-                            "Event decoration services",
-                            null,
-                            Status.APPROVED
-                    )));
+
 
             SolutionCategory cateringCategory = solutionCategoryRepository.findByName("Catering")
                     .orElseGet(() -> solutionCategoryRepository.save(new SolutionCategory(
@@ -192,6 +202,7 @@ public class DatabaseSeeder {
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("Prestige Champagne");
                         newProvider.setDescription("Sparkling wine");
+                        newProvider.setCity("Novi Sad");
                         newProvider.setActive(true);
                         newProvider.setVerified(true);
                         newProvider.setPhotos(List.of("assets/images/profile2.png"));
@@ -204,6 +215,7 @@ public class DatabaseSeeder {
                         newProvider.setEmail("lighting1@example.com");
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("Freedom Riders");
+                        newProvider.setCity("Novi Sad");
                         newProvider.setDescription("Galop beyond limits");
                         newProvider.setActive(true);
                         newProvider.setVerified(true);
@@ -217,6 +229,7 @@ public class DatabaseSeeder {
                         newProvider.setEmail("music@example.com");
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("VibeX");
+                        newProvider.setCity("Novi Sad");
                         newProvider.setDescription("DJ and live band services for weddings and parties.");
                         newProvider.setPhotos(List.of("dj1.png", "band1.png"));
                         newProvider.setActive(true);
@@ -230,6 +243,7 @@ public class DatabaseSeeder {
                         newProvider.setEmail("food@example.com");
                         newProvider.setPassword("securepassword");
                         newProvider.setCompanyName("Majestic bites");
+                        newProvider.setCity("Novi Sad");
                         newProvider.setDescription("Taste the Majesty, savor the moment");
                         newProvider.setPhotos(List.of("dj1.png", "band1.png"));
                         newProvider.setActive(true);
@@ -324,6 +338,10 @@ public class DatabaseSeeder {
                 weddingDJ.setAvailable(true);
                 weddingDJ.setVisible(true);
                 weddingDJ.setDeleted(false);
+                weddingDJ.setDuration(Duration.ofHours(2));
+                weddingDJ.setCancellationPeriod(Duration.ofHours(1));
+                weddingDJ.setReservationPeriod(Duration.ofHours(4));
+                weddingDJ.setReservationType(ReservationType.MANUAL);
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);
                 weddingDJ.setProvider(provider3);
@@ -341,6 +359,11 @@ public class DatabaseSeeder {
                 weddingDJ.setAvailable(true);
                 weddingDJ.setVisible(true);
                 weddingDJ.setDeleted(false);
+                weddingDJ.setCancellationPeriod(Duration.ofHours(1));
+                weddingDJ.setReservationPeriod(Duration.ofHours(4));
+                weddingDJ.setMaxDuration(Duration.ofHours(3));
+                weddingDJ.setMinDuration(Duration.ofHours(1));
+                weddingDJ.setReservationType(ReservationType.MANUAL);
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);
                 weddingDJ.setProvider(provider3);
@@ -359,6 +382,10 @@ public class DatabaseSeeder {
                 weddingDJ.setAvailable(true);
                 weddingDJ.setVisible(true);
                 weddingDJ.setDeleted(false);
+                weddingDJ.setDuration(Duration.ofHours(2));
+                weddingDJ.setCancellationPeriod(Duration.ofHours(1));
+                weddingDJ.setReservationPeriod(Duration.ofHours(4));
+                weddingDJ.setReservationType(ReservationType.MANUAL);
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);
                 weddingDJ.setProvider(provider2);
@@ -377,6 +404,10 @@ public class DatabaseSeeder {
                 weddingDJ.setAvailable(true);
                 weddingDJ.setVisible(true);
                 weddingDJ.setDeleted(false);
+                weddingDJ.setDuration(Duration.ofHours(2));
+                weddingDJ.setCancellationPeriod(Duration.ofHours(1));
+                weddingDJ.setReservationPeriod(Duration.ofHours(4));
+                weddingDJ.setReservationType(ReservationType.MANUAL);
                 weddingDJ.setStatus(Status.APPROVED);
                 weddingDJ.setCategory(musicCategory);
                 weddingDJ.setProvider(provider3);

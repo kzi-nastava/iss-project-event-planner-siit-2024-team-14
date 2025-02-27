@@ -37,6 +37,11 @@ public class EventService {
         return eventRepository.findAllCategories();
     }
 
+    public List<EventDTO> findEventsByOrganizer(Integer organizerId) {
+        List<Event> events =  eventRepository.findByOrganizerId(organizerId);
+        return mapToDTO(events);
+    }
+
     public Page<EventDTO> getFilteredEvents(String startDate, String endDate, String category, String location, Pageable pageable) {
         LocalDate start = (startDate != null && !startDate.isEmpty()) ? LocalDate.parse(startDate) : null;
         LocalDate end = (endDate != null && !endDate.isEmpty()) ? LocalDate.parse(endDate) : null;

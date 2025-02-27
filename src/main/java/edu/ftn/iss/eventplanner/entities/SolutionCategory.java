@@ -35,8 +35,8 @@ public class SolutionCategory {
     @Column(name = "description", nullable = false, length = 500)
     private String description;
 
-    @OneToMany(mappedBy = "solutionCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "solutionCategory", cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.EAGER)
     private List<EventType> eventTypes = new ArrayList<>();
 
-    private Status status;      // when new category is requested
+    private Status status;
 }

@@ -4,22 +4,23 @@ import lombok.*;
 import jakarta.persistence.*;
 
 import java.sql.Time;
+import java.time.Duration;
 import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class BookingServices {
+public class BookingService {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private LocalDate bookingDate;
-    private boolean isConfirmed;
+    private boolean confirmed;
     private Time startTime;
-    private Time endTime;
+    private Duration duration;
 
     @ManyToOne
     @JoinColumn(name = "service_id")
