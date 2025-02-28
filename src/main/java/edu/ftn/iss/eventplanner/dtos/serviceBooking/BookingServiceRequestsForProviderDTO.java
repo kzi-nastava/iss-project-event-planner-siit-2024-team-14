@@ -9,8 +9,8 @@ import java.time.LocalDate;
 @Data
 public class BookingServiceRequestsForProviderDTO {
     private Integer id;
-    private Integer serviceId;
-    private Integer eventId;
+    private String service;
+    private String event;
     private LocalDate bookingDate;
     private String startTime;
     private Long duration;

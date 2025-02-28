@@ -66,6 +66,12 @@ public class BookingServiceController {
         return ResponseEntity.ok(requests);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<BookingServiceRequestsForProviderDTO>> getAllBookings() {
+        List<BookingServiceRequestsForProviderDTO> requests = bookingServiceService.getAllBookings();
+        return ResponseEntity.ok(requests);
+    }
+
 
 
 

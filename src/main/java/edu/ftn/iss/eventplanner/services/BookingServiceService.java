@@ -204,11 +204,17 @@ public class BookingServiceService {
                 .collect(Collectors.toList());
     }
 
+    public List<BookingServiceRequestsForProviderDTO> getAllBookings() {
+        return bookingServiceRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
     private BookingServiceRequestsForProviderDTO mapToDTO(BookingService booking) {
         BookingServiceRequestsForProviderDTO dto = new BookingServiceRequestsForProviderDTO();
         dto.setId(booking.getId());
-        dto.setServiceId(booking.getService().getId());
-        dto.setEventId(booking.getEvent().getId());
+        dto.setService(booking.getService().getName());
+        dto.setEvent(booking.getEvent().getName());
         dto.setBookingDate(booking.getBookingDate());
         dto.setStartTime(booking.getStartTime().toString());
         dto.setDuration(booking.getDuration().toMinutes());
