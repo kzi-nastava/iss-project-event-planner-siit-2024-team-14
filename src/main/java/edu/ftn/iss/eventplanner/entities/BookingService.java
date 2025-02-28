@@ -1,5 +1,6 @@
 package edu.ftn.iss.eventplanner.entities;
 
+import edu.ftn.iss.eventplanner.enums.Status;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -18,7 +19,7 @@ public class BookingService {
     private Integer id;
 
     private LocalDate bookingDate;
-    private boolean confirmed;
+    private Status confirmed;
     private Time startTime;
     private Duration duration;
 

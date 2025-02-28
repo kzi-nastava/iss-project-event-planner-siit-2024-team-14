@@ -12,13 +12,10 @@ import java.util.Optional;
 
 @Repository
 public interface SolutionRepository extends JpaRepository<Solution, Integer> {
-    // Pronaći prva 5 događaja po lokaciji
     List<Solution> findFirst5ByLocation(String location);
 
-    // Pronaći događaj po imenu
     Optional<Solution> findByName(String name);
 
-    // Pronaći događaje po lokaciji
     List<Solution> findByLocation(String location);
 
     @Query("SELECT DISTINCT s.location FROM Solution s WHERE s.isDeleted = false AND s.isVisible = true")
@@ -29,7 +26,7 @@ public interface SolutionRepository extends JpaRepository<Solution, Integer> {
 
     @Query("SELECT s FROM Solution s WHERE " +
             "(:category IS NULL OR s.category.name = :category) AND " +
-            "(:type IS NULL OR TYPE(s) = :type) AND " +  // Ovde sada očekuje Class objekat
+            "(:type IS NULL OR TYPE(s) = :type) AND " +
             "(:minPrice IS NULL OR s.price >= :minPrice) AND " +
             "(:maxPrice IS NULL OR s.price <= :maxPrice) AND " +
             "(:location IS NULL OR s.location = :location) AND " +

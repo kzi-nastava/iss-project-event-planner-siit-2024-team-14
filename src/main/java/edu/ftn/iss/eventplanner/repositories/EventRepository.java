@@ -15,13 +15,10 @@ import java.util.Optional;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
 
-    // Pronaći prva 5 događaja po lokaciji
     List<Event> findFirst5ByLocationOrderByStartDateDesc(String location);
 
-    // Pronaći događaj po imenu
     Optional<Event> findByName(String name);
 
-    // Pronaći događaje po lokaciji
     List<Event> findByLocation(String location);
 
     @Query("SELECT DISTINCT e.location FROM Event e")
