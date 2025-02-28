@@ -1,10 +1,9 @@
 package edu.ftn.iss.eventplanner.services;
-
-import edu.ftn.iss.eventplanner.dtos.serviceBooking.BookingServiceRequestDTO;
-import edu.ftn.iss.eventplanner.entities.BookingService;
-import edu.ftn.iss.eventplanner.entities.Event;
-import edu.ftn.iss.eventplanner.entities.Notification;
-import edu.ftn.iss.eventplanner.entities.User;
+import edu.ftn.iss.eventplanner.dtos.serviceBooking.ApproveRequestDTO;
+import edu.ftn.iss.eventplanner.dtos.serviceBooking.BookingServiceRequestsForProviderDTO;
+import edu.ftn.iss.eventplanner.entities.*;
+import edu.ftn.iss.eventplanner.enums.ReservationType;
+import edu.ftn.iss.eventplanner.enums.Status;
 import edu.ftn.iss.eventplanner.repositories.BookingServiceRepository;
 import edu.ftn.iss.eventplanner.repositories.EventRepository;
 import edu.ftn.iss.eventplanner.repositories.NotificationRepository;
@@ -16,10 +15,10 @@ import org.springframework.stereotype.Service;
 import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -89,25 +88,33 @@ public class BookingServiceService {
 
 
     public BookingService createBooking(Integer serviceId, Integer eventId, LocalDate bookingDate, Time startTime, Duration duration) {
-        // Dohvatamo servis i događaj iz baze
         edu.ftn.iss.eventplanner.entities.Service service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new IllegalArgumentException("Service not found"));
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
 
-        // Kreiramo i čuvamo novu rezervaciju
         BookingService booking = new BookingService();
         booking.setService(service);
         booking.setEvent(event);
         booking.setBookingDate(bookingDate);
-        booking.setStartTime(startTime);  // Čuvamo kao Time
-        booking.setDuration(duration);  // Čuvamo kao Duration
-        booking.setConfirmed(true);
+        booking.setStartTime(startTime);
+        booking.setDuration(duration);
+        if (service.getReservationType() == ReservationType.MANUAL) {
+            booking.setConfirmed(Status.PENDING);
+
+            Notification notification = new Notification();
+            notification.setMessage("Check booking service request you have one new pending request");
+            notification.setUser(service.getProvider());
+            notification.setDate(LocalDate.now());
+            notification.setRead(false);
+            notificationRepository.save(notification);
+        }else{
+            booking.setConfirmed(Status.APPROVED);
+        }
 
         bookingServiceRepository.save(booking);
 
-        // Slanje obaveštenja putem mejla
         try {
             emailService.sendBookingNotification(event.getOrganizer().getEmail(), event.getName(), service.getName(), bookingDate, startTime, duration);
             emailService.sendBookingNotification(service.getProvider().getEmail(), event.getName(), service.getName(), bookingDate, startTime, duration);
@@ -151,5 +158,62 @@ public class BookingServiceService {
                 System.out.println("Notifikacija kreirana za: " + organizer.getEmail());
             }
         }
+
+    }
+
+    public BookingServiceRequestsForProviderDTO deleteRequest(ApproveRequestDTO dto) {
+
+        BookingService booking = bookingServiceRepository.findById(dto.getRequestId())
+                .orElseThrow(() -> new IllegalArgumentException("Booking request not found with ID: " + dto.getRequestId()));
+        booking.setConfirmed(Status.REJECTED);
+        bookingServiceRepository.save(booking);
+
+        Notification notification = new Notification();
+        notification.setDate(LocalDate.now());
+        notification.setRead(false);
+        notification.setUser(booking.getEvent().getOrganizer());
+        notification.setEvent(booking.getEvent());
+        notification.setMessage("Your reservation for service: " + booking.getService().getName()+ " , for your event: " + booking.getEvent().getName() + "has been rejected");
+        notificationRepository.save(notification);
+
+        return mapToDTO(booking);
+    }
+
+    public BookingServiceRequestsForProviderDTO approveRequest(ApproveRequestDTO dto) {
+        BookingService booking = bookingServiceRepository.findById(dto.getRequestId())
+                .orElseThrow(() -> new IllegalArgumentException("Booking request not found with ID: " + dto.getRequestId()));
+
+        booking.setConfirmed(Status.APPROVED);
+        bookingServiceRepository.save(booking);
+
+        Notification notification = new Notification();
+        notification.setDate(LocalDate.now());
+        notification.setRead(false);
+        notification.setUser(booking.getEvent().getOrganizer());
+        notification.setEvent(booking.getEvent());
+        notification.setMessage("Your reservation for service: " + booking.getService().getName() +
+                ", for your event: " + booking.getEvent().getName() + " has been accepted");
+        notificationRepository.save(notification);
+
+        return mapToDTO(booking);
+    }
+
+    public List<BookingServiceRequestsForProviderDTO> getRequests() {
+        return bookingServiceRepository.findByConfirmed(Status.PENDING).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private BookingServiceRequestsForProviderDTO mapToDTO(BookingService booking) {
+        BookingServiceRequestsForProviderDTO dto = new BookingServiceRequestsForProviderDTO();
+        dto.setId(booking.getId());
+        dto.setServiceId(booking.getService().getId());
+        dto.setEventId(booking.getEvent().getId());
+        dto.setBookingDate(booking.getBookingDate());
+        dto.setStartTime(booking.getStartTime().toString());
+        dto.setDuration(booking.getDuration().toMinutes());
+        dto.setConfirmed(booking.getConfirmed());
+
+        return dto;
     }
 }

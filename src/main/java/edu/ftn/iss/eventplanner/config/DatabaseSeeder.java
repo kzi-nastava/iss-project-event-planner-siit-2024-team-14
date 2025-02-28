@@ -167,7 +167,7 @@ public class DatabaseSeeder {
 
             if (eventRepository.findByName("Proba").isEmpty()) {
                 eventRepository.save(new Event(null, organizer, "Proba", "For horse lovers, free entry", 30, "open", "Novi Sad",
-                        LocalDate.of(2025, 2, 25), LocalDate.of(2025, 2, 25), "assets/images/event2.png", partyType));
+                        LocalDate.of(2025, 2, 27), LocalDate.of(2025, 2, 28), "assets/images/event2.png", partyType));
             }
 
 
