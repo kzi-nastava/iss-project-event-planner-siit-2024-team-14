@@ -1,7 +1,12 @@
 package edu.ftn.iss.eventplanner.entities;
 
+import edu.ftn.iss.eventplanner.enums.Status;
 import lombok.*;
 import jakarta.persistence.*;
+
+import java.sql.Time;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,8 +22,12 @@ public class SolutionBooking {
     @JoinColumn(name = "solution_id")
     private Solution solution;
 
-    private LocalDateTime startDateTime;
-    private LocalDateTime endDateTime;
+    private LocalDate bookingDate;
+    private Status confirmed;
+    private Time startTime;
+    private Duration duration;
 
-    private String bookedBy;
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 }

@@ -4,10 +4,7 @@ import edu.ftn.iss.eventplanner.dtos.serviceBooking.BookingServiceRequestsForPro
 import edu.ftn.iss.eventplanner.entities.*;
 import edu.ftn.iss.eventplanner.enums.ReservationType;
 import edu.ftn.iss.eventplanner.enums.Status;
-import edu.ftn.iss.eventplanner.repositories.BookingServiceRepository;
-import edu.ftn.iss.eventplanner.repositories.EventRepository;
-import edu.ftn.iss.eventplanner.repositories.NotificationRepository;
-import edu.ftn.iss.eventplanner.repositories.ServiceRepository;
+import edu.ftn.iss.eventplanner.repositories.*;
 import jakarta.mail.MessagingException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -28,13 +25,15 @@ public class BookingServiceService {
     private final ServiceRepository serviceRepository;
     private final EmailService emailService;
     private final NotificationRepository notificationRepository;
+    private final SolutionBookingRepository solutionRepository;
 
-    public BookingServiceService(BookingServiceRepository bookingServiceRepository, EventRepository eventRepository, ServiceRepository serviceRepository, EmailService emailService, NotificationRepository notificationRepository) {
+    public BookingServiceService(BookingServiceRepository bookingServiceRepository, EventRepository eventRepository, ServiceRepository serviceRepository, EmailService emailService, NotificationRepository notificationRepository, SolutionBookingRepository solutionRepository) {
         this.bookingServiceRepository = bookingServiceRepository;
         this.eventRepository = eventRepository;
         this.serviceRepository = serviceRepository;
         this.emailService = emailService;
         this.notificationRepository = notificationRepository;
+        this.solutionRepository = solutionRepository;
     }
 
     public List<String> getAvailableStartTimes(Integer serviceId, LocalDate date, Integer optionalDuration) {
@@ -111,6 +110,14 @@ public class BookingServiceService {
             notificationRepository.save(notification);
         }else{
             booking.setConfirmed(Status.APPROVED);
+            SolutionBooking solutionBooking = new SolutionBooking();
+            solutionBooking.setBookingDate(bookingDate);
+            solutionBooking.setStartTime(startTime);
+            solutionBooking.setDuration(duration);
+            solutionBooking.setEvent(event);
+            solutionBooking.setConfirmed(Status.APPROVED);
+            solutionBooking.setSolution(service);
+            solutionRepository.save(solutionBooking);
         }
 
         bookingServiceRepository.save(booking);
@@ -125,24 +132,21 @@ public class BookingServiceService {
         return booking;
     }
 
-    // Zakazani task koji se izvršava na svakih 5 minuta i kreira notifikacije za rezervacije koje su 1h pre početka
     @Scheduled(cron = "0 0,30 * * * *")
     public void createNotificationsForUpcomingBookings() {
-        LocalTime now = LocalTime.now(); // Trenutno vreme
-        LocalTime oneHourLater = now.plusHours(1); // Vreme za 1h kasnije
-        LocalDate today = LocalDate.now(); // Trenutni datum
+        LocalTime now = LocalTime.now();
+        LocalTime oneHourLater = now.plusHours(1);
+        LocalDate today = LocalDate.now();
 
         // Konvertujemo LocalTime u Time (SQL format)
         Time sqlOneHourLater = Time.valueOf(oneHourLater);
 
-        // Pronalazimo sve rezervacije koje počinju tačno za 1 sat
         List<BookingService> upcomingBookings = bookingServiceRepository.findBookingsStartingAt(sqlOneHourLater);
         for (BookingService booking : upcomingBookings) {
             Event event = booking.getEvent();
             User organizer = event.getOrganizer();
             System.out.println("Pronadjen event"+ event.getName());
 
-            // Proveravamo da li notifikacija već postoji (da ne bismo duplirali)
             boolean alreadyExists = notificationRepository.existsByUserAndEventAndMessageContaining(organizer, event, "Reminder");
             if (!alreadyExists) {
                 System.out.println("Pravimo event"+ event.getName());
@@ -194,6 +198,15 @@ public class BookingServiceService {
         notification.setMessage("Your reservation for service: " + booking.getService().getName() +
                 ", for your event: " + booking.getEvent().getName() + " has been accepted");
         notificationRepository.save(notification);
+
+        SolutionBooking solutionBooking = new SolutionBooking();
+        solutionBooking.setBookingDate(booking.getBookingDate());
+        solutionBooking.setStartTime(booking.getStartTime());
+        solutionBooking.setDuration(booking.getDuration());
+        solutionBooking.setEvent(booking.getEvent());
+        solutionBooking.setConfirmed(Status.APPROVED);
+        solutionBooking.setSolution(booking.getService());
+        solutionRepository.save(solutionBooking);
 
         return mapToDTO(booking);
     }
