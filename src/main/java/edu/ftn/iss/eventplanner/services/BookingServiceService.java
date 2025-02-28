@@ -184,31 +184,55 @@ public class BookingServiceService {
     }
 
     public BookingServiceRequestsForProviderDTO approveRequest(ApproveRequestDTO dto) {
-        BookingService booking = bookingServiceRepository.findById(dto.getRequestId())
-                .orElseThrow(() -> new IllegalArgumentException("Booking request not found with ID: " + dto.getRequestId()));
+        try {
+            BookingService booking = bookingServiceRepository.findById(dto.getRequestId())
+                    .orElseThrow(() -> new IllegalArgumentException("Booking request not found with ID: " + dto.getRequestId()));
 
-        booking.setConfirmed(Status.APPROVED);
-        bookingServiceRepository.save(booking);
+            boolean isOverlapping = checkForOverlappingBookings(booking.getService().getId(), booking.getBookingDate(), booking.getStartTime(), booking.getDuration());
 
-        Notification notification = new Notification();
-        notification.setDate(LocalDate.now());
-        notification.setRead(false);
-        notification.setUser(booking.getEvent().getOrganizer());
-        notification.setEvent(booking.getEvent());
-        notification.setMessage("Your reservation for service: " + booking.getService().getName() +
-                ", for your event: " + booking.getEvent().getName() + " has been accepted");
-        notificationRepository.save(notification);
+            if (isOverlapping) {
+                throw new IllegalArgumentException("The selected time slot is already booked for another event.");
+            }
 
-        SolutionBooking solutionBooking = new SolutionBooking();
-        solutionBooking.setBookingDate(booking.getBookingDate());
-        solutionBooking.setStartTime(booking.getStartTime());
-        solutionBooking.setDuration(booking.getDuration());
-        solutionBooking.setEvent(booking.getEvent());
-        solutionBooking.setConfirmed(Status.APPROVED);
-        solutionBooking.setSolution(booking.getService());
-        solutionRepository.save(solutionBooking);
+            booking.setConfirmed(Status.APPROVED);
+            bookingServiceRepository.save(booking);
 
-        return mapToDTO(booking);
+            Notification notification = new Notification();
+            notification.setDate(LocalDate.now());
+            notification.setRead(false);
+            notification.setUser(booking.getEvent().getOrganizer());
+            notification.setEvent(booking.getEvent());
+            notification.setMessage("Your reservation for service: " + booking.getService().getName() +
+                    ", for your event: " + booking.getEvent().getName() + " has been accepted");
+            notificationRepository.save(notification);
+
+            SolutionBooking solutionBooking = new SolutionBooking();
+            solutionBooking.setBookingDate(booking.getBookingDate());
+            solutionBooking.setStartTime(booking.getStartTime());
+            solutionBooking.setDuration(booking.getDuration());
+            solutionBooking.setEvent(booking.getEvent());
+            solutionBooking.setConfirmed(Status.APPROVED);
+            solutionBooking.setSolution(booking.getService());
+            solutionRepository.save(solutionBooking);
+
+            return mapToDTO(booking);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unable to approve booking. The selected time slot is already booked. Please contact the event organizer or reject the request.");
+        }
+    }
+
+
+    private boolean checkForOverlappingBookings(Integer serviceId, LocalDate bookingDate, Time startTime, Duration duration) {
+        List<BookingService> existingBookings = bookingServiceRepository.findConfirmedBookings(serviceId, bookingDate);
+        for (BookingService existingBooking : existingBookings) {
+            LocalTime existingEndTime = existingBooking.getStartTime().toLocalTime().plusMinutes(existingBooking.getDuration().toMinutes());
+            LocalTime newEndTime = startTime.toLocalTime().plusMinutes(duration.toMinutes());
+
+            if (startTime.toLocalTime().isBefore(existingEndTime) && newEndTime.isAfter(existingBooking.getStartTime().toLocalTime())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<BookingServiceRequestsForProviderDTO> getRequests() {
