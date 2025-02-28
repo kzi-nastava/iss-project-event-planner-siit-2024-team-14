@@ -29,8 +29,8 @@ public class SolutionService {
         return mapToDTO(solutions);
     }
 
-    public List<SolutionDTO> getSolutions(String city) {
-        List<Solution> solutions = solutionRepository.findByLocation(city);
+    public List<SolutionDTO> getSolutions() {
+        List<Solution> solutions = solutionRepository.findAll();
         return mapToDTO(solutions);
     }
 

@@ -24,8 +24,8 @@ public class EventService {
         return mapToDTO(events);
     }
 
-    public List<EventDTO> getEvents(String city) {
-        List<Event> events = eventRepository.findByLocation(city);
+    public List<EventDTO> getEvents() {
+        List<Event> events = eventRepository.findAll();
         return mapToDTO(events);
     }
 

@@ -33,8 +33,8 @@ public class EventController {
     }
 
     @GetMapping("api/events/all")
-    public ResponseEntity<List<EventDTO>> getAllEvents( @RequestParam String city) {
-        return ResponseEntity.ok(eventService.getEvents(city));
+    public ResponseEntity<List<EventDTO>> getAllEvents() {
+        return ResponseEntity.ok(eventService.getEvents());
     }
 
     @GetMapping("api/events/locations")
