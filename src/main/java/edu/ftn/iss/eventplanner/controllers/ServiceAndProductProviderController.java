@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.MalformedURLException;
 import java.util.List;
 
 @RestController
@@ -40,12 +39,14 @@ public class ServiceAndProductProviderController {
     }
 
     @GetMapping("/get-photos/{id}")
-    public ResponseEntity<List<Resource>> getPhotos(@PathVariable int id) {
-        try {
-            return providerService.getPhotos(id);  // Call the service method
-        } catch (MalformedURLException e) {
-            return ResponseEntity.status(500).build();  // Handle URL exception
+    public ResponseEntity<List<String>> getPhotos(@PathVariable int id) {
+        List<String> photoUrls = providerService.getPhotos(id);
+
+        if (photoUrls.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
+
+        return ResponseEntity.ok(photoUrls);
     }
 
     @PutMapping("/update")
@@ -57,5 +58,11 @@ public class ServiceAndProductProviderController {
         return ResponseEntity.ok(updatedProviderDTO);
     }
 
-    //update-photos
+    @PutMapping("/update-photo/{id}")
+    public ResponseEntity<RegisterResponseDTO> updatePhoto(@PathVariable("id") int userId,
+                                                           @RequestParam("photo") MultipartFile photo,
+                                                           @RequestParam("photoIndex") int photoIndex) {
+
+        return providerService.updatePhoto(userId, photo, photoIndex);
+    }
 }
