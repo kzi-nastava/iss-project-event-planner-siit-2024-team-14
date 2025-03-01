@@ -1,14 +1,19 @@
 package edu.ftn.iss.eventplanner.controllers;
 
+import edu.ftn.iss.eventplanner.dtos.GetProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
+import edu.ftn.iss.eventplanner.dtos.update.UpdateProviderDTO;
+import edu.ftn.iss.eventplanner.dtos.update.UpdatedProviderDTO;
 import edu.ftn.iss.eventplanner.services.ServiceAndProductProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 @RestController
@@ -28,4 +33,29 @@ public class ServiceAndProductProviderController {
     public ResponseEntity<RegisterResponseDTO> activate(@RequestParam("token") String token) {
         return providerService.activate(token);
     }
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity<GetProviderDTO> get(@PathVariable("id") int id) {
+        return providerService.get(id);
+    }
+
+    @GetMapping("/get-photos/{id}")
+    public ResponseEntity<List<Resource>> getPhotos(@PathVariable int id) {
+        try {
+            return providerService.getPhotos(id);  // Call the service method
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(500).build();  // Handle URL exception
+        }
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<UpdatedProviderDTO> update (@RequestBody UpdateProviderDTO updateProviderDTO) {
+        Integer userId = updateProviderDTO.getId();
+
+        UpdatedProviderDTO updatedProviderDTO = providerService.update(userId, updateProviderDTO);
+
+        return ResponseEntity.ok(updatedProviderDTO);
+    }
+
+    //update-photos
 }

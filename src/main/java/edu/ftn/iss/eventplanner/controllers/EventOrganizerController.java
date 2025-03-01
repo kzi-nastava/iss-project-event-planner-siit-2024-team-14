@@ -38,14 +38,15 @@ public class EventOrganizerController {
         return organizerService.get(id);
     }
 
-    @GetMapping("/get-photo/{filename}")
-    public ResponseEntity<Resource> getProfilePhoto(@PathVariable String filename) throws MalformedURLException {
-        return organizerService.getProfilePhoto(filename);
+    @GetMapping("/get-photo/{id}")
+    public ResponseEntity<Resource> getProfilePhoto(@PathVariable("id") int id) throws MalformedURLException {
+        System.out.println("ENTERED getProfilePhoto CONTROLLER");
+        return organizerService.getProfilePhoto(id);
     }
 
     @PutMapping("/update")
     public ResponseEntity<UpdatedOrganizerDTO> update(@RequestBody UpdateOrganizerDTO updateOrganizerDTO) {
-        Integer userId = updateOrganizerDTO.getId(); // Get the id from the request body
+        Integer userId = updateOrganizerDTO.getId();
 
         UpdatedOrganizerDTO updatedOrganizer = organizerService.update(userId, updateOrganizerDTO);
 

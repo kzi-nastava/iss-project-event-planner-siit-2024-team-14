@@ -1,20 +1,29 @@
 package edu.ftn.iss.eventplanner.services;
 
+import edu.ftn.iss.eventplanner.dtos.GetProviderDTO;
+import edu.ftn.iss.eventplanner.dtos.get.ProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.update.UpdateProviderDTO;
+import edu.ftn.iss.eventplanner.dtos.update.UpdatedProviderDTO;
 import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
 import edu.ftn.iss.eventplanner.repositories.ServiceAndProductProviderRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -122,8 +131,87 @@ public class ServiceAndProductProviderService {
         return ResponseEntity.ok(new RegisterResponseDTO("Your email is verified successfully!", true));
     }
 
-    // get
-    // getPhotos
-    // update
+    public ResponseEntity<GetProviderDTO> get(int id) {
+        ServiceAndProductProvider provider = providerRepository.findById(id);
+
+        if (provider == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ProviderDTO providerDTO = new ProviderDTO();
+        providerDTO.setId(provider.getId());
+        providerDTO.setEmail(provider.getEmail());
+        providerDTO.setName(provider.getCompanyName());
+        providerDTO.setDescription(provider.getDescription());
+        providerDTO.setCity(provider.getCity());
+        providerDTO.setAddress(provider.getAddress());
+        providerDTO.setPhoneNumber(String.valueOf(provider.getPhoneNumber()));
+        providerDTO.setRole("ServiceAndProductProvider");
+        providerDTO.setPhotos(providerDTO.getPhotos());
+
+        GetProviderDTO getProviderDTO = new GetProviderDTO();
+        getProviderDTO.setMessage("ok");
+        getProviderDTO.setProvider(providerDTO);
+
+        return ResponseEntity.ok(getProviderDTO);
+    }
+
+    public ResponseEntity<List<Resource>> getPhotos(int id) throws MalformedURLException {
+        ServiceAndProductProvider provider = providerRepository.findById(id);
+        List<String> photos = provider.getPhotos();
+        List<Resource> photoResources = new ArrayList<>();
+
+        try {
+            for (String photo : photos) {
+                Path path = Paths.get("src/main/resources/static/photos/" + photo);
+                Resource resource = new UrlResource(path.toUri());
+
+                if (resource.exists() || resource.isReadable()) {
+                    photoResources.add(resource); // Add all readable resources to the list
+                    System.out.println(resource);
+                }
+            }
+
+            if (photoResources.isEmpty()) {
+                return ResponseEntity.notFound().build(); // Return 404 if no photos are found
+            }
+
+            return ResponseEntity.ok().body(photoResources);
+
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(500).body(null); // Return internal server error in case of malformed URL
+        }
+    }
+
+
+
+    public UpdatedProviderDTO update(Integer userId, UpdateProviderDTO updateDTO) {
+        Optional<ServiceAndProductProvider> providerOptional = providerRepository.findById(userId);
+
+        if (providerOptional.isPresent()) {
+            ServiceAndProductProvider provider = providerOptional.get();
+
+            provider.setCompanyName(updateDTO.getName());
+            provider.setDescription(updateDTO.getDescription());
+            provider.setAddress(updateDTO.getAddress());
+            provider.setCity(updateDTO.getCity());
+            provider.setPhoneNumber(Integer.parseInt(updateDTO.getPhoneNumber()));
+
+            ServiceAndProductProvider updatedProvider = providerRepository.save(provider);
+
+            UpdatedProviderDTO updatedDTO = new UpdatedProviderDTO();
+            updatedDTO.setName(updatedProvider.getCompanyName());
+            updatedDTO.setDescription(updatedProvider.getDescription());
+            updatedDTO.setAddress(updatedProvider.getAddress());
+            updatedDTO.setCity(updatedProvider.getCity());
+            updatedDTO.setPhoneNumber(Integer.parseInt(updateDTO.getPhoneNumber()));
+
+            return updatedDTO;
+        } else {
+            throw new RuntimeException("Provider with id " + userId + " not found");
+        }
+    }
+
     // updatePhotos
 }
+
