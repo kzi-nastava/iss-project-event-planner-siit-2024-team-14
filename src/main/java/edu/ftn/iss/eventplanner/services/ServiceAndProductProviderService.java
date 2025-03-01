@@ -12,7 +12,6 @@ import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,13 +20,11 @@ import java.net.MalformedURLException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 @Service
 public class ServiceAndProductProviderService {
@@ -55,26 +52,23 @@ public class ServiceAndProductProviderService {
                 return ResponseEntity.badRequest().body(new RegisterResponseDTO("Invalid phone number format!", false));
             }
 
-            // Initialize the photos list if it's not already set
             if (dto.getPhotos() == null) {
                 dto.setPhotos(new ArrayList<>());
             }
 
-            // If photos are provided, save them (maximum of 3 photos)
             if (photos != null && !photos.isEmpty()) {
                 String uploadDir = "src/main/resources/static/photos/";
-                Files.createDirectories(Paths.get(uploadDir));  // Create directories if they don't exist
+                Files.createDirectories(Paths.get(uploadDir));
 
                 // Loop through the photos, limit to 3, and save them
                 for (int i = 0; i < Math.min(photos.size(), 3); i++) {
                     MultipartFile photo = photos.get(i);
                     if (photo != null && !photo.isEmpty()) {
-                        String photoFilename = dto.getEmail() + (i + 1) + ".png"; // Name photo as email1.png, email2.png, email3.png
+                        String photoFilename = dto.getEmail() + (i + 1) + ".png";
                         Path filePath = Paths.get(uploadDir + photoFilename);
 
                         Files.write(filePath, photo.getBytes());  // Write photo to file
 
-                        // Add the filename to the list of photos in the DTO
                         dto.getPhotos().add(photoFilename);
                     }
                 }
@@ -156,33 +150,18 @@ public class ServiceAndProductProviderService {
         return ResponseEntity.ok(getProviderDTO);
     }
 
-    public ResponseEntity<List<Resource>> getPhotos(int id) throws MalformedURLException {
+    public List<String> getPhotos(int id) {
         ServiceAndProductProvider provider = providerRepository.findById(id);
-        List<String> photos = provider.getPhotos();
-        List<Resource> photoResources = new ArrayList<>();
 
-        try {
-            for (String photo : photos) {
-                Path path = Paths.get("src/main/resources/static/photos/" + photo);
-                Resource resource = new UrlResource(path.toUri());
-
-                if (resource.exists() || resource.isReadable()) {
-                    photoResources.add(resource); // Add all readable resources to the list
-                    System.out.println(resource);
-                }
-            }
-
-            if (photoResources.isEmpty()) {
-                return ResponseEntity.notFound().build(); // Return 404 if no photos are found
-            }
-
-            return ResponseEntity.ok().body(photoResources);
-
-        } catch (MalformedURLException e) {
-            return ResponseEntity.status(500).body(null); // Return internal server error in case of malformed URL
+        if (provider == null || provider.getPhotos().isEmpty()) {
+            return Collections.emptyList(); // Return empty list if no photos found
         }
-    }
 
+        // Convert filenames into accessible URLs
+        return provider.getPhotos().stream()
+                .map(photo -> "http://localhost:8080/photos/" + photo) // Change based on deployment
+                .collect(Collectors.toList());
+    }
 
 
     public UpdatedProviderDTO update(Integer userId, UpdateProviderDTO updateDTO) {
@@ -212,6 +191,53 @@ public class ServiceAndProductProviderService {
         }
     }
 
-    // updatePhotos
+    public ResponseEntity<RegisterResponseDTO> updatePhoto(int userId, MultipartFile photo, int photoIndex) {
+        try {
+            ServiceAndProductProvider provider = providerRepository.findById(userId);
+
+            if (provider == null) {
+                return ResponseEntity.badRequest().body(new RegisterResponseDTO("Provider not found!", false));
+            }
+
+            // Get the list of photos
+            List<String> photos = provider.getPhotos();
+
+            // Check if the photoIndex is valid
+            if (photoIndex < 0 || photoIndex >= photos.size()) {
+                return ResponseEntity.badRequest().body(new RegisterResponseDTO("Invalid photo index!", false));
+            }
+
+            // Get the current photo to delete
+            String oldPhoto = photos.get(photoIndex);  // Use the correct method to get the photo from the list
+            if (oldPhoto != null) {
+                Path oldPhotoPath = Paths.get("src/main/resources/static/photos/" + oldPhoto);
+                Files.deleteIfExists(oldPhotoPath);  // Delete the old photo if it exists
+            }
+
+            int index = photoIndex + 1;
+            // Generate a new photo filename, using the email + photoIndex to make it unique
+            String photoFilename = provider.getEmail()  + index + ".png";  // Unique filename per index
+            String uploadDir = "src/main/resources/static/photos/";
+
+            // Ensure the directory exists
+            Path filePath = Paths.get(uploadDir + photoFilename);
+            Files.createDirectories(filePath.getParent());
+
+            // Write the new photo to the file system
+            Files.write(filePath, photo.getBytes());
+
+            // Update the photos list with the new photo URL (add the new photo filename to the list)
+            photos.set(photoIndex, photoFilename);  // Update the photo at the given index
+
+            // Save the provider entity with the updated photos list
+            provider.setPhotos(photos);  // Update the list of photos in the provider
+            providerRepository.save(provider);
+
+            return ResponseEntity.ok(new RegisterResponseDTO("Photo updated successfully!", true));
+        } catch (IOException ex) {
+            return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to update photo!", false));
+        }
+    }
+
 }
 
