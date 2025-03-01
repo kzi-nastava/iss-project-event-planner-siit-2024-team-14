@@ -29,8 +29,8 @@ public class SolutionService {
         return mapToDTO(solutions);
     }
 
-    public List<SolutionDTO> getSolutions(String city) {
-        List<Solution> solutions = solutionRepository.findByLocation(city);
+    public List<SolutionDTO> getSolutions() {
+        List<Solution> solutions = solutionRepository.findAll();
         return mapToDTO(solutions);
     }
 
@@ -43,12 +43,13 @@ public class SolutionService {
     }
 
     public Page<SolutionDTO> getFilteredSolutions(String startDate, String endDate, String category,
-                                                  String type, Double minPrice, Double maxPrice, String location, int page, int size) {
+                                                  String type, Double minPrice, Double maxPrice,
+                                                  String location, int page, int size) {
 
-        LocalDateTime start = (startDate != null && !startDate.isEmpty()) ? LocalDate.parse(startDate).atStartOfDay() : null;
-        LocalDateTime end = (endDate != null && !endDate.isEmpty()) ? LocalDate.parse(endDate).atTime(23, 59) : null;
+        LocalDate start = (startDate != null && !startDate.isEmpty()) ? LocalDate.parse(startDate) : null;
+        LocalDate end = (endDate != null && !endDate.isEmpty()) ? LocalDate.parse(endDate) : null;
 
-        // Mapiraj string na Java klasu
+        // Mapiranje tipa rešenja
         Class<?> mappedType = null;
         if (type != null) {
             switch (type.toLowerCase()) {
@@ -61,16 +62,19 @@ public class SolutionService {
             }
         }
 
+        // Pronalazak zauzetih rešenja (samo ako su oba datuma prosleđena)
         List<Long> bookedSolutionIds = (start != null && end != null)
                 ? solutionBookingRepository.findBookedSolutionIds(start, end)
                 : null;
 
+        // Filtriranje dostupnih rešenja
         Page<Solution> solutionPage = solutionRepository.findAvailableSolutions(
                 category, mappedType, minPrice, maxPrice, location, bookedSolutionIds, PageRequest.of(page, size)
         );
 
         return solutionPage.map(this::mapToDTO);
     }
+
 
     private SolutionDTO mapToDTO(Solution solution) {
         SolutionDTO dto = new SolutionDTO();

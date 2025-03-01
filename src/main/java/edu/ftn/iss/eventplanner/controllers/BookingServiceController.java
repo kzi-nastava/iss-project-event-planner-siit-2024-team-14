@@ -1,6 +1,10 @@
 package edu.ftn.iss.eventplanner.controllers;
 
+import edu.ftn.iss.eventplanner.dtos.comments.ApproveCommentDTO;
+import edu.ftn.iss.eventplanner.dtos.comments.CommentResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.serviceBooking.ApproveRequestDTO;
 import edu.ftn.iss.eventplanner.dtos.serviceBooking.BookingServiceRequestDTO;
+import edu.ftn.iss.eventplanner.dtos.serviceBooking.BookingServiceRequestsForProviderDTO;
 import edu.ftn.iss.eventplanner.entities.BookingService;
 import edu.ftn.iss.eventplanner.services.BookingServiceService;
 import org.springframework.http.HttpStatus;
@@ -8,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
+import javax.validation.Valid;
 import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -32,17 +37,39 @@ public class BookingServiceController {
 
     @PostMapping("/reserve")
     public ResponseEntity<BookingService> reserveService(@RequestBody BookingServiceRequestDTO request) {
-        System.out.println("usao kontroler");
-        // Konvertovanje startTime u Time
-        Time startTime = Time.valueOf(request.getStartTime() + ":00");  // Pretpostavljam da dolazi kao HH:mm
-        Duration duration = Duration.ofMinutes(request.getDuration());  // Pretvaramo broj minuta u Duration
+        Time startTime = Time.valueOf(request.getStartTime() + ":00");
+        Duration duration = Duration.ofMinutes(request.getDuration());
 
         try {
             BookingService bookingService = bookingServiceService.createBooking(request.getServiceId(), request.getEventId(), request.getBookingDate(), startTime, duration);
-            return ResponseEntity.ok(bookingService);  // 200 OK
+            return ResponseEntity.ok(bookingService);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();  // 400 Bad Request ako dođe do greške
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+    }
+
+    @PutMapping("/approve")
+    public ResponseEntity<BookingServiceRequestsForProviderDTO> approveComment(@Valid @RequestBody ApproveRequestDTO approveRequestDTO) {
+        BookingServiceRequestsForProviderDTO response = bookingServiceService.approveRequest(approveRequestDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/delete")
+    public ResponseEntity<BookingServiceRequestsForProviderDTO> deleteRequest(@Valid @RequestBody ApproveRequestDTO approveRequestDTO) {
+        BookingServiceRequestsForProviderDTO response = bookingServiceService.deleteRequest(approveRequestDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/requests")
+    public ResponseEntity<List<BookingServiceRequestsForProviderDTO>> getBookingRequests() {
+        List<BookingServiceRequestsForProviderDTO> requests = bookingServiceService.getRequests();
+        return ResponseEntity.ok(requests);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<BookingServiceRequestsForProviderDTO>> getAllBookings() {
+        List<BookingServiceRequestsForProviderDTO> requests = bookingServiceService.getAllBookings();
+        return ResponseEntity.ok(requests);
     }
 
 

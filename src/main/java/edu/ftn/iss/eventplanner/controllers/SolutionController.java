@@ -25,8 +25,8 @@ public class SolutionController {
     }
 
     @GetMapping("api/solutions/all")
-    public ResponseEntity<List<SolutionDTO>> getAllSolutions( @RequestParam String city) {
-        return ResponseEntity.ok(solutionService.getSolutions(city));
+    public ResponseEntity<List<SolutionDTO>> getAllSolutions() {
+        return ResponseEntity.ok(solutionService.getSolutions());
     }
 
     @GetMapping("api/solutions/locations")
