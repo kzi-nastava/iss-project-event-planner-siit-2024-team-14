@@ -5,13 +5,16 @@ import edu.ftn.iss.eventplanner.dtos.reports.ChangeReportStatusDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.CreateReportDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ReportUserDTO;
 import edu.ftn.iss.eventplanner.entities.*;
+import edu.ftn.iss.eventplanner.enums.Role;
 import edu.ftn.iss.eventplanner.enums.Status;
 import edu.ftn.iss.eventplanner.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +24,7 @@ public class ReportRequestService {
     private final ReportRequestRepository reportRepository;
     private final NotificationService notificationService;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
 
     public ReportUserDTO createReport(CreateReportDTO dto) {
@@ -33,6 +37,19 @@ public class ReportRequestService {
 
         String sender = savedReport.getSender().getEmail();
         String reportedUser = savedReport.getReportedUser().getEmail();
+
+        Optional<User> adminUserOpt = userRepository.findByEmail("admin@gmail.com");
+        if (adminUserOpt.isPresent()) {
+            User adminUser = adminUserOpt.get();
+            Notification notification = new Notification();
+            notification.setMessage("You have new report request to review.");
+
+            notification.setUser(adminUser);
+            notification.setDate(LocalDate.now());
+            notification.setRead(false);
+            notificationRepository.save(notification);
+        }
+
 
         return new ReportUserDTO(savedReport.getId(), savedReport.getReason(),savedReport.getStatus(), sender, reportedUser);
     }
