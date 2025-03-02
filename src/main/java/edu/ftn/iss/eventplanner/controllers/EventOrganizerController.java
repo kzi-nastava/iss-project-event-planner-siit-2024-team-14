@@ -1,7 +1,6 @@
 package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.get.GetOrganizerDTO;
-import edu.ftn.iss.eventplanner.dtos.get.OrganizerDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterEoDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewOrganizerProfileDTO;
@@ -52,14 +51,10 @@ public class EventOrganizerController {
         }
     }
 
-    @GetMapping("/get-photo/{filename}")
-    public ResponseEntity<Resource> getProfilePhoto(@PathVariable String filename) throws MalformedURLException {
-        return organizerService.getProfilePhoto(filename);
-
     @GetMapping("/get-photo/{id}")
     public ResponseEntity<Resource> getProfilePhoto(@PathVariable("id") int id) throws MalformedURLException {
         System.out.println("ENTERED getProfilePhoto CONTROLLER");
-
+        return organizerService.getProfilePhoto(id);
     }
 
     @PutMapping("/update")
