@@ -43,6 +43,7 @@ public class ServiceAndProductProviderController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<GetProviderDTO> get(@PathVariable("id") int id) {
