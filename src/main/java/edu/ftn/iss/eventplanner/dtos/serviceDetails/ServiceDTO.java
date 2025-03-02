@@ -35,4 +35,5 @@ public class ServiceDTO {
     private OfferingVisibility visibility;  // Vidljivost servisa (public, private, pending)
 
     private ProviderDTO provider;
+    private Integer providerId;
 }

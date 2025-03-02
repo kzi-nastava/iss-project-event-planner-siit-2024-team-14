@@ -2,6 +2,8 @@ package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
+import edu.ftn.iss.eventplanner.dtos.reports.ViewOrganizerProfileDTO;
+import edu.ftn.iss.eventplanner.dtos.reports.ViewProviderProfileDTO;
 import edu.ftn.iss.eventplanner.services.ServiceAndProductProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,5 +29,15 @@ public class ServiceAndProductProviderController {
     @GetMapping("/activate")
     public ResponseEntity<RegisterResponseDTO> activate(@RequestParam("token") String token) {
         return providerService.activate(token);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ViewProviderProfileDTO> getProviderById(@PathVariable Integer id) {
+        ViewProviderProfileDTO provider = providerService.getProviderById(id);
+        if (provider != null) {
+            return ResponseEntity.ok(provider);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
