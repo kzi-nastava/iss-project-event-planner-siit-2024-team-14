@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import edu.ftn.iss.eventplanner.security.JWTUtil;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -72,7 +73,10 @@ public class UserService {
 
             report = reportRepository.findByReportedUserAndStatus(user, Status.APPROVED);
             if (report != null) {
-                return ResponseEntity.status(401).body(new LoginResponseDTO(null, null, "User is suspended!", false));
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                String formattedTimestamp = report.getTimestamp().format(formatter);
+                return ResponseEntity.status(401).body(new LoginResponseDTO(null, null, "User is suspended until: " + formattedTimestamp + " !", false));
             }
         }
 

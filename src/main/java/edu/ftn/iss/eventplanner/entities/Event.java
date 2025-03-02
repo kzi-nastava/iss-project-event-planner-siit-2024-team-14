@@ -1,5 +1,6 @@
 package edu.ftn.iss.eventplanner.entities;
 
+import edu.ftn.iss.eventplanner.enums.PrivacyType;
 import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -19,7 +20,7 @@ public class Event {
     private String name;
     private String description;
     private int maxParticipants;
-    private String privacyType;
+    private PrivacyType privacyType;
     private String location;
     private LocalDate startDate;
     private LocalDate endDate;
