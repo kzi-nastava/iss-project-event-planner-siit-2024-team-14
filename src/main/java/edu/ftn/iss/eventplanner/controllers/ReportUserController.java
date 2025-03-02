@@ -19,19 +19,19 @@ public class ReportUserController {
     private final ReportRequestService reportService;
 
     @PostMapping
-    public ResponseEntity<ReportUserDTO> createComment(@Valid @RequestBody CreateReportDTO createReportDTO) {
+    public ResponseEntity<ReportUserDTO> createReport(@Valid @RequestBody CreateReportDTO createReportDTO) {
         ReportUserDTO response = reportService.createReport(createReportDTO);
         return ResponseEntity.status(201).body(response);
     }
 
     @PutMapping("/approve")
-    public ResponseEntity<ReportUserDTO> approveComment(@Valid @RequestBody ChangeReportStatusDTO approveReportDTO) {
+    public ResponseEntity<ReportUserDTO> approveReport(@Valid @RequestBody ChangeReportStatusDTO approveReportDTO) {
         ReportUserDTO response = reportService.approveReport(approveReportDTO);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/delete")
-    public ResponseEntity<ReportUserDTO> deleteComment(@Valid @RequestBody ChangeReportStatusDTO deleteReportDTO) {
+    public ResponseEntity<ReportUserDTO> deleteReport(@Valid @RequestBody ChangeReportStatusDTO deleteReportDTO) {
         ReportUserDTO response = reportService.deleteReport(deleteReportDTO);
         return ResponseEntity.ok(response);
     }
