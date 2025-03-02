@@ -1,26 +1,32 @@
 package edu.ftn.iss.eventplanner.services;
 
+import edu.ftn.iss.eventplanner.dtos.GetProviderDTO;
+import edu.ftn.iss.eventplanner.dtos.get.ProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewOrganizerProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewProviderProfileDTO;
+import edu.ftn.iss.eventplanner.dtos.update.UpdateProviderDTO;
+import edu.ftn.iss.eventplanner.dtos.update.UpdatedProviderDTO;
 import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
 import edu.ftn.iss.eventplanner.repositories.ServiceAndProductProviderRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 @Service
 public class ServiceAndProductProviderService {
@@ -48,26 +54,23 @@ public class ServiceAndProductProviderService {
                 return ResponseEntity.badRequest().body(new RegisterResponseDTO("Invalid phone number format!", false));
             }
 
-            // Initialize the photos list if it's not already set
             if (dto.getPhotos() == null) {
                 dto.setPhotos(new ArrayList<>());
             }
 
-            // If photos are provided, save them (maximum of 3 photos)
             if (photos != null && !photos.isEmpty()) {
                 String uploadDir = "src/main/resources/static/photos/";
-                Files.createDirectories(Paths.get(uploadDir));  // Create directories if they don't exist
+                Files.createDirectories(Paths.get(uploadDir));
 
                 // Loop through the photos, limit to 3, and save them
                 for (int i = 0; i < Math.min(photos.size(), 3); i++) {
                     MultipartFile photo = photos.get(i);
                     if (photo != null && !photo.isEmpty()) {
-                        String photoFilename = dto.getEmail() + (i + 1) + ".png"; // Name photo as email1.png, email2.png, email3.png
+                        String photoFilename = dto.getEmail() + (i + 1) + ".png";
                         Path filePath = Paths.get(uploadDir + photoFilename);
 
                         Files.write(filePath, photo.getBytes());  // Write photo to file
 
-                        // Add the filename to the list of photos in the DTO
                         dto.getPhotos().add(photoFilename);
                     }
                 }
@@ -123,7 +126,6 @@ public class ServiceAndProductProviderService {
 
         return ResponseEntity.ok(new RegisterResponseDTO("Your email is verified successfully!", true));
     }
-
     public ViewProviderProfileDTO getProviderById(Integer id) {
         return providerRepository.findById(id)
                 .map(provider -> new ViewProviderProfileDTO(
@@ -139,8 +141,120 @@ public class ServiceAndProductProviderService {
                 .orElse(null);
     }
 
-    // get
-    // getPhotos
-    // update
-    // updatePhotos
+
+    public ResponseEntity<GetProviderDTO> get(int id) {
+        ServiceAndProductProvider provider = providerRepository.findById(id);
+
+        if (provider == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ProviderDTO providerDTO = new ProviderDTO();
+        providerDTO.setId(provider.getId());
+        providerDTO.setEmail(provider.getEmail());
+        providerDTO.setName(provider.getCompanyName());
+        providerDTO.setDescription(provider.getDescription());
+        providerDTO.setCity(provider.getCity());
+        providerDTO.setAddress(provider.getAddress());
+        providerDTO.setPhoneNumber(String.valueOf(provider.getPhoneNumber()));
+        providerDTO.setRole("ServiceAndProductProvider");
+        providerDTO.setPhotos(providerDTO.getPhotos());
+
+        GetProviderDTO getProviderDTO = new GetProviderDTO();
+        getProviderDTO.setMessage("ok");
+        getProviderDTO.setProvider(providerDTO);
+
+        return ResponseEntity.ok(getProviderDTO);
+    }
+
+    public List<String> getPhotos(int id) {
+        ServiceAndProductProvider provider = providerRepository.findById(id);
+
+        if (provider == null || provider.getPhotos().isEmpty()) {
+            return Collections.emptyList(); // Return empty list if no photos found
+        }
+
+        // Convert filenames into accessible URLs
+        return provider.getPhotos().stream()
+                .map(photo -> "http://localhost:8080/photos/" + photo) // Change based on deployment
+                .collect(Collectors.toList());
+    }
+
+
+    public UpdatedProviderDTO update(Integer userId, UpdateProviderDTO updateDTO) {
+        Optional<ServiceAndProductProvider> providerOptional = providerRepository.findById(userId);
+
+        if (providerOptional.isPresent()) {
+            ServiceAndProductProvider provider = providerOptional.get();
+
+            provider.setCompanyName(updateDTO.getName());
+            provider.setDescription(updateDTO.getDescription());
+            provider.setAddress(updateDTO.getAddress());
+            provider.setCity(updateDTO.getCity());
+            provider.setPhoneNumber(Integer.parseInt(updateDTO.getPhoneNumber()));
+
+            ServiceAndProductProvider updatedProvider = providerRepository.save(provider);
+
+            UpdatedProviderDTO updatedDTO = new UpdatedProviderDTO();
+            updatedDTO.setName(updatedProvider.getCompanyName());
+            updatedDTO.setDescription(updatedProvider.getDescription());
+            updatedDTO.setAddress(updatedProvider.getAddress());
+            updatedDTO.setCity(updatedProvider.getCity());
+            updatedDTO.setPhoneNumber(Integer.parseInt(updateDTO.getPhoneNumber()));
+
+            return updatedDTO;
+        } else {
+            throw new RuntimeException("Provider with id " + userId + " not found");
+        }
+    }
+
+    public ResponseEntity<RegisterResponseDTO> updatePhoto(int userId, MultipartFile photo, int photoIndex) {
+        try {
+            ServiceAndProductProvider provider = providerRepository.findById(userId);
+
+            if (provider == null) {
+                return ResponseEntity.badRequest().body(new RegisterResponseDTO("Provider not found!", false));
+            }
+
+            // Get the list of photos
+            List<String> photos = provider.getPhotos();
+
+            // Check if the photoIndex is valid
+            if (photoIndex < 0 || photoIndex >= photos.size()) {
+                return ResponseEntity.badRequest().body(new RegisterResponseDTO("Invalid photo index!", false));
+            }
+
+            // Get the current photo to delete
+            String oldPhoto = photos.get(photoIndex);  // Use the correct method to get the photo from the list
+            if (oldPhoto != null) {
+                Path oldPhotoPath = Paths.get("src/main/resources/static/photos/" + oldPhoto);
+                Files.deleteIfExists(oldPhotoPath);  // Delete the old photo if it exists
+            }
+
+            int index = photoIndex + 1;
+            // Generate a new photo filename, using the email + photoIndex to make it unique
+            String photoFilename = provider.getEmail()  + index + ".png";  // Unique filename per index
+            String uploadDir = "src/main/resources/static/photos/";
+
+            // Ensure the directory exists
+            Path filePath = Paths.get(uploadDir + photoFilename);
+            Files.createDirectories(filePath.getParent());
+
+            // Write the new photo to the file system
+            Files.write(filePath, photo.getBytes());
+
+            // Update the photos list with the new photo URL (add the new photo filename to the list)
+            photos.set(photoIndex, photoFilename);  // Update the photo at the given index
+
+            // Save the provider entity with the updated photos list
+            provider.setPhotos(photos);  // Update the list of photos in the provider
+            providerRepository.save(provider);
+
+            return ResponseEntity.ok(new RegisterResponseDTO("Photo updated successfully!", true));
+        } catch (IOException ex) {
+            return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to update photo!", false));
+        }
+    }
+
 }
+

@@ -145,8 +145,12 @@ public class EventOrganizerService {
         return ResponseEntity.ok(getOrganizerDTO);  // Return the DTO
     }
 
-    public ResponseEntity<Resource> getProfilePhoto(String filename) throws MalformedURLException {
-        Path path = Paths.get("src/main/resources/static/profile-photos/" + filename);
+    public ResponseEntity<Resource> getProfilePhoto(int id) throws MalformedURLException {
+        EventOrganizer organizer = organizerRepository.findById(id);
+
+        System.out.println("MAIL" + organizer.getEmail());
+
+        Path path = Paths.get("src/main/resources/static/profile-photos/" + organizer.getEmail() + ".png");
         Resource resource = new UrlResource(path.toUri());
 
         // Return the image as a Resource
@@ -178,7 +182,7 @@ public class EventOrganizerService {
             updatedDTO.setCity(updatedOrganizer.getCity());
             updatedDTO.setPhoneNumber(Integer.parseInt(updateDTO.getPhoneNumber()));
 
-            return updatedDTO; // Return the updated organizer DTO
+            return updatedDTO;
         } else {
             throw new RuntimeException("Organizer with id " + userId + " not found");
         }
