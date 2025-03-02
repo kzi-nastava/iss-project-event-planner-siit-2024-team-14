@@ -1,8 +1,5 @@
 package edu.ftn.iss.eventplanner.services;
 
-import edu.ftn.iss.eventplanner.dtos.comments.ApproveCommentDTO;
-import edu.ftn.iss.eventplanner.dtos.comments.CommentResponseDTO;
-import edu.ftn.iss.eventplanner.dtos.comments.CreateCommentDTO;
 import edu.ftn.iss.eventplanner.dtos.notifications.NotificationDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ChangeReportStatusDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.CreateReportDTO;
@@ -13,7 +10,7 @@ import edu.ftn.iss.eventplanner.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,7 +54,12 @@ public class ReportRequestService {
     public ReportUserDTO approveReport(ChangeReportStatusDTO dto) {
         ReportRequest report = findReportById(dto.getReportId());
         report.setStatus(Status.APPROVED);
+        report.setTimestamp(LocalDateTime.now().plusDays(3));
         reportRepository.save(report);
+
+        User user = userRepository.findById(report.getReportedUser().getId()).orElse(null);
+        user.setSuspended(true);
+        userRepository.save(user);
 
         String sender = report.getSender().getEmail();
         String reportedUser = report.getReportedUser().getEmail();
@@ -102,7 +104,9 @@ public class ReportRequestService {
 
     private ReportUserDTO mapToDTO(ReportRequest report) {
         String sender = report.getSender().getEmail();
+        System.out.println(sender);
         String reportedUser = report.getReportedUser().getEmail();
+        System.out.println(reportedUser);
         return new ReportUserDTO(report.getId(), report.getReason(), report.getStatus(), sender, reportedUser);
     }
 

@@ -37,8 +37,8 @@ public class ReportUserController {
     }
 
     @GetMapping("/pending")
-    public ResponseEntity<List<ReportUserDTO>> getPendingComments() {
-        List<ReportUserDTO> comments = reportService.getPendingReports();
-        return ResponseEntity.ok(comments);
+    public ResponseEntity<List<ReportUserDTO>> getPendingReports() {
+        List<ReportUserDTO> reports = reportService.getPendingReports();
+        return ResponseEntity.ok(reports);
     }
 }
