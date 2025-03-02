@@ -1,8 +1,10 @@
 package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.get.GetOrganizerDTO;
+import edu.ftn.iss.eventplanner.dtos.get.OrganizerDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterEoDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.reports.ViewOrganizerProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdateOrganizerDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdatedOrganizerDTO;
 import edu.ftn.iss.eventplanner.services.EventOrganizerService;
@@ -36,6 +38,17 @@ public class EventOrganizerController {
     @GetMapping("/get/{id}")
     public ResponseEntity<GetOrganizerDTO> get(@PathVariable("id") int id) {
         return organizerService.get(id);
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ViewOrganizerProfileDTO> getOrganizerById(@PathVariable Integer id) {
+        ViewOrganizerProfileDTO organizer = organizerService.getOrganizerById(id);
+        if (organizer != null) {
+            return ResponseEntity.ok(organizer);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/get-photo/{filename}")
