@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class SuspensionRequest {
+public class ReportRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,8 +28,8 @@ public class SuspensionRequest {
 
     // who is suspended
     @ManyToOne
-    @JoinColumn(name = "suspended_user_id")
-    private User suspendedUser;
+    @JoinColumn(name = "reported_user_id")
+    private User reportedUser;
 
     private String reason;
 }

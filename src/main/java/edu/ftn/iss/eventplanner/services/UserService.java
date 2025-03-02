@@ -5,7 +5,10 @@ import edu.ftn.iss.eventplanner.dtos.login.LoginDTO;
 import edu.ftn.iss.eventplanner.dtos.login.LoginResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.update.ChangePasswordDTO;
 import edu.ftn.iss.eventplanner.dtos.update.ChangedPasswordDTO;
+import edu.ftn.iss.eventplanner.entities.ReportRequest;
 import edu.ftn.iss.eventplanner.entities.User;
+import edu.ftn.iss.eventplanner.enums.Status;
+import edu.ftn.iss.eventplanner.repositories.ReportRequestRepository;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import edu.ftn.iss.eventplanner.security.JWTUtil;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -22,8 +26,14 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    private  final ReportRequestRepository reportRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;  // Fix here!
+
+    public UserService(ReportRequestRepository reportRepository) {
+        this.reportRepository = reportRepository;
+    }
 
     public ResponseEntity<LoginResponseDTO> login(LoginDTO loginDTO) {
         Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail());
@@ -53,7 +63,17 @@ public class UserService {
 
         if (user.isSuspended()) {
             System.out.println("User is suspended");
-            return ResponseEntity.status(401).body(new LoginResponseDTO(null, null, "User is suspended!", false));
+            ReportRequest report = reportRepository.findByReportedUserAndStatus(user, Status.APPROVED);
+            if (report != null && report.getTimestamp().isBefore(LocalDateTime.now())) {
+                report.setStatus(Status.DELETED);
+                reportRepository.save(report);
+                System.out.println("Removed expired report for suspended user");
+            }
+
+            report = reportRepository.findByReportedUserAndStatus(user, Status.APPROVED);
+            if (report != null) {
+                return ResponseEntity.status(401).body(new LoginResponseDTO(null, null, "User is suspended!", false));
+            }
         }
 
         // Generate token

@@ -49,11 +49,11 @@ public class ServiceService {
 
         serviceDTO.setApplicableEventTypes(eventTypes.toArray(new EventTypeDTO[0]));
 
-        // Mapiranje provider-a
         ProviderDTO providerDTO = new ProviderDTO();
         providerDTO.setCompanyName(service.getProvider().getCompanyName());
         providerDTO.setDescription(service.getProvider().getDescription());
         serviceDTO.setProvider(providerDTO);
+        serviceDTO.setProviderId(service.getProvider().getId());
 
         return serviceDTO;
     }

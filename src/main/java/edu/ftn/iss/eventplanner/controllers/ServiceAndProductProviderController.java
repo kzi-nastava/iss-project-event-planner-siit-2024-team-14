@@ -3,6 +3,8 @@ package edu.ftn.iss.eventplanner.controllers;
 import edu.ftn.iss.eventplanner.dtos.GetProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
+import edu.ftn.iss.eventplanner.dtos.reports.ViewOrganizerProfileDTO;
+import edu.ftn.iss.eventplanner.dtos.reports.ViewProviderProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdateProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdatedProviderDTO;
 import edu.ftn.iss.eventplanner.services.ServiceAndProductProviderService;
@@ -32,6 +34,15 @@ public class ServiceAndProductProviderController {
     public ResponseEntity<RegisterResponseDTO> activate(@RequestParam("token") String token) {
         return providerService.activate(token);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ViewProviderProfileDTO> getProviderById(@PathVariable Integer id) {
+        ViewProviderProfileDTO provider = providerService.getProviderById(id);
+        if (provider != null) {
+            return ResponseEntity.ok(provider);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<GetProviderDTO> get(@PathVariable("id") int id) {
