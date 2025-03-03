@@ -1,7 +1,4 @@
 package edu.ftn.iss.eventplanner.controllers;
-
-import edu.ftn.iss.eventplanner.dtos.comments.ApproveCommentDTO;
-import edu.ftn.iss.eventplanner.dtos.comments.CommentResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.serviceBooking.ApproveRequestDTO;
 import edu.ftn.iss.eventplanner.dtos.serviceBooking.BookingServiceRequestDTO;
 import edu.ftn.iss.eventplanner.dtos.serviceBooking.BookingServiceRequestsForProviderDTO;
