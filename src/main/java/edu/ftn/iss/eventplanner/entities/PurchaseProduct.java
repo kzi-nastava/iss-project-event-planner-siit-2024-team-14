@@ -3,6 +3,7 @@ package edu.ftn.iss.eventplanner.entities;
 import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
 
 @Data
 @NoArgsConstructor
@@ -32,11 +33,12 @@ public class PurchaseProduct {
     public PurchaseProduct(Event event, Product product) {
         setEvent(event);
         setProduct(product);
+        this.purchaseDate = LocalDateTime.now();
     }
 
     @PrePersist
     protected void onCreate() {
-        this.purchaseDate = LocalDateTime.now();
+        // this.purchaseDate = LocalDateTime.now();
     }
 
 
@@ -52,4 +54,28 @@ public class PurchaseProduct {
         this.product = product;
     }
 
+    public void setEvent(Event event) {
+        if (event == null) {
+            throw new IllegalArgumentException("Event cannot be null");
+        }
+
+        if (event.getEndDate() != null && event.getEndDate().isBefore(ChronoLocalDate.from(purchaseDate))) {
+            throw new IllegalStateException("Event cannot be over at the time of the purchase");
+        }
+
+        this.event = event;
+    }
+
+    public void setPurchaseDate(LocalDateTime purchaseDate) {
+        if (purchaseDate == null) {
+            throw new IllegalArgumentException("PurchaseDate cannot be null");
+        }
+
+        if (event.getEndDate() != null && event.getEndDate().isBefore(ChronoLocalDate.from(purchaseDate))) {
+            throw new IllegalStateException("Purchase date cannot be after the event has passed");
+        }
+
+        this.purchaseDate = purchaseDate;
+    }
+// maybe could do the validation with annotations?
 }

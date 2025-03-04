@@ -4,10 +4,13 @@ import edu.ftn.iss.eventplanner.entities.Event;
 import edu.ftn.iss.eventplanner.entities.Product;
 import edu.ftn.iss.eventplanner.entities.PurchaseProduct;
 import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
+import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ProductPurchaseRepository;
 import edu.ftn.iss.eventplanner.repositories.ProductRepository;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -39,15 +42,17 @@ public class ProductService {
 
 
     public PurchaseProduct purchaseProduct(int eventId, int productId) {
-        Event event = events.getEventById(eventId);
-        Product product = getProductById(productId);
+        try {
+            Event event = events.getEventById(eventId);
+            Product product = getProductById(productId);
 
-        if (!product.isAvailable()) {
-            throw new BadRequestException("Cannot purchase an unavailable product");
+            PurchaseProduct purchase = new PurchaseProduct(event, product);
+            return purchases.save(purchase);
+        } catch (IllegalArgumentException | IllegalStateException | ConstraintViolationException | DataIntegrityViolationException | NotFoundException e) {
+            throw new BadRequestException(e.getMessage());
+        } catch (Exception e) {
+            throw new InternalServerError("An unexpected error has occurred");
         }
-
-        PurchaseProduct purchase = new PurchaseProduct(event, product);
-        return purchases.save(purchase);
     }
 
 
