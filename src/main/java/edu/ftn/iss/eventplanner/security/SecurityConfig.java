@@ -26,7 +26,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/providers/**", "/api/users/**", "/api/organizers/**",
                         "/api/events/*", "/api/events/**",  "/api/solutions/*", "/api/comments/*", "/api/notifications/*", "/api/notifications", "/api/notifications/**",
                         "/api/providers/register", "/api/providers/activate", "/api/users/register",
-                        "/api/users/activate", "/api/users/login", "/ws/**", "/api/services", "/api/services/*", "/api/services/**", "/api/products", "/api/products/*", "/api/bookings/*", "/api/bookings/**", "/api/bookings/reserve", "/photos/**").permitAll()  // Dodata podrška za WebSocket
+                        "/api/users/activate", "/api/users/login", "/ws/**", "/api/services", "/api/services/*", "/api/services/**", "/api/products", "/api/products/*", "/api/bookings/*", "/api/bookings/**", "/api/bookings/reserve", "/api/reports", "/api/reports/*",
+                        "/api/reports/**", "/photos/**", "/api/chat", "/api/chat/*", "/api/chat/**", "/api/chat/***").permitAll()
+
                 .anyRequest().authenticated()  // Ostale rute zahtevaju autentifikaciju
                 .and()
                 .formLogin().disable();  // Disable form login (ako koristiš JWT ili neki drugi metod)

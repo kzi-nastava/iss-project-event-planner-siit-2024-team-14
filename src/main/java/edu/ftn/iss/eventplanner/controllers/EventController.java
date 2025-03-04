@@ -1,7 +1,6 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.EventDTO;
-import edu.ftn.iss.eventplanner.entities.Event;
+import edu.ftn.iss.eventplanner.dtos.homepage.EventDTO;
 import edu.ftn.iss.eventplanner.services.EventService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,8 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -66,6 +63,16 @@ public class EventController {
         Pageable pageable = PageRequest.of(page, size);
         Page<EventDTO> eventDTOPage = eventService.getFilteredEvents(startDate, endDate, category, location, pageable);
         return ResponseEntity.ok(eventDTOPage);
+    }
+
+    @GetMapping("/api/events/{id}")
+    public ResponseEntity<EventDTO> getEventById(@PathVariable Integer id) {
+        EventDTO event = eventService.getEventById(id);
+        if (event != null) {
+            return ResponseEntity.ok(event);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 

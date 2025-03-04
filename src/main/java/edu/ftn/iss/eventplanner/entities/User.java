@@ -1,6 +1,4 @@
 package edu.ftn.iss.eventplanner.entities;
-
-import edu.ftn.iss.eventplanner.enums.Role;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -34,13 +32,8 @@ public class User {
     @Column(nullable = false)
     private boolean muted;  //for notifications
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_blocked_users",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "blocked_user_id")
-    )
-    private List<User> blockedUsers;
+    @OneToMany(mappedBy = "blocker", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BlockedUser> blockedUsers;
 
     @ManyToMany
     @JoinTable(

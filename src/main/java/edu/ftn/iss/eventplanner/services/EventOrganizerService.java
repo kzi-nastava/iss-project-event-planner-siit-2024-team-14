@@ -4,6 +4,7 @@ import edu.ftn.iss.eventplanner.dtos.get.GetOrganizerDTO;
 import edu.ftn.iss.eventplanner.dtos.get.OrganizerDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterEoDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.reports.ViewOrganizerProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdateOrganizerDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdatedOrganizerDTO;
 import edu.ftn.iss.eventplanner.entities.EventOrganizer;
@@ -222,5 +223,20 @@ public class EventOrganizerService {
         } catch (IOException e) {
             return ResponseEntity.status(500).body(new RegisterResponseDTO("Failed to update profile photo!", false));
         }
+    }
+
+    public ViewOrganizerProfileDTO getOrganizerById(Integer id) {
+        return organizerRepository.findById(id)
+                .map(organizer -> new ViewOrganizerProfileDTO(
+                        organizer.getId(),
+                        organizer.getName(),
+                        organizer.getSurname(),
+                        organizer.getEmail(),
+                        organizer.getAddress(),
+                        organizer.getCity(),
+                        organizer.getPhoneNumber(),
+                        organizer.getProfilePhoto()
+                  ))
+                .orElse(null);
     }
 }

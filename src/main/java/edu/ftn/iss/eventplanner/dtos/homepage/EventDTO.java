@@ -1,10 +1,14 @@
-package edu.ftn.iss.eventplanner.dtos;
+package edu.ftn.iss.eventplanner.dtos.homepage;
 
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
 public class EventDTO {
 
     private Integer id;
@@ -14,9 +18,9 @@ public class EventDTO {
     private String privacyType;
     private LocalDate startDate;
     private LocalDate endDate;
-    private double budget;
     private String imageUrl;
     private String organizerFirstName;
     private String organizerLastName;
+    private Integer organizerId;
     private String organizerProfilePicture;
 }

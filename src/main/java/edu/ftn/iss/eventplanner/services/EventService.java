@@ -1,8 +1,9 @@
 package edu.ftn.iss.eventplanner.services;
 
-import edu.ftn.iss.eventplanner.dtos.EventDTO;
+import edu.ftn.iss.eventplanner.dtos.homepage.EventDTO;
 import edu.ftn.iss.eventplanner.entities.Event;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
+import edu.ftn.iss.eventplanner.enums.PrivacyType;
 import edu.ftn.iss.eventplanner.repositories.EventRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +23,20 @@ public class EventService {
 
     public List<EventDTO> getTop5Events(String city) {
         List<Event> events = eventRepository.findFirst5ByLocationOrderByStartDateDesc(city);
-        return mapToDTO(events);
+        List<Event> publicEvents = events.stream()
+                .filter(event -> event.getPrivacyType() == PrivacyType.PUBLIC)
+                .collect(Collectors.toList());
+
+        return mapToDTO(publicEvents);
     }
 
     public List<EventDTO> getEvents() {
         List<Event> events = eventRepository.findAll();
-        return mapToDTO(events);
+        List<Event> publicEvents = events.stream()
+                .filter(event -> event.getPrivacyType() == PrivacyType.PUBLIC)
+                .collect(Collectors.toList());
+
+        return mapToDTO(publicEvents);
     }
 
     public List<String> getAllLocations() {
@@ -70,6 +79,24 @@ public class EventService {
         });
     }
 
+    public EventDTO getEventById(Integer id) {
+        return eventRepository.findById(id)
+                .map(event -> new EventDTO(
+                        event.getId(),
+                        event.getName(),
+                        event.getDescription(),
+                        event.getLocation(),
+                        event.getPrivacyType().toString(),
+                        event.getStartDate(),
+                        event.getEndDate(),
+                        event.getImageUrl(),
+                        event.getOrganizer() != null ? event.getOrganizer().getName() : null,
+                        event.getOrganizer() != null ? event.getOrganizer().getSurname() : null,
+                        event.getOrganizer() != null ? event.getOrganizer().getId() : null,
+                        event.getOrganizer() != null ? event.getOrganizer().getProfilePhoto() : null
+                ))
+                .orElse(null); // Ako event ne postoji, vrati null
+    }
 
     private List<EventDTO> mapToDTO(List<Event> events) {
         return events.stream().map(event -> {

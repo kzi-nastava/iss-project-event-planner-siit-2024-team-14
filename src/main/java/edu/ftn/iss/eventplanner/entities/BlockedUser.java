@@ -1,6 +1,4 @@
 package edu.ftn.iss.eventplanner.entities;
-
-import edu.ftn.iss.eventplanner.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,28 +6,24 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+
+@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class SuspensionRequest {
+public class BlockedUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private LocalDateTime timestamp;
-    private Status status;
-
-    // who sent request
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User sender;
+    @JoinColumn(name = "blocker_id", nullable = false)
+    private User blocker;
 
-    // who is suspended
     @ManyToOne
-    @JoinColumn(name = "suspended_user_id")
-    private User suspendedUser;
+    @JoinColumn(name = "blocked_id", nullable = false)
+    private User blocked;
 
-    private String reason;
+    private LocalDateTime blockedAt;
 }

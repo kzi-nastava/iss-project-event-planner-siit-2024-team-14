@@ -4,6 +4,8 @@ import edu.ftn.iss.eventplanner.dtos.GetProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.get.ProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.reports.ViewOrganizerProfileDTO;
+import edu.ftn.iss.eventplanner.dtos.reports.ViewProviderProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdateProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdatedProviderDTO;
 import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
@@ -124,6 +126,21 @@ public class ServiceAndProductProviderService {
 
         return ResponseEntity.ok(new RegisterResponseDTO("Your email is verified successfully!", true));
     }
+    public ViewProviderProfileDTO getProviderById(Integer id) {
+        return providerRepository.findById(id)
+                .map(provider -> new ViewProviderProfileDTO(
+                        provider.getId(),
+                        provider.getCompanyName(),
+                        provider.getDescription(),
+                        provider.getEmail(),
+                        provider.getAddress(),
+                        provider.getCity(),
+                        provider.getPhoneNumber(),
+                        provider.getPhotos().get(0)
+                ))
+                .orElse(null);
+    }
+
 
     public ResponseEntity<GetProviderDTO> get(int id) {
         ServiceAndProductProvider provider = providerRepository.findById(id);

@@ -1,6 +1,7 @@
 package edu.ftn.iss.eventplanner.config;
 
 import edu.ftn.iss.eventplanner.entities.*;
+import edu.ftn.iss.eventplanner.enums.PrivacyType;
 import edu.ftn.iss.eventplanner.enums.ReservationType;
 import edu.ftn.iss.eventplanner.enums.Status;
 import edu.ftn.iss.eventplanner.repositories.*;
@@ -136,37 +137,37 @@ public class DatabaseSeeder {
 
             // Dodavanje događaja
             if (eventRepository.findByName("Birthday Party").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, "open", "Belgrade",
+                eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, PrivacyType.PUBLIC, "Belgrade",
                         LocalDate.of(2025, 6, 2), LocalDate.of(2025, 6, 2), "assets/images/event1.png", partyType));
             }
 
             if (eventRepository.findByName("Horse Riding").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Horse Riding", "For horse lovers, free entry", 30, "open", "Novi Sad",
+                eventRepository.save(new Event(null, organizer, "Horse Riding", "For horse lovers, free entry", 30, PrivacyType.PUBLIC, "Novi Sad",
                         LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event2.png", partyType));
             }
 
             if (eventRepository.findByName("Bakery opening").isEmpty()) {
-                eventRepository.save(new Event(null, organizer3, "Bakery opening", "Come with an empty stomach!", 30, "open", "Novi Sad",
+                eventRepository.save(new Event(null, organizer3, "Bakery opening", "Come with an empty stomach!", 30, PrivacyType.PUBLIC, "Novi Sad",
                         LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event6.png", partyType));
             }
 
             if (eventRepository.findByName("Rooftop theatre").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Rooftop theatre", "Free entry, bring popcorn and drinks!", 30, "open", "Novi Sad",
+                eventRepository.save(new Event(null, organizer, "Rooftop theatre", "Free entry, bring popcorn and drinks!", 30, PrivacyType.PUBLIC, "Novi Sad",
                         LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25),"assets/images/event3.png", partyType));
             }
 
             if (eventRepository.findByName("Graduation party").isEmpty()) {
-                eventRepository.save(new Event(null, organizer5, "Graduation party", "All college graduates wellcome :)", 30, "open", "Novi Sad",
+                eventRepository.save(new Event(null, organizer5, "Graduation party", "All college graduates wellcome :)", 30, PrivacyType.PUBLIC, "Novi Sad",
                         LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event5.png", theatreType));
             }
 
             if (eventRepository.findByName("EXIT Festival").isEmpty()) {
-                eventRepository.save(new Event(null, organizer2, "EXIT Festival", "Together, always", 30, "open", "Novi Sad",
+                eventRepository.save(new Event(null, organizer2, "EXIT Festival", "Together, always", 30, PrivacyType.PUBLIC, "Novi Sad",
                         LocalDate.of(2025, 7, 7), LocalDate.of(2025, 7, 10), "assets/images/event8.png", partyType));
             }
 
             if (eventRepository.findByName("Proba").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Proba", "For horse lovers, free entry", 30, "open", "Novi Sad",
+                eventRepository.save(new Event(null, organizer, "Proba", "For horse lovers, free entry", 30, PrivacyType.PUBLIC, "Novi Sad",
                         LocalDate.of(2025, 2, 27), LocalDate.of(2025, 2, 28), "assets/images/event2.png", partyType));
             }
 
