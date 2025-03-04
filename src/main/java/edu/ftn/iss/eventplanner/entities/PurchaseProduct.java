@@ -30,12 +30,26 @@ public class PurchaseProduct {
 
 
     public PurchaseProduct(Event event, Product product) {
-        this.event = event;
-        this.product = product;
+        setEvent(event);
+        setProduct(product);
     }
 
     @PrePersist
     protected void onCreate() {
         this.purchaseDate = LocalDateTime.now();
     }
+
+
+    public void setProduct(Product product) {
+        if (product == null) {
+            throw new IllegalArgumentException("Product cannot be null");
+        }
+
+        if (!product.isAvailable()) {
+            throw new IllegalStateException("Product is not available");
+        }
+
+        this.product = product;
+    }
+
 }
