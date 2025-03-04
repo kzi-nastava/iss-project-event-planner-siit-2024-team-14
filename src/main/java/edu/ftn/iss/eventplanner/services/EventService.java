@@ -2,6 +2,7 @@ package edu.ftn.iss.eventplanner.services;
 
 import edu.ftn.iss.eventplanner.dtos.homepage.EventDTO;
 import edu.ftn.iss.eventplanner.entities.Event;
+import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.enums.PrivacyType;
 import edu.ftn.iss.eventplanner.repositories.EventRepository;
 import org.springframework.data.domain.Page;
@@ -116,5 +117,10 @@ public class EventService {
 
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    public Event getEventById(int id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Event not found"));
     }
 }
