@@ -40,8 +40,10 @@ public class ServiceDTO {
     public Long getMaxDurationMinutes() { return maxDuration == null ? null : maxDuration.toMinutes(); }
     public Long getReservationPeriodDays() { return reservationPeriod == null ? null : reservationPeriod.toDays(); }
     public Long getCancellationPeriodDays() { return cancellationPeriod == null ? null : cancellationPeriod.toDays(); }
-    //public boolean isVisible() { return visibility == null || visibility == OfferingVisibility.PUBLIC; }
-    //public boolean isIsVisible() { return visibility == null || visibility == OfferingVisibility.PUBLIC; }
+    public boolean isVisible() { return visibility == null || visibility == OfferingVisibility.PUBLIC; }
+    public boolean isIsVisible() { return visibility == null || visibility == OfferingVisibility.PUBLIC; }
+    public Integer getProviderId() { return provider == null ? null : provider.getId(); }
+    public boolean isIsAvailable() { return available; }
 
     // TODO: Model and DTO field names should match in order for clients to know sort parameters
 }
