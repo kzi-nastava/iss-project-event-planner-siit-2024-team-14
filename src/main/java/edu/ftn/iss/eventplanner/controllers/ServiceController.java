@@ -7,7 +7,6 @@ import edu.ftn.iss.eventplanner.mappers.ServiceDTOMapper;
 import edu.ftn.iss.eventplanner.services.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,7 +20,7 @@ import java.util.Set;
 
 
 @RestController
-@RequestMapping(path = {"api/services"})
+@RequestMapping(path = {"api/services"}, produces = MediaType.APPLICATION_JSON_VALUE)
 public class ServiceController {
 
     private final ServiceService serviceService;
@@ -35,7 +34,7 @@ public class ServiceController {
 
 
     // GET */api/services (Result differs across user roles)
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     ResponseEntity<Page<ServiceDTO>> getAllServices(
             @RequestParam MultiValueMap<String, String> params,
             Pageable pageable,
@@ -50,7 +49,7 @@ public class ServiceController {
     }
 
     // GET @*/api/services/1
-    @GetMapping(path = "/{id:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{id:\\d+}")
     ResponseEntity<ServiceDTO> getServiceById(
             @PathVariable(name = "id") int id
     ) {
@@ -59,11 +58,13 @@ public class ServiceController {
     }
 
 
-    // PUT provider[Provides the service]|admin@*/api/services
-    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    // PUT provider[Provides the service]|admin@*/api/services/1
+    @PutMapping(path = "/{id:\\d+}")
     ResponseEntity<ServiceDTO> putUpdateService(
+            @PathVariable int id,
             @RequestBody @Validated UpdateServiceDTO updateServiceDTO
     ) {
+        updateServiceDTO.setId(id);
         Service service = serviceService.updateService(modelMapper.toUpdateServiceRequest(updateServiceDTO));
         return ResponseEntity.ok(modelMapper.toServiceDTO(service));
     }

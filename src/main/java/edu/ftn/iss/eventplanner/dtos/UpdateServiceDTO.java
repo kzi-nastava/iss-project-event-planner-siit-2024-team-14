@@ -1,9 +1,9 @@
 package edu.ftn.iss.eventplanner.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.ftn.iss.eventplanner.enums.OfferingVisibility;
 import edu.ftn.iss.eventplanner.enums.ReservationType;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.List;
@@ -11,8 +11,8 @@ import java.util.List;
 
 @Data
 public class UpdateServiceDTO {
-    @NotNull
-    private Integer id;
+    @JsonIgnore
+    private int id;
 
     private String name;
     private String description;
