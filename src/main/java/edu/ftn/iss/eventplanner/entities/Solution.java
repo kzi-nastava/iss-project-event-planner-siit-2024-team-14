@@ -19,6 +19,7 @@ public class Solution {
 
     private String name;
     private String description;
+    private String specificities;
     private String location;
     private double price;
     private double discount;
@@ -38,4 +39,7 @@ public class Solution {
     @ManyToOne
     @JoinColumn(name = "provider_id")
     private ServiceAndProductProvider provider;
+
+    @OneToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    private List<EventType> applicableEventTypes;
 }

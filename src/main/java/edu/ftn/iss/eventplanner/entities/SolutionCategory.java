@@ -33,7 +33,7 @@ public class SolutionCategory {
     @NotNull
     @Size(max = 500)
     @Column(name = "description", nullable = false, length = 500)
-    private String description;
+    private String description = "";
 
     @OneToMany(mappedBy = "solutionCategory", cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.EAGER)
     private List<EventType> eventTypes = new ArrayList<>();
