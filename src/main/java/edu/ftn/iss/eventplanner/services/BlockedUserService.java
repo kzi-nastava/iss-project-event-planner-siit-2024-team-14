@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +40,13 @@ public class BlockedUserService {
 
         blockedUserRepository.save(blockedUser);
         return blockedUser;
+    }
+
+    public List<Integer> getBlockedUsers(Integer userId) {
+        Optional<User> user = userRepository.findById(userId);
+        List<BlockedUser> blockedUsers = blockedUserRepository.findByBlocker(user.get());
+        System.out.println(" blokirano: " + blockedUsers);
+        return blockedUsers.stream().map(blockedUser -> blockedUser.getBlocked().getId()).collect(Collectors.toList());
     }
 
 }

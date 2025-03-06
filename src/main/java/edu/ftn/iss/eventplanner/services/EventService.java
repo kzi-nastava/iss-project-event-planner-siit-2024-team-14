@@ -112,6 +112,7 @@ public class EventService {
                 dto.setOrganizerFirstName(event.getOrganizer().getName());
                 dto.setOrganizerLastName(event.getOrganizer().getSurname());
                 dto.setOrganizerProfilePicture(event.getOrganizer().getProfilePhoto());
+                dto.setOrganizerId(event.getOrganizer().getId());
             }
 
             return dto;

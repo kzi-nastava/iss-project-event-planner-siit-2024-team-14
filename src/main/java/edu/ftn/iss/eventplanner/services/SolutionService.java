@@ -89,6 +89,7 @@ public class SolutionService {
 
         if (solution.getProvider() != null) {
             dto.setProviderCompanyName(solution.getProvider().getCompanyName());
+            dto.setProviderId(solution.getProvider().getId());
         }
         return dto;
     }
