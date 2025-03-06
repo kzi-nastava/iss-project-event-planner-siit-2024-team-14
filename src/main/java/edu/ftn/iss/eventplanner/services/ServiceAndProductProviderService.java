@@ -9,6 +9,7 @@ import edu.ftn.iss.eventplanner.dtos.reports.ViewProviderProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdateProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdatedProviderDTO;
 import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
+import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ServiceAndProductProviderRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,6 +140,11 @@ public class ServiceAndProductProviderService {
                         provider.getPhotos().get(0)
                 ))
                 .orElse(null);
+    }
+
+    public ServiceAndProductProvider getById(int id) {
+        return providerRepository.findByIdAsOptional(id)
+                .orElseThrow(() -> new NotFoundException("Provider not found"));
     }
 
 

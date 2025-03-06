@@ -9,4 +9,8 @@ public interface ServiceAndProductProviderRepository extends JpaRepository<Servi
     Optional<ServiceAndProductProvider> findByEmail(String email);
     ServiceAndProductProvider findByActivationToken(String token);
     ServiceAndProductProvider findById(int id);
+
+    default Optional<ServiceAndProductProvider> findByIdAsOptional(int id) {
+        return Optional.ofNullable(findById(id));
+    }
 }
