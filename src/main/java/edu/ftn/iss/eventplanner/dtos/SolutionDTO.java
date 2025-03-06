@@ -1,6 +1,7 @@
 package edu.ftn.iss.eventplanner.dtos;
 
 import edu.ftn.iss.eventplanner.entities.Comment;
+import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
 import lombok.*;
 
 import java.util.List;
@@ -9,12 +10,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SolutionDTO {
-    private Long id;
+    private Integer id;
     private String name;
     private String description;
+    private String location;
     private double price;
     private double discount;
     private String imageUrl;
     private boolean isAvailable;
-    private List<Comment> comments;
+    private String providerCompanyName;
+    private Integer providerId;
+    private String solutionType;
 }

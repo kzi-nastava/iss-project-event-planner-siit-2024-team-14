@@ -1,5 +1,6 @@
 package edu.ftn.iss.eventplanner.entities;
 
+import edu.ftn.iss.eventplanner.enums.PrivacyType;
 import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -12,16 +13,18 @@ public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private Integer id;
+    @ManyToOne
+    @JoinColumn(name = "organizer_id")
+    private EventOrganizer organizer;
     private String name;
     private String description;
     private int maxParticipants;
-    private String privacyType;
+    private PrivacyType privacyType;
     private String location;
     private LocalDate startDate;
     private LocalDate endDate;
-    private double budget;
+    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "event_type_id")

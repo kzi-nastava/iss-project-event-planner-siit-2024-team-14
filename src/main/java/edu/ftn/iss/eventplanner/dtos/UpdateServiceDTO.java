@@ -1,17 +1,19 @@
 package edu.ftn.iss.eventplanner.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.ftn.iss.eventplanner.enums.OfferingVisibility;
 import edu.ftn.iss.eventplanner.enums.ReservationType;
 
 import lombok.Data;
 
-import java.time.Duration;
+import java.util.List;
 
-// TODO: Add validation
 
 @Data
 public class UpdateServiceDTO {
-    // TODO: Check if the provider may be changed
+    @JsonIgnore
+    private int id;
+
     private String name;
     private String description;
     private String specificities;
@@ -19,11 +21,18 @@ public class UpdateServiceDTO {
     private Double price;
     private Double discount;
 
-    private Boolean available;
-    private ReservationType reservationPolicy;
-    private Duration sessionDuration;
-    private Duration reservationPeriod;
-    private Duration cancellationPeriod;
+    private List<String> images;
+    private List<Integer> applicableEventTypeIds;
 
     private OfferingVisibility visibility;
+    private Boolean available;
+
+    private ReservationType reservationType;
+
+    private Long durationMinutes;
+    private Long minDurationMinutes;
+    private Long maxDurationMinutes;
+
+    private Long reservationPeriodDays;
+    private Long cancellationPeriodDays;
 }

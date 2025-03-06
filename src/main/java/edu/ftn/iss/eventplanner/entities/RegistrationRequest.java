@@ -1,9 +1,10 @@
 package edu.ftn.iss.eventplanner.entities;
 
-import edu.ftn.iss.eventplanner.enums.InvitationStatus;
+import edu.ftn.iss.eventplanner.enums.Status;
 import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -13,16 +14,15 @@ public class RegistrationRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    private LocalDate requestDate;
-    private boolean isVerified; // Da li je zahtev verifikovan?
+    private LocalDateTime timestamp;
 
     @Enumerated(EnumType.STRING)
-    private InvitationStatus status; // Status pozivnice (npr. PENDING, ACCEPTED, REJECTED)
+    private Status status;    // PENDING, ACCEPTED, REJECTED
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user; // Ko je poslao zahtev
+    private User user;                  // who sent request
 }
 

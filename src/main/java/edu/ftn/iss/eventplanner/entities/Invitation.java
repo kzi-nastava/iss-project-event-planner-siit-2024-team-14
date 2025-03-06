@@ -11,12 +11,12 @@ public class Invitation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String guestEmail;
     private String status;
 
     @ManyToOne
-    @JoinColumn(name = "activity_id")
-    private Activity activity;
+    @JoinColumn(name = "event_id")
+    private Event event;
 }
