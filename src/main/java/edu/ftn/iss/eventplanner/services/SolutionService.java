@@ -1,18 +1,14 @@
 package edu.ftn.iss.eventplanner.services;
-
 import edu.ftn.iss.eventplanner.dtos.SolutionDTO;
 import edu.ftn.iss.eventplanner.entities.Solution;
 import edu.ftn.iss.eventplanner.repositories.SolutionBookingRepository;
 import edu.ftn.iss.eventplanner.repositories.SolutionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 @Service
 public class SolutionService {
@@ -89,6 +85,7 @@ public class SolutionService {
 
         if (solution.getProvider() != null) {
             dto.setProviderCompanyName(solution.getProvider().getCompanyName());
+            dto.setProviderId(solution.getProvider().getId());
         }
         return dto;
     }
@@ -108,6 +105,7 @@ public class SolutionService {
 
             if (solution.getProvider() != null) {
                 dto.setProviderCompanyName(solution.getProvider().getCompanyName());
+                dto.setProviderId(solution.getProvider().getId());
             }
 
             return dto;
