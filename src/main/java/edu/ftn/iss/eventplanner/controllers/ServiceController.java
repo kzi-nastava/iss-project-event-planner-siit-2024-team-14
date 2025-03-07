@@ -3,6 +3,9 @@ package edu.ftn.iss.eventplanner.controllers;
 import edu.ftn.iss.eventplanner.dtos.serviceDetails.ServiceDTO;
 import edu.ftn.iss.eventplanner.dtos.UpdateServiceDTO;
 import edu.ftn.iss.eventplanner.entities.Service;
+import edu.ftn.iss.eventplanner.entities.SolutionFilterParams;
+import edu.ftn.iss.eventplanner.entities.SolutionSearchRequest;
+import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
 import edu.ftn.iss.eventplanner.mappers.ServiceDTOMapper;
 import edu.ftn.iss.eventplanner.services.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,15 +39,34 @@ public class ServiceController {
     // GET */api/services (Result differs across user roles)
     @GetMapping
     ResponseEntity<Page<ServiceDTO>> getAllServices(
-            @RequestParam MultiValueMap<String, String> params,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Double price,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String status, // available, unavailable
+            @RequestParam(required = false) Integer[] categories,
+            @RequestParam(required = false) Integer[] eventTypes,
             Pageable pageable,
             Principal principal
     ) {
-        params.keySet().removeAll(Set.of("page", "size", "sort"));
-        Page<Service> services = serviceService.getAllServices(pageable, principal == null ? null : principal.getName());
+        SolutionFilterParams params = SolutionFilterParams.builder()
+                .price(price)
+                .minPrice(minPrice == null ? Double.MIN_VALUE : minPrice)
+                .maxPrice(maxPrice == null ? Double.MAX_VALUE : maxPrice)
+                .available(switch (status) {
+                    case "available" -> true;
+                    case "unavailable" -> false;
+                    default -> throw new BadRequestException("Unexpected service status: " + status);
+                })
+                .wantedCategories(categories == null ? null : Set.of(categories))
+                .wantedEventTypes(eventTypes == null ? null : Set.of(eventTypes))
+                .build();
+
+        SolutionSearchRequest searchRequest = new SolutionSearchRequest(q, params, principal.getName());
+        Page<Service> services = serviceService.getAllServices(searchRequest, pageable);
 
         return ResponseEntity.ok(
-                services.map(this.modelMapper::toServiceDTO)
+                services.map(modelMapper::toServiceDTO)
         );
     }
 

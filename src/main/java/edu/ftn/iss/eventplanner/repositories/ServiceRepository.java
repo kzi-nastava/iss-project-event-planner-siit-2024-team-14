@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ServiceRepository extends JpaRepository<Service, Integer> {
+public interface ServiceRepository extends JpaRepository<Service, Integer>, SolutionSearchRepositoryMixin<Service> {
 
     List<Service> findByProvider_Id(int providerId);
     Page<Service> findByProvider_Id(int providerId, Pageable pageable);
