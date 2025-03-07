@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -41,15 +42,19 @@ public class ProviderServicesController {
     public ResponseEntity<Page<ServiceDTO>> getProviderServices(
             @PathVariable(name = "providerId") int providerId,
             @RequestParam MultiValueMap<String, String> params,
-            Pageable pageable,
-            Principal principal
+            UriComponentsBuilder uriComponentsBuilder
     ) {
-        params.keySet().removeAll(Set.of("page", "size", "sort"));
-        Page<Service> services = serviceService.getAllProviderServices(providerId, pageable, principal == null ? null : principal.getName());
+        params.remove("provider");
+        params.add("provider", String.valueOf(providerId));
 
-        return ResponseEntity.ok(
-                services.map(this.modelMapper::toServiceDTO)
-        );
+        URI redirectUri = uriComponentsBuilder.path("/api/services")
+                .queryParams(params)
+                .build()
+                .toUri();
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(redirectUri)
+                .build();
     }
 
     // POST provider[Is identified by id 1]|admin@*/api/providers/1/services

@@ -46,10 +46,12 @@ public class ServiceController {
             @RequestParam(required = false) String status, // available, unavailable
             @RequestParam(required = false) Integer[] categories,
             @RequestParam(required = false) Integer[] eventTypes,
+            @RequestParam(required = false) Integer provider,
             Pageable pageable,
             Principal principal
     ) {
         SolutionFilterParams params = SolutionFilterParams.builder()
+                .providerId(provider)
                 .price(price)
                 .minPrice(minPrice == null ? Double.MIN_VALUE : minPrice)
                 .maxPrice(maxPrice == null ? Double.MAX_VALUE : maxPrice)

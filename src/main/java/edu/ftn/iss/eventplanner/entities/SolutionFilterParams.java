@@ -31,12 +31,18 @@ public final class SolutionFilterParams implements java.util.function.Predicate<
     @Nullable
     private Set<Integer> wantedCategories, wantedEventTypes;
 
+    @Nullable
+    private Integer providerId;
+
 
 
     @Override
     @SuppressWarnings("RedundantIfStatement")
     public boolean test(Solution solution) {
         if (solution == null)
+            return false;
+
+        if (providerId != null && (solution.getProvider() == null || !providerId.equals(solution.getProvider().getId())))
             return false;
 
         if (price != null && price != solution.getPrice())
@@ -61,6 +67,10 @@ public final class SolutionFilterParams implements java.util.function.Predicate<
     public <T extends Solution> Specification<T> toSpecification() {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
+
+            if (providerId != null) {
+                predicates.add(cb.equal(root.get("provider").get("id"), providerId));
+            }
 
             if (price != null) {
                 predicates.add(cb.equal(root.get("price"), price));
