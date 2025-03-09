@@ -39,8 +39,6 @@ public class EventOrganizerController {
         return organizerService.get(id);
     }
 
-
-
     @GetMapping("/{id}")
     public ResponseEntity<ViewOrganizerProfileDTO> getOrganizerById(@PathVariable Integer id) {
         ViewOrganizerProfileDTO organizer = organizerService.getOrganizerById(id);
@@ -70,5 +68,10 @@ public class EventOrganizerController {
     public ResponseEntity<RegisterResponseDTO> updateProfilePhoto(@PathVariable("id") int id,
                                                                   @RequestParam("photo") MultipartFile photo) {
         return organizerService.updateProfilePhoto(id, photo);
+    }
+
+    @PutMapping("/deactivate/{id}")
+    public ResponseEntity<RegisterResponseDTO> deactivate(@PathVariable int id) {
+        return organizerService.deactivate(id);
     }
 }

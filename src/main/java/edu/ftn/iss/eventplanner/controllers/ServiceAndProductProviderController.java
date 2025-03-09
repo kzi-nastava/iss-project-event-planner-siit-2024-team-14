@@ -3,13 +3,11 @@ package edu.ftn.iss.eventplanner.controllers;
 import edu.ftn.iss.eventplanner.dtos.GetProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
-import edu.ftn.iss.eventplanner.dtos.reports.ViewOrganizerProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewProviderProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdateProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdatedProviderDTO;
 import edu.ftn.iss.eventplanner.services.ServiceAndProductProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -76,5 +74,10 @@ public class ServiceAndProductProviderController {
                                                            @RequestParam("photoIndex") int photoIndex) {
 
         return providerService.updatePhoto(userId, photo, photoIndex);
+    }
+
+    @PutMapping("/deactivate/{id}")
+    public ResponseEntity<RegisterResponseDTO> deactivate(@PathVariable int id) {
+        return providerService.deactivate(id);
     }
 }
