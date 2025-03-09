@@ -3,6 +3,8 @@ package edu.ftn.iss.eventplanner.entities;
 import lombok.*;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,4 +15,12 @@ public class EventOrganizer extends User {
     private String profilePhoto;
     private String name;
     private String surname;
+
+    @ManyToMany
+    @JoinTable(
+            name = "organizers_events",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id")
+    )
+    private List<Event> myEvents;
 }

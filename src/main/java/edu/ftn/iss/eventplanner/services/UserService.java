@@ -3,13 +3,16 @@ package edu.ftn.iss.eventplanner.services;
 import edu.ftn.iss.eventplanner.dtos.get.UserDTO;
 import edu.ftn.iss.eventplanner.dtos.login.LoginDTO;
 import edu.ftn.iss.eventplanner.dtos.login.LoginResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.update.ChangePasswordDTO;
 import edu.ftn.iss.eventplanner.dtos.update.ChangedPasswordDTO;
 import edu.ftn.iss.eventplanner.entities.ReportRequest;
+import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
 import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.enums.Status;
 import edu.ftn.iss.eventplanner.repositories.ReportRequestRepository;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,8 +61,8 @@ public class UserService {
         }
 
         if (!user.isActive()) {
-            System.out.println("User is not active");
-            return ResponseEntity.status(401).body(new LoginResponseDTO(null, null, "User is not active!", false));
+            System.out.println("Account is deactivated");
+            return ResponseEntity.status(401).body(new LoginResponseDTO(null, null, "Account is deactivated!", false));
         }
 
         if (user.isSuspended()) {
