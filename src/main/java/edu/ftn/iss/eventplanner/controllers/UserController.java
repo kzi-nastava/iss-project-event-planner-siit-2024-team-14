@@ -1,6 +1,7 @@
 package edu.ftn.iss.eventplanner.controllers;
 import edu.ftn.iss.eventplanner.dtos.login.LoginDTO;
 import edu.ftn.iss.eventplanner.dtos.login.LoginResponseDTO;
+import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.update.ChangePasswordDTO;
 import edu.ftn.iss.eventplanner.dtos.update.ChangedPasswordDTO;
 import edu.ftn.iss.eventplanner.services.UserService;

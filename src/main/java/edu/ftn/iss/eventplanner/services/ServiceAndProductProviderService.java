@@ -4,7 +4,6 @@ import edu.ftn.iss.eventplanner.dtos.GetProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.get.ProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
-import edu.ftn.iss.eventplanner.dtos.reports.ViewOrganizerProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewProviderProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdateProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.update.UpdatedProviderDTO;
@@ -13,13 +12,9 @@ import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ServiceAndProductProviderRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.net.MalformedURLException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -193,7 +188,6 @@ public class ServiceAndProductProviderService {
         if (providerOptional.isPresent()) {
             ServiceAndProductProvider provider = providerOptional.get();
 
-            provider.setCompanyName(updateDTO.getName());
             provider.setDescription(updateDTO.getDescription());
             provider.setAddress(updateDTO.getAddress());
             provider.setCity(updateDTO.getCity());
@@ -202,7 +196,6 @@ public class ServiceAndProductProviderService {
             ServiceAndProductProvider updatedProvider = providerRepository.save(provider);
 
             UpdatedProviderDTO updatedDTO = new UpdatedProviderDTO();
-            updatedDTO.setName(updatedProvider.getCompanyName());
             updatedDTO.setDescription(updatedProvider.getDescription());
             updatedDTO.setAddress(updatedProvider.getAddress());
             updatedDTO.setCity(updatedProvider.getCity());
@@ -262,5 +255,18 @@ public class ServiceAndProductProviderService {
         }
     }
 
+    public ResponseEntity<RegisterResponseDTO> deactivate(int id) {
+        ServiceAndProductProvider provider = providerRepository.findById(id);
+
+        if (provider == null) {
+            return ResponseEntity.badRequest().body(new RegisterResponseDTO("Provider not found!", false));
+        }
+
+        if (provider.getReservedSolutions().isEmpty()) {
+            provider.setActive(false);
+        }
+        providerRepository.save(provider);
+        return ResponseEntity.ok(new RegisterResponseDTO("Provider deactivated successfully!", true));
+    }
 }
 

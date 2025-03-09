@@ -239,4 +239,18 @@ public class EventOrganizerService {
                   ))
                 .orElse(null);
     }
+
+    public ResponseEntity<RegisterResponseDTO> deactivate(int id) {
+        EventOrganizer organizer = organizerRepository.findById(id);
+
+        if (organizer == null) {
+            return ResponseEntity.status(404).body(new RegisterResponseDTO("Organizer not found!", false));
+        }
+
+        if (organizer.getMyEvents().isEmpty()) {
+            organizer.setActive(false);
+        }
+        organizerRepository.save(organizer);
+        return ResponseEntity.ok(new RegisterResponseDTO("Organizer deactivated successfully!", true));
+    }
 }

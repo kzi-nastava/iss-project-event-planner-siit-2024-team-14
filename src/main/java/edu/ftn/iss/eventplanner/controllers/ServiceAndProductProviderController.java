@@ -75,4 +75,9 @@ public class ServiceAndProductProviderController {
 
         return providerService.updatePhoto(userId, photo, photoIndex);
     }
+
+    @PutMapping("/deactivate/{id}")
+    public ResponseEntity<RegisterResponseDTO> deactivate(@PathVariable int id) {
+        return providerService.deactivate(id);
+    }
 }
