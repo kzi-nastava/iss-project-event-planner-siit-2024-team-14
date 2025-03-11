@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Integer> {
+public interface ProductRepository extends JpaRepository<Product, Integer>, SolutionSearchRepositoryMixin<Product> {
     @Query("SELECT p FROM Product p WHERE p.isAvailable") // TODO: need to change isAvailable to available
     List<Product> getByAvailableTrue();
 }

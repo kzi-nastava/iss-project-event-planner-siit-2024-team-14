@@ -8,6 +8,8 @@ import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
 import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ServiceRepository;
+import edu.ftn.iss.eventplanner.repositories.SolutionSearchRepositoryMixin;
+import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -35,15 +38,17 @@ public class ServiceService {
     private final CategoryService categoryService;
     private final ModelMapper modelMapper;
     private final EventTypeService eventTypeService;
+    private final UserRepository userRepository;
 
 
     @Autowired
-    public ServiceService(ServiceRepository services, CategoryService categoryService, ServiceAndProductProviderService providerService, EventTypeService eventTypeService, ModelMapper modelMapper) {
+    public ServiceService(ServiceRepository services, CategoryService categoryService, ServiceAndProductProviderService providerService, EventTypeService eventTypeService, ModelMapper modelMapper, UserRepository userRepository) {
         this.services = services;
         this.categoryService = categoryService;
         this.providerService = providerService;
         this.eventTypeService = eventTypeService;
         this.modelMapper = modelMapper;
+        this.userRepository = userRepository;
     }
 
 
@@ -181,5 +186,21 @@ public class ServiceService {
         category.setStatus(Status.PENDING);
         // TODO: Notify admin of category request
         return categoryService.insertCategory(category);
+    }
+
+
+    public List<Service> getAllServices(SolutionSearchRequest request)  {
+        return services.findAll().stream().filter(request.getFilterParams()).toList();
+    }
+
+
+    public Page<Service> getAllServices(SolutionSearchRequest request, Pageable pageable) {
+        // TODO: restrict access based on role userRepository.findByEmail(request.getSubmitterEmail()).orElseThrow();
+
+        return services.search(
+                request.getQuery(),
+                request.getFilterParams() == null ? null : request.getFilterParams().toSpecification(),
+                pageable
+        );
     }
 }
