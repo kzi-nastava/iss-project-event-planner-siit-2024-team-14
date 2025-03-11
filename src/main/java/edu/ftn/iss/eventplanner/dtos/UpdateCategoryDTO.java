@@ -1,13 +1,13 @@
 package edu.ftn.iss.eventplanner.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class UpdateCategoryDTO {
-    @Positive
+    @JsonIgnore
     private int id;
 
     @NotBlank(message = "{category.name.blank}")
