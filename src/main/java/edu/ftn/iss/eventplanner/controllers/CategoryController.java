@@ -79,7 +79,7 @@ public class CategoryController {
         SolutionCategory createdCategory = categoryService.insertCategory(modelMapper.fromDTO(categoryData));
 
         URI location = uriBuilder
-                .path("/{id}")
+                .path("/api/categories/{id}")
                 .buildAndExpand(createdCategory.getId())
                 .toUri();
 
