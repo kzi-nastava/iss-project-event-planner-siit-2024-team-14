@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SolutionSearchRequest {
-    private String query;
+    private String query = "";
     private SolutionFilterParams filterParams;
     private String submitterEmail;
 }

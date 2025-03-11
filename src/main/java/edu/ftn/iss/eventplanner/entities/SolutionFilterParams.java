@@ -79,7 +79,7 @@ public final class SolutionFilterParams implements java.util.function.Predicate<
             }
 
             if (available != null) {
-                predicates.add(cb.equal(root.get("available"), available));
+                predicates.add(cb.equal(root.get("isAvailable"), available));
             }
 
             if (wantedCategories != null) {

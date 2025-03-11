@@ -4,12 +4,13 @@ import edu.ftn.iss.eventplanner.entities.Solution;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
-import java.util.Objects;
 
 
 public interface SolutionSearchRepositoryMixin<T extends Solution> extends JpaSpecificationExecutor<T> {
@@ -25,16 +26,15 @@ public interface SolutionSearchRepositoryMixin<T extends Solution> extends JpaSp
 
     default Page<T> search(String query, @Nullable Specification<T> spec, Pageable pageable) {
         return findAll(
-                Specification
-                        .where(spec)
-                        .and(query == null ? null : orderByBestNameMatchSpecification(query)),
+                Specification.allOf(spec, orderByBestNameMatchSpecification(query)),
                 pageable
         );
     }
 
-
-    default Specification<T> orderByBestNameMatchSpecification(String query) {
-        String lowerQuery = Objects.requireNonNull(query).toLowerCase();
+    @Nullable
+    private static <T extends Solution> Specification<T> orderByBestNameMatchSpecification(@Nullable String query) {
+        if (query == null) return null;
+        String lowerQuery = query.toLowerCase();
 
         return (root, cq, cb) -> {
             Expression<String> lowerName = cb.lower(root.get("name"));

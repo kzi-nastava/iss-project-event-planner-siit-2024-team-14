@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -38,38 +39,23 @@ public class ServiceController {
 
     // GET */api/services (Result differs across user roles)
     @GetMapping
-    ResponseEntity<Page<ServiceDTO>> getAllServices(
+    @ResponseStatus(HttpStatus.OK)
+    Page<ServiceDTO> getAllServices(
             @RequestParam(required = false) String q,
             @RequestParam(required = false) Double price,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
-            @RequestParam(required = false) String status, // available, unavailable
-            @RequestParam(required = false) Integer[] categories,
-            @RequestParam(required = false) Integer[] eventTypes,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Integer[] category,
+            @RequestParam(required = false) Integer[] eventType,
             @RequestParam(required = false) Integer provider,
             Pageable pageable,
             Principal principal
     ) {
-        SolutionFilterParams params = SolutionFilterParams.builder()
-                .providerId(provider)
-                .price(price)
-                .minPrice(minPrice == null ? Double.MIN_VALUE : minPrice)
-                .maxPrice(maxPrice == null ? Double.MAX_VALUE : maxPrice)
-                .available(switch (status) {
-                    case "available" -> true;
-                    case "unavailable" -> false;
-                    default -> throw new BadRequestException("Unexpected service status: " + status);
-                })
-                .wantedCategories(categories == null ? null : Set.of(categories))
-                .wantedEventTypes(eventTypes == null ? null : Set.of(eventTypes))
-                .build();
-
-        SolutionSearchRequest searchRequest = new SolutionSearchRequest(q, params, principal.getName());
+        SolutionFilterParams params = buildFilterParams(price, minPrice, maxPrice, status, category, eventType, provider);
+        SolutionSearchRequest searchRequest = new SolutionSearchRequest(q, params, principal == null ? null : principal.getName());
         Page<Service> services = serviceService.getAllServices(searchRequest, pageable);
-
-        return ResponseEntity.ok(
-                services.map(modelMapper::toServiceDTO)
-        );
+        return services.map(modelMapper::toServiceDTO);
     }
 
     // GET @*/api/services/1
@@ -108,6 +94,37 @@ public class ServiceController {
     @DeleteMapping
     void deleteAllServices() {
         serviceService.deleteAllServices();
+    }
+
+
+
+    SolutionFilterParams buildFilterParams(
+            Double price, Double minPrice, Double maxPrice, String status,
+            Integer[] categories, Integer[] eventTypes, Integer provider
+    ) {
+        SolutionFilterParams.SolutionFilterParamsBuilder builder = SolutionFilterParams.builder()
+                .providerId(provider)
+                .price(price)
+                .minPrice(Optional.ofNullable(minPrice).orElse(Double.MIN_VALUE))
+                .maxPrice(Optional.ofNullable(maxPrice).orElse(Double.MAX_VALUE));
+
+        if (status != null)
+            switch (status.toLowerCase()) {
+                case "available" -> builder.available(true);
+                case "unavailable" -> builder.available(false);
+                default -> throw new BadRequestException("Unexpected status: " + status.toLowerCase());
+
+            }
+
+        if (categories != null) {
+            builder.wantedCategories(Set.of(categories));
+        }
+
+        if (eventTypes != null) {
+            builder.wantedEventTypes(Set.of(eventTypes));
+        }
+
+        return builder.build();
     }
 
 }
