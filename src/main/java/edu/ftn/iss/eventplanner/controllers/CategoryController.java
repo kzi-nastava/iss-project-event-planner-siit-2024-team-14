@@ -21,7 +21,7 @@ import java.util.Collection;
 @Getter
 @Setter
 @RestController
-@RequestMapping(path = {"/api/categories"})
+@RequestMapping(path = {"/api/categories"}, produces = MediaType.APPLICATION_JSON_VALUE)
 public class CategoryController {
 
     private CategoryService categoryService;
@@ -37,7 +37,7 @@ public class CategoryController {
 
 
     // GET */api/categories
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<Collection<CategoryDTO>> getAllCategories() {
         Collection<CategoryDTO> categories = categoryService.getAllCategories()
                 .stream().map(modelMapper::toCategoryDTO).toList();
@@ -48,7 +48,7 @@ public class CategoryController {
 
 
     // GET */api/categories/1
-    @GetMapping(path = "/{id:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{id:\\d+}")
     public ResponseEntity<CategoryDTO> getCategoryById(
             @PathVariable(name = "id") int id
     ) {
@@ -71,7 +71,7 @@ public class CategoryController {
 
 
     // POST admin@*/api/categories
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<CategoryDTO> createCategory(
             @RequestBody @Valid CreateCategoryDTO categoryData,
             UriComponentsBuilder uriBuilder
@@ -79,7 +79,7 @@ public class CategoryController {
         SolutionCategory createdCategory = categoryService.insertCategory(modelMapper.fromDTO(categoryData));
 
         URI location = uriBuilder
-                .path("/{id}")
+                .path("/api/categories/{id}")
                 .buildAndExpand(createdCategory.getId())
                 .toUri();
 
@@ -88,11 +88,13 @@ public class CategoryController {
 
 
 
-    // PUT admin@*/api/categories
-    @PutMapping
+    // PUT admin@*/api/categories/1
+    @PutMapping(path = {"/{id:\\d+}"})
     public ResponseEntity<CategoryDTO> putUpdateCategory(
+            @PathVariable int id,
             @RequestBody @Valid UpdateCategoryDTO categoryData
     ) {
+        categoryData.setId(id);
         SolutionCategory updatedCategory = categoryService.updateCategory(modelMapper.fromDTO(categoryData));
         return ResponseEntity.ok(modelMapper.toCategoryDTO(updatedCategory));
     }
