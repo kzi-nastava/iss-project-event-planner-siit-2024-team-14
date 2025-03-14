@@ -1,5 +1,6 @@
 package edu.ftn.iss.eventplanner.controllers;
 
+import edu.ftn.iss.eventplanner.dtos.eventType.CategoryNamesDTO;
 import edu.ftn.iss.eventplanner.dtos.serviceDetails.CategoryDTO;
 import edu.ftn.iss.eventplanner.dtos.CreateCategoryDTO;
 import edu.ftn.iss.eventplanner.dtos.UpdateCategoryDTO;
@@ -17,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,8 +36,6 @@ public class CategoryController {
         this.modelMapper = modelMapper;
     }
 
-
-
     // GET */api/categories
     @GetMapping
     public ResponseEntity<Collection<CategoryDTO>> getAllCategories() {
@@ -45,7 +45,12 @@ public class CategoryController {
         return ResponseEntity.ok(categories);
     }
 
-
+    @GetMapping("/get-all-et")
+    public ResponseEntity<List<CategoryNamesDTO>> getAllForET() {
+        List<CategoryNamesDTO> categories = categoryService.getAllForET();
+        System.out.println("CATEGORIES: " + categories);
+        return ResponseEntity.ok(categories);
+    }
 
     // GET */api/categories/1
     @GetMapping(path = "/{id:\\d+}")

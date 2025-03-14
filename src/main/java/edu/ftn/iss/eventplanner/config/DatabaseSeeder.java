@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -33,15 +34,14 @@ public class DatabaseSeeder {
                             null,
                             "Decoration",
                             "Event decoration services",
-                            null,
                             Status.APPROVED
                     )));
 
             // Proveri i dodaj EventType
             EventType partyType = eventTypeRepository.findByName("Party")
-                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Party", "Social gathering", true, decorationCategory)));
+                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Party", "Social gathering", true, new ArrayList<>())));
             EventType theatreType = eventTypeRepository.findByName("Theatre")
-                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Theatre", "Performing arts", true, decorationCategory)));
+                    .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Theatre", "Performing arts", true, new ArrayList<>())));
 
             Admin admin = (Admin) userRepository.findByEmail("admin@gmail.com").orElseGet(() -> {
                 Admin newAdmin = new Admin();
@@ -181,7 +181,6 @@ public class DatabaseSeeder {
                             null,
                             "Catering",
                             "Food and beverage services for events",
-                            null,
                             Status.APPROVED
                     )));
 
@@ -190,7 +189,6 @@ public class DatabaseSeeder {
                             null,
                             "Lighting",
                             "Professional event lighting solutions",
-                             null,
                            Status.APPROVED
                     )));
 
@@ -199,9 +197,19 @@ public class DatabaseSeeder {
                             null,
                             "Music",
                             "Live bands and DJ services",
-                            null,
                              Status.APPROVED
                     )));
+
+            // Add categories to event types
+            partyType.getSolutionCategories().add(cateringCategory);
+            partyType.getSolutionCategories().add(musicCategory);
+
+            theatreType.getSolutionCategories().add(lightingCategory);
+            theatreType.getSolutionCategories().add(musicCategory);
+
+            // Save the updated EventTypes (this will automatically update the join table)
+            eventTypeRepository.save(partyType);
+            eventTypeRepository.save(theatreType);
 
             // Dodavanje ServiceAndProductProvider
             ServiceAndProductProvider provider1 = (ServiceAndProductProvider) userRepository.findByEmail("provider1@example.com")

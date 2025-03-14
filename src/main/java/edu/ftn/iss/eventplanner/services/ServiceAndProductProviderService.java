@@ -1,12 +1,12 @@
 package edu.ftn.iss.eventplanner.services;
 
 import edu.ftn.iss.eventplanner.dtos.GetProviderDTO;
-import edu.ftn.iss.eventplanner.dtos.get.ProviderDTO;
+import edu.ftn.iss.eventplanner.dtos.getUsers.ProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewProviderProfileDTO;
-import edu.ftn.iss.eventplanner.dtos.update.UpdateProviderDTO;
-import edu.ftn.iss.eventplanner.dtos.update.UpdatedProviderDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateProviderDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdatedProviderDTO;
 import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ServiceAndProductProviderRepository;

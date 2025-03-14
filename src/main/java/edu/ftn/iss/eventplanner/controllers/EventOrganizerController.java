@@ -1,11 +1,11 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.get.GetOrganizerDTO;
+import edu.ftn.iss.eventplanner.dtos.getUsers.GetOrganizerDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterEoDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewOrganizerProfileDTO;
-import edu.ftn.iss.eventplanner.dtos.update.UpdateOrganizerDTO;
-import edu.ftn.iss.eventplanner.dtos.update.UpdatedOrganizerDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateOrganizerDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdatedOrganizerDTO;
 import edu.ftn.iss.eventplanner.services.EventOrganizerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
