@@ -1,12 +1,10 @@
 package edu.ftn.iss.eventplanner.controllers;
 import edu.ftn.iss.eventplanner.dtos.login.LoginDTO;
 import edu.ftn.iss.eventplanner.dtos.login.LoginResponseDTO;
-import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
-import edu.ftn.iss.eventplanner.dtos.update.ChangePasswordDTO;
-import edu.ftn.iss.eventplanner.dtos.update.ChangedPasswordDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.ChangePasswordDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.ChangedPasswordDTO;
 import edu.ftn.iss.eventplanner.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -35,8 +35,9 @@ public class SolutionCategory {
     @Column(name = "description", nullable = false, length = 500)
     private String description = "";
 
-    @OneToMany(mappedBy = "solutionCategory", cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.EAGER)
-    private List<EventType> eventTypes = new ArrayList<>();
-
     private Status status;
+
+    // constructor (because of update)
+    public SolutionCategory(@NotBlank @Size(min = 3, max = 100) String name, @NotNull @Size(max = 500) String description, Status status) {
+    }
 }
