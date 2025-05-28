@@ -48,7 +48,12 @@ public class CategoryController {
     @GetMapping("/get-all-et")
     public ResponseEntity<List<CategoryNamesDTO>> getAllForET() {
         List<CategoryNamesDTO> categories = categoryService.getAllForET();
-        System.out.println("CATEGORIES: " + categories);
+        return ResponseEntity.ok(categories);
+    }
+
+    @GetMapping("/get-by-event-type")
+    public ResponseEntity<List<CategoryNamesDTO>> getByEventType(@RequestParam String eventType) {
+        List<CategoryNamesDTO> categories = categoryService.getByEventType(eventType);
         return ResponseEntity.ok(categories);
     }
 

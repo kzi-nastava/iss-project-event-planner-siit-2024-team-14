@@ -2,6 +2,7 @@ package edu.ftn.iss.eventplanner.services;
 
 import edu.ftn.iss.eventplanner.dtos.eventType.EventTypeDTO;
 import edu.ftn.iss.eventplanner.dtos.eventType.UpdatedEventTypeDTO;
+import edu.ftn.iss.eventplanner.dtos.events.EventTypeNamesDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.entities.EventType;
 import edu.ftn.iss.eventplanner.entities.SolutionCategory;
@@ -124,4 +125,12 @@ public class EventTypeService {
         }
     }
 
+    public List<EventTypeNamesDTO> getAllForEvent() {
+        List<EventType> eventTypes = eventTypeRepository.findAll();
+        return eventTypes.stream()
+                .map(eventType -> new EventTypeNamesDTO(
+                        eventType.getName()
+                ))
+                .collect(Collectors.toList());
+    }
 }

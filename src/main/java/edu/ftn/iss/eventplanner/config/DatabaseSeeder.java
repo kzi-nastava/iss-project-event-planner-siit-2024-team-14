@@ -37,6 +37,31 @@ public class DatabaseSeeder {
                             Status.APPROVED
                     )));
 
+            SolutionCategory cateringCategory = solutionCategoryRepository.findByName("Catering")
+                    .orElseGet(() -> solutionCategoryRepository.save(new SolutionCategory(
+                            null,
+                            "Catering",
+                            "Food and beverage services for events",
+                            Status.APPROVED
+                    )));
+
+            SolutionCategory lightingCategory = solutionCategoryRepository.findByName("Lighting")
+                    .orElseGet(() -> solutionCategoryRepository.save(new SolutionCategory(
+                            null,
+                            "Lighting",
+                            "Professional event lighting solutions",
+                            Status.APPROVED
+                    )));
+
+            SolutionCategory musicCategory = solutionCategoryRepository.findByName("Music")
+                    .orElseGet(() -> solutionCategoryRepository.save(new SolutionCategory(
+                            null,
+                            "Music",
+                            "Live bands and DJ services",
+                            Status.APPROVED
+                    )));
+
+
             // Proveri i dodaj EventType
             EventType partyType = eventTypeRepository.findByName("Party")
                     .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Party", "Social gathering", true, new ArrayList<>())));
@@ -135,70 +160,59 @@ public class DatabaseSeeder {
                     });
 
 
-            // Dodavanje događaja
+// Dodavanje događaja
             if (eventRepository.findByName("Birthday Party").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, PrivacyType.PUBLIC, "Belgrade",
-                        LocalDate.of(2025, 6, 2), LocalDate.of(2025, 6, 2), "assets/images/event1.png", partyType));
+                List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(1));
+                System.out.println("Categories for 'Birthday Party': " + categories);
+                eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, PrivacyType.OPEN, "Belgrade",
+                        LocalDate.of(2025, 6, 2), LocalDate.of(2025, 6, 2), "assets/images/event1.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Horse Riding").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Horse Riding", "For horse lovers, free entry", 30, PrivacyType.PUBLIC, "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event2.png", partyType));
+                List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(2));
+                System.out.println("Categories for 'Horse Riding': " + categories);
+                eventRepository.save(new Event(null, organizer, "Horse Riding", "For horse lovers, free entry", 30, PrivacyType.OPEN, "Novi Sad",
+                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event2.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Bakery opening").isEmpty()) {
-                eventRepository.save(new Event(null, organizer3, "Bakery opening", "Come with an empty stomach!", 30, PrivacyType.PUBLIC, "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event6.png", partyType));
+                List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(3, 4));
+                System.out.println("Categories for 'Bakery opening': " + categories);
+                eventRepository.save(new Event(null, organizer3, "Bakery opening", "Come with an empty stomach!", 30, PrivacyType.OPEN, "Novi Sad",
+                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event6.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Rooftop theatre").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Rooftop theatre", "Free entry, bring popcorn and drinks!", 30, PrivacyType.PUBLIC, "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25),"assets/images/event3.png", partyType));
+                List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(1));
+                System.out.println("Categories for 'Rooftop theatre': " + categories);
+                eventRepository.save(new Event(null, organizer, "Rooftop theatre", "Free entry, bring popcorn and drinks!", 30, PrivacyType.OPEN, "Novi Sad",
+                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event3.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Graduation party").isEmpty()) {
-                eventRepository.save(new Event(null, organizer5, "Graduation party", "All college graduates wellcome :)", 30, PrivacyType.PUBLIC, "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event5.png", theatreType));
+                List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(4));
+                System.out.println("Categories for 'Graduation party': " + categories);
+                eventRepository.save(new Event(null, organizer5, "Graduation party", "All college graduates wellcome :)", 30, PrivacyType.OPEN, "Novi Sad",
+                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event5.png", theatreType, categories));
             }
 
             if (eventRepository.findByName("EXIT Festival").isEmpty()) {
-                eventRepository.save(new Event(null, organizer2, "EXIT Festival", "Together, always", 30, PrivacyType.PUBLIC, "Novi Sad",
-                        LocalDate.of(2025, 7, 7), LocalDate.of(2025, 7, 10), "assets/images/event8.png", partyType));
+                List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(3));
+                System.out.println("Categories for 'EXIT Festival': " + categories);
+                eventRepository.save(new Event(null, organizer2, "EXIT Festival", "Together, always", 30, PrivacyType.OPEN, "Novi Sad",
+                        LocalDate.of(2025, 7, 7), LocalDate.of(2025, 7, 10), "assets/images/event8.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Proba").isEmpty()) {
-                eventRepository.save(new Event(null, organizer, "Proba", "For horse lovers, free entry", 30, PrivacyType.PUBLIC, "Novi Sad",
-                        LocalDate.of(2025, 2, 27), LocalDate.of(2025, 2, 28), "assets/images/event2.png", partyType));
+                List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(2));
+                System.out.println("Categories for 'Proba': " + categories);
+                eventRepository.save(new Event(null, organizer, "Proba", "For horse lovers, free entry", 30, PrivacyType.OPEN, "Novi Sad",
+                        LocalDate.of(2025, 2, 27), LocalDate.of(2025, 2, 28), "assets/images/event2.png", partyType, categories));
             }
 
 
 
 
-
-
-            SolutionCategory cateringCategory = solutionCategoryRepository.findByName("Catering")
-                    .orElseGet(() -> solutionCategoryRepository.save(new SolutionCategory(
-                            null,
-                            "Catering",
-                            "Food and beverage services for events",
-                            Status.APPROVED
-                    )));
-
-            SolutionCategory lightingCategory = solutionCategoryRepository.findByName("Lighting")
-                    .orElseGet(() -> solutionCategoryRepository.save(new SolutionCategory(
-                            null,
-                            "Lighting",
-                            "Professional event lighting solutions",
-                           Status.APPROVED
-                    )));
-
-            SolutionCategory musicCategory = solutionCategoryRepository.findByName("Music")
-                    .orElseGet(() -> solutionCategoryRepository.save(new SolutionCategory(
-                            null,
-                            "Music",
-                            "Live bands and DJ services",
-                             Status.APPROVED
-                    )));
 
             // Add categories to event types
             partyType.getSolutionCategories().add(cateringCategory);
