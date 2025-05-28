@@ -1,5 +1,6 @@
 package edu.ftn.iss.eventplanner.controllers;
 
+import edu.ftn.iss.eventplanner.dtos.eventType.CategoryNamesDTO;
 import edu.ftn.iss.eventplanner.dtos.serviceDetails.CategoryDTO;
 import edu.ftn.iss.eventplanner.dtos.CreateCategoryDTO;
 import edu.ftn.iss.eventplanner.dtos.UpdateCategoryDTO;
@@ -17,11 +18,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 
 @Getter
 @Setter
 @RestController
-@RequestMapping(path = {"/api/categories"})
+@RequestMapping(path = {"/api/categories"}, produces = MediaType.APPLICATION_JSON_VALUE)
 public class CategoryController {
 
     private CategoryService categoryService;
@@ -34,10 +36,8 @@ public class CategoryController {
         this.modelMapper = modelMapper;
     }
 
-
-
     // GET */api/categories
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<Collection<CategoryDTO>> getAllCategories() {
         Collection<CategoryDTO> categories = categoryService.getAllCategories()
                 .stream().map(modelMapper::toCategoryDTO).toList();
@@ -45,10 +45,20 @@ public class CategoryController {
         return ResponseEntity.ok(categories);
     }
 
+    @GetMapping("/get-all-et")
+    public ResponseEntity<List<CategoryNamesDTO>> getAllForET() {
+        List<CategoryNamesDTO> categories = categoryService.getAllForET();
+        return ResponseEntity.ok(categories);
+    }
 
+    @GetMapping("/get-by-event-type")
+    public ResponseEntity<List<CategoryNamesDTO>> getByEventType(@RequestParam String eventType) {
+        List<CategoryNamesDTO> categories = categoryService.getByEventType(eventType);
+        return ResponseEntity.ok(categories);
+    }
 
     // GET */api/categories/1
-    @GetMapping(path = "/{id:\\d+}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{id:\\d+}")
     public ResponseEntity<CategoryDTO> getCategoryById(
             @PathVariable(name = "id") int id
     ) {
@@ -71,7 +81,7 @@ public class CategoryController {
 
 
     // POST admin@*/api/categories
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<CategoryDTO> createCategory(
             @RequestBody @Valid CreateCategoryDTO categoryData,
             UriComponentsBuilder uriBuilder
@@ -79,7 +89,7 @@ public class CategoryController {
         SolutionCategory createdCategory = categoryService.insertCategory(modelMapper.fromDTO(categoryData));
 
         URI location = uriBuilder
-                .path("/{id}")
+                .path("/api/categories/{id}")
                 .buildAndExpand(createdCategory.getId())
                 .toUri();
 
@@ -88,11 +98,13 @@ public class CategoryController {
 
 
 
-    // PUT admin@*/api/categories
-    @PutMapping
+    // PUT admin@*/api/categories/1
+    @PutMapping(path = {"/{id:\\d+}"})
     public ResponseEntity<CategoryDTO> putUpdateCategory(
+            @PathVariable int id,
             @RequestBody @Valid UpdateCategoryDTO categoryData
     ) {
+        categoryData.setId(id);
         SolutionCategory updatedCategory = categoryService.updateCategory(modelMapper.fromDTO(categoryData));
         return ResponseEntity.ok(modelMapper.toCategoryDTO(updatedCategory));
     }

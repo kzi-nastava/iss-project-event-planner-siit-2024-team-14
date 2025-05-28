@@ -1,11 +1,14 @@
 package edu.ftn.iss.eventplanner.services;
 
+import edu.ftn.iss.eventplanner.dtos.eventType.CategoryNamesDTO;
 import edu.ftn.iss.eventplanner.entities.SolutionCategory;
+import edu.ftn.iss.eventplanner.entities.EventType;
 import edu.ftn.iss.eventplanner.entities.CategoryNameChangedEvent;
 import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
 import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.CategoryRepository;
+import edu.ftn.iss.eventplanner.repositories.EventTypeRepository;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -17,30 +20,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
 @Service("CategoryCRUDServiceImpl")
 public class CategoryService {
 
-    private CategoryRepository categories;
+    private CategoryRepository categoryRepository;
     private ApplicationEventPublisher eventPublisher;
 
 
     @Autowired
     public CategoryService(CategoryRepository categoryRepository, ApplicationEventPublisher eventPublisher) {
-        this.categories = categoryRepository;
+        this.categoryRepository = categoryRepository;
         this.eventPublisher = eventPublisher;
     }
-
-
 
     public SolutionCategory getCategoryById(int id) {
         Optional<SolutionCategory> category;
         try {
-            category = categories.findById(id);
+            category = categoryRepository.findById(id);
         } catch (Exception ex) {
             throw new InternalServerError("An unexpected error has occurred. :(");
         }
@@ -48,35 +51,48 @@ public class CategoryService {
         return category.orElseThrow(() -> new NotFoundException("Category not found."));
     }
 
-
     public Optional<SolutionCategory> findCategoryById(int id) {
         try {
-            return categories.findById(id);
+            return categoryRepository.findById(id);
         } catch  (Exception ex) {
             throw new InternalServerError("An unexpected error has occurred. :(");
         }
     }
 
-
     public Optional<SolutionCategory> findCategoryByName(String name) {
         try {
-            return categories.findByName(name);
+            return categoryRepository.findByName(name);
         } catch (Exception ex) {
             throw new InternalServerError("An unexpected error has occurred. :(");
         }
     }
-
-
 
     public Collection<SolutionCategory> getAllCategories() {
         try {
-            return categories.findAll();
+            return categoryRepository.findAll();
         } catch (Exception ex) {
             throw new InternalServerError("An unexpected error has occurred. :(");
         }
     }
 
+    public List<CategoryNamesDTO> getAllForET() {
+        List<SolutionCategory> categories = categoryRepository.findAll();
+        return categories.stream()
+                .map(category -> new CategoryNamesDTO(
+                        category.getName()
+                ))
+                .collect(Collectors.toList());
+    }
 
+    public List<CategoryNamesDTO> getByEventType(String eventTypeName) {
+        EventType eventType = categoryRepository.findByNameWithCategories(eventTypeName);
+        if (eventType == null) {
+            throw new NotFoundException("EventType not found.");
+        }
+        return eventType.getSolutionCategories().stream()
+                .map(category -> new CategoryNamesDTO(category.getName()))
+                .collect(Collectors.toList());
+    }
 
     public SolutionCategory insertCategory(@NotNull SolutionCategory categoryRequest) {
         SolutionCategory category = SolutionCategory.builder()
@@ -85,7 +101,7 @@ public class CategoryService {
                 .build();
 
         try {
-            return categories.save(category);
+            return categoryRepository.save(category);
         } catch (DataIntegrityViolationException | ConstraintViolationException | IllegalArgumentException ex) {
             throw new BadRequestException();
         } catch (Exception ex) {
@@ -123,13 +139,13 @@ public class CategoryService {
 
 
     public void deleteCategoryById(int id) {
-        if (!categories.existsById(id)) {
+        if (!categoryRepository.existsById(id)) {
             throw new NotFoundException("Category not found!");
         }
 
         try {
             // TODO: Prevent deletion if services/products that are categorized into this category exist
-            categories.deleteById(id);
+            categoryRepository.deleteById(id);
         } catch (Exception ex) {
             throw new InternalServerError("An unexpected error has occurred. :(");
         }
@@ -140,7 +156,7 @@ public class CategoryService {
     public void deleteAllCategories() {
         try {
             // TODO: Prevent deletion ...
-            categories.deleteAll();
+            categoryRepository.deleteAll();
         } catch (Exception ex) {
             throw new InternalServerError("An unexpected error has occurred. :(");
         }
