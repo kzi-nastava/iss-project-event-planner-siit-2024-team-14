@@ -4,6 +4,8 @@ import edu.ftn.iss.eventplanner.enums.PrivacyType;
 import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -29,4 +31,13 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "event_type_id")
     private EventType eventType;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "event_category",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<SolutionCategory> selectedCategories = new ArrayList<>();
+
 }

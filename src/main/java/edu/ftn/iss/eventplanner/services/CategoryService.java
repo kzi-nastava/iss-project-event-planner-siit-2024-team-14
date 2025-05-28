@@ -2,11 +2,13 @@ package edu.ftn.iss.eventplanner.services;
 
 import edu.ftn.iss.eventplanner.dtos.eventType.CategoryNamesDTO;
 import edu.ftn.iss.eventplanner.entities.SolutionCategory;
+import edu.ftn.iss.eventplanner.entities.EventType;
 import edu.ftn.iss.eventplanner.entities.CategoryNameChangedEvent;
 import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
 import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.CategoryRepository;
+import edu.ftn.iss.eventplanner.repositories.EventTypeRepository;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -38,8 +40,6 @@ public class CategoryService {
         this.eventPublisher = eventPublisher;
     }
 
-
-
     public SolutionCategory getCategoryById(int id) {
         Optional<SolutionCategory> category;
         try {
@@ -51,7 +51,6 @@ public class CategoryService {
         return category.orElseThrow(() -> new NotFoundException("Category not found."));
     }
 
-
     public Optional<SolutionCategory> findCategoryById(int id) {
         try {
             return categoryRepository.findById(id);
@@ -60,7 +59,6 @@ public class CategoryService {
         }
     }
 
-
     public Optional<SolutionCategory> findCategoryByName(String name) {
         try {
             return categoryRepository.findByName(name);
@@ -68,8 +66,6 @@ public class CategoryService {
             throw new InternalServerError("An unexpected error has occurred. :(");
         }
     }
-
-
 
     public Collection<SolutionCategory> getAllCategories() {
         try {
@@ -88,6 +84,15 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    public List<CategoryNamesDTO> getByEventType(String eventTypeName) {
+        EventType eventType = categoryRepository.findByNameWithCategories(eventTypeName);
+        if (eventType == null) {
+            throw new NotFoundException("EventType not found.");
+        }
+        return eventType.getSolutionCategories().stream()
+                .map(category -> new CategoryNamesDTO(category.getName()))
+                .collect(Collectors.toList());
+    }
 
     public SolutionCategory insertCategory(@NotNull SolutionCategory categoryRequest) {
         SolutionCategory category = SolutionCategory.builder()

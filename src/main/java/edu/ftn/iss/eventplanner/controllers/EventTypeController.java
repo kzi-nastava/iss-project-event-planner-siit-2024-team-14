@@ -2,6 +2,7 @@ package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.eventType.EventTypeDTO;
 import edu.ftn.iss.eventplanner.dtos.eventType.UpdatedEventTypeDTO;
+import edu.ftn.iss.eventplanner.dtos.events.EventTypeNamesDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.entities.EventType;
 import edu.ftn.iss.eventplanner.repositories.EventTypeRepository;
@@ -62,5 +63,12 @@ public class EventTypeController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Return 404 if event not found
         }
+    }
+
+    @GetMapping("/get-all-event")
+    public ResponseEntity<List<EventTypeNamesDTO>> getAllForEvent() {
+        List<EventTypeNamesDTO> eventTypes = eventTypeService.getAllForEvent();
+        System.out.println("EVENT TYPES: " + eventTypes);
+        return ResponseEntity.ok(eventTypes);
     }
 }
