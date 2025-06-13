@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class GetProductDTO {
+    private int id;
     private String name;
     private String description;
     private double price;
