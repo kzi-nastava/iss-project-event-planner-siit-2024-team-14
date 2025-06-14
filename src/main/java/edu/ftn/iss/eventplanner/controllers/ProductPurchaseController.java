@@ -37,7 +37,7 @@ public class ProductPurchaseController {
     @GetMapping("/products")
     public List<GetProductDTO> getAvailableXorPurchasedProductsForEvent(
             @PathVariable int eventId,
-            @RequestParam String status // purchased | available
+            @RequestParam(required = false, defaultValue = "available") String status // purchased | available
     ) {
         List<Product> products = switch (status.toLowerCase()) {
             case "purchased" -> productService.getPurchasedProductsForEvent(eventId);
