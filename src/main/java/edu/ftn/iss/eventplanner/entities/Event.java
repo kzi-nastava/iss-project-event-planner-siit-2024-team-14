@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,6 +34,14 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "event_type_id")
     private EventType eventType;
+  
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "event_category",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<SolutionCategory> selectedCategories = new ArrayList<>();
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<PurchaseProduct> purchases = new ArrayList<>();

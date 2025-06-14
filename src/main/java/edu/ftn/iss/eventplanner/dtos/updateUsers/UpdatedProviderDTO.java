@@ -1,4 +1,4 @@
-package edu.ftn.iss.eventplanner.dtos.update;
+package edu.ftn.iss.eventplanner.dtos.updateUsers;
 
 import lombok.Data;
 
