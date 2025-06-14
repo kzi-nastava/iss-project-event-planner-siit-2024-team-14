@@ -50,8 +50,8 @@ public class Budget {
 
     @Transient
     public double getSpent() {
-        return items.stream()
-                .mapToDouble(BudgetItem::getSpent)
+        return event.getHeldSolutions().stream()
+                .mapToDouble(Solution::getPrice)
                 .sum();
     }
 

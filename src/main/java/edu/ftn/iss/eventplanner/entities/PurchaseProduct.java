@@ -4,6 +4,7 @@ import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
+import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +20,7 @@ public class PurchaseProduct {
     private Integer id;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime purchaseDate;
+    private LocalDateTime purchaseDate = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -33,7 +34,6 @@ public class PurchaseProduct {
     public PurchaseProduct(Event event, Product product) {
         setEvent(event);
         setProduct(product);
-        this.purchaseDate = LocalDateTime.now();
     }
 
     @PrePersist
@@ -60,7 +60,7 @@ public class PurchaseProduct {
         }
 
         if (event.getEndDate() != null && event.getEndDate().isBefore(ChronoLocalDate.from(purchaseDate))) {
-            throw new IllegalStateException("Event cannot be over at the time of the purchase");
+            //throw new IllegalStateException("Event cannot be over at the time of the purchase");
         }
 
         this.event = event;
@@ -78,4 +78,17 @@ public class PurchaseProduct {
         this.purchaseDate = purchaseDate;
     }
 // maybe could do the validation with annotations?
+
+    @PostPersist
+    protected void addBudgetItemIfNecessary() {
+        var category = product.getCategory();
+        var budget = Optional.ofNullable(event.getBudget())
+                .orElseGet(() -> {
+                    event.setBudget(new Budget());
+                    return event.getBudget();
+                });
+
+        if (budget.getItem(category).isEmpty())
+            budget.addItem(category, 0d);
+    }
 }

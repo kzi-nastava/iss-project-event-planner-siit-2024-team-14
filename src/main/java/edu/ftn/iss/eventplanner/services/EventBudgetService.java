@@ -1,9 +1,6 @@
 package edu.ftn.iss.eventplanner.services;
 
-import edu.ftn.iss.eventplanner.entities.Budget;
-import edu.ftn.iss.eventplanner.entities.BudgetItem;
-import edu.ftn.iss.eventplanner.entities.Event;
-import edu.ftn.iss.eventplanner.entities.SolutionCategory;
+import edu.ftn.iss.eventplanner.entities.*;
 import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
 import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
@@ -58,8 +55,15 @@ public class EventBudgetService {
 
     @Transactional
     public BudgetItem addEventBudgetItem(int eventId, int categoryId, double amount) {
-        Budget budget = getBudgetByEventId(eventId);
-        SolutionCategory category = categoryService.getCategoryById(categoryId);
+        var event = getEventById(eventId);
+
+        var budget = event.getBudget();
+        if (budget == null)
+            event.setBudget(budget = new Budget());
+
+        var category = categoryService.getCategoryById(categoryId);
+        if (budget.getItem(category).isPresent())
+            throw new BadRequestException("Budget plan for '" + category.getName() + "' already exists");
 
         budget.addItem(category, amount);
         return budget.getItem(category)
@@ -93,6 +97,11 @@ public class EventBudgetService {
     private Event getEventById(int id) {
         return events.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event not found"));
+    }
+
+
+
+    void productPurchasedHandler() {
     }
 
 }

@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Data
 @NoArgsConstructor
@@ -30,5 +31,23 @@ public class BookingService {
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
+
+
+    @PostPersist
+    @PostUpdate
+    protected void addBudgetItemIfNecessary() {
+        if (confirmed != Status.APPROVED)
+            return;
+
+        var category = service.getCategory();
+        var budget = Optional.ofNullable(event.getBudget())
+                .orElseGet(() -> {
+                    event.setBudget(new Budget());
+                    return event.getBudget();
+                });
+
+        if (budget.getItem(category).isEmpty())
+            budget.addItem(category, 0d);
+    }
 }
 

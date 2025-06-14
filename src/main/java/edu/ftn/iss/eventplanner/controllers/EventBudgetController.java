@@ -30,9 +30,6 @@ public class EventBudgetController {
     public EventBudgetController(EventBudgetService budgetService, ModelMapper modelMapper) {
         this.budgetService = budgetService;
         this.modelMapper = modelMapper;
-
-        modelMapper.createTypeMap(Solution.class, SolutionItemDTO.class)
-                .addMapping(src -> src.getClass().getSimpleName().toLowerCase(), SolutionItemDTO::setType);
     }
 
 

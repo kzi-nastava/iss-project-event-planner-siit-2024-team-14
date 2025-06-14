@@ -1,9 +1,9 @@
 package edu.ftn.iss.eventplanner.dtos.budget;
 
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class UpdateBudgetItemDTO {
 
     int categoryId;

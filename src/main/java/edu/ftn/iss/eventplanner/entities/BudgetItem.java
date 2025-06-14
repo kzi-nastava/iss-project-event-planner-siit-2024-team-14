@@ -1,6 +1,7 @@
 package edu.ftn.iss.eventplanner.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Formula;
@@ -21,6 +22,7 @@ public class BudgetItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @PositiveOrZero
     private double amount = 0d;
 
     @ManyToOne(optional = false)
@@ -47,13 +49,9 @@ public class BudgetItem {
 
     @Transient
     public double getSpent() {
-        Stream<Solution> solutions = Stream.concat(
-                getPurchasedProducts(),
-                getReservedServices()
-
-        ).filter(s -> category.getId().equals(s.getCategory().getId()));
-
-        return solutions.mapToDouble(Solution::getPrice).sum();
+        return getItems().stream()
+                .mapToDouble(Solution::getPrice)
+                .sum();
     }
 
 
@@ -63,19 +61,9 @@ public class BudgetItem {
     }
 
 
-    private Stream<Product> getPurchasedProducts() { // should probably be in the event
-        return budget.getEvent().getPurchases().stream().map(PurchaseProduct::getProduct);
-    }
-
-
-    private Stream<Service> getReservedServices() {
-        return budget.getEvent().getReservations().stream().map(BookingService::getService);
-    }
-
-
     @Transient
     public List<Solution> getItems() {
-        return Stream.concat(getPurchasedProducts(), getReservedServices())
+        return budget.getEvent().getHeldSolutions().stream()
                 .filter(solution -> Objects.equals(category.getId(), solution.getCategory().getId()))
                 .toList();
     }
