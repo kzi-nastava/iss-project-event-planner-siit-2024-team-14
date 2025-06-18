@@ -1,20 +1,31 @@
 package edu.ftn.iss.eventplanner.security;
 
+import edu.ftn.iss.eventplanner.entities.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 
 import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
 
 public class JWTUtil {
 
     private static final String SECRET_KEY = "bXlzdHJvbmdzZWNyZXRrZXlmb3JldmVuY2UjfewnjJhjbhnVBDGHKJnjmebnjkwn";  // This is a Base64-encoded key
 
     // Generate token
-    public static String generateToken(String email) {
+    public static String generateToken(User user) {
+        Objects.requireNonNull(user);
+
         return Jwts.builder()
-                .setSubject(email)
+                .claims(
+                        Map.of(
+                                "id", user.getId(),
+                                "role", user.getClass().getSimpleName()
+                        )
+                )
+                .setSubject(user.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour expiration
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
