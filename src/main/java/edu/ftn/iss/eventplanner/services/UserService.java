@@ -8,6 +8,7 @@ import edu.ftn.iss.eventplanner.dtos.updateUsers.ChangedPasswordDTO;
 import edu.ftn.iss.eventplanner.entities.ReportRequest;
 import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.enums.Status;
+import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ReportRequestRepository;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +82,7 @@ public class UserService {
         }
 
         // Generate token
-        String token = JWTUtil.generateToken(user.getEmail());
+        String token = JWTUtil.generateToken(user);
 
         // Prepare User DTO
         UserDTO userDTO = new UserDTO();
@@ -126,5 +127,10 @@ public class UserService {
             response.setMessage("User not found");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+    }
+
+    User getUserById(int id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found"));
     }
 }
