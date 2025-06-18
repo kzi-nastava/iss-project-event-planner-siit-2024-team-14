@@ -53,7 +53,7 @@ public class Event {
     private Budget budget;
 
 
-    public Event(Integer id, EventOrganizer organizer, String name, String description, int maxParticipants, PrivacyType privacyType, String location, LocalDate startDate, LocalDate endDate, String imageUrl, EventType eventType) {
+    public Event(Integer id, EventOrganizer organizer, String name, String description, int maxParticipants, PrivacyType privacyType, String location, LocalDate startDate, LocalDate endDate, String imageUrl, EventType eventType, List<SolutionCategory> selectedCategories) {
         this.id = id;
         this.organizer = organizer;
         this.name = name;
@@ -65,6 +65,7 @@ public class Event {
         this.endDate = endDate;
         this.imageUrl = imageUrl;
         this.eventType = eventType;
+        this.selectedCategories = selectedCategories;
     }
 
 
