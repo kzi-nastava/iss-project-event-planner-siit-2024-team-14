@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Data
@@ -67,4 +68,13 @@ public class User {
     public void generateActivationToken() {
         this.activationToken = UUID.randomUUID().toString();
     }
+
+
+    public boolean hasBlocked(User other) {
+        return blockedUsers.stream()
+                .map(BlockedUser::getBlocked)
+                .map(User::getId)
+                .anyMatch(Objects.requireNonNull(other).getId()::equals);
+    }
+
 }

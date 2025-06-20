@@ -57,6 +57,11 @@ public class Chat {
         if (!isParticipant(from))
             throw new IllegalStateException("User not in chat");
 
+        var recipient = from.getId().equals(sender.getId()) ? this.recipient : sender;
+        if (recipient.hasBlocked(from)) {
+            throw new IllegalStateException("User is blocked by the recipient");
+        }
+
         var message = new Message(this, from, content);
         messages.add(message);
         return message;
