@@ -129,8 +129,13 @@ public class UserService {
         }
     }
 
-    User getUserById(int id) {
+    public User getUserById(int id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found"));
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User with email '" + email + "' not found"));
     }
 }
