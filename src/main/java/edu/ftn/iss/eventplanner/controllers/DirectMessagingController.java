@@ -46,7 +46,6 @@ public class DirectMessagingController {
             @PathVariable int recipientId
     ) {
         var chat = messagingService.getChat(userId, recipientId);
-        chat.sendMessage(userId, "This should not appear in msgs");
         return modelMapper.map(chat, ChatDTO.class);
     }
 
@@ -91,7 +90,7 @@ public class DirectMessagingController {
 
     @MessageExceptionHandler
     public void handleMessageException(Throwable ex) {
-        log.error("Message exception", ex);
+        log.error("[DirectMessagingController] Message exception: ", ex);
     }
 
 }
