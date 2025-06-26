@@ -1,19 +1,33 @@
 package edu.ftn.iss.eventplanner.controllers;
+import edu.ftn.iss.eventplanner.dtos.getUsers.UserDTO;
 import edu.ftn.iss.eventplanner.dtos.login.LoginDTO;
 import edu.ftn.iss.eventplanner.dtos.login.LoginResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.ChangePasswordDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.ChangedPasswordDTO;
+import jakarta.validation.constraints.Email;
 import edu.ftn.iss.eventplanner.services.UserService;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
+@Validated
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping(path = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@AllArgsConstructor
 public class UserController {
 
     @Autowired
     private UserService userService;
+    private final ModelMapper modelMapper;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) {
@@ -25,4 +39,12 @@ public class UserController {
     public ResponseEntity<ChangedPasswordDTO> changePassword(@RequestBody ChangePasswordDTO dto) {
         return userService.changePassword(dto);
     }
+
+    @GetMapping(path = "/~{email}")
+    @ResponseStatus(HttpStatus.OK)
+    UserDTO getByEmail(@PathVariable @Email String email) {
+        var user = userService.getUserByEmail(email);
+        return modelMapper.map(user, UserDTO.class);
+    }
+
 }

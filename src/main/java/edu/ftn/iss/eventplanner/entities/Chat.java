@@ -3,8 +3,7 @@ package edu.ftn.iss.eventplanner.entities;
 import lombok.*;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -25,5 +24,46 @@ public class Chat {
     private User recipient;             // who got a message
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("timestamp DESC")
     private List<Message> messages = new ArrayList<>();     // list of messages in the chat
+
+
+
+    public Chat(User sender, User recipient) {
+        this.sender = Objects.requireNonNull(sender);
+        this.recipient = Objects.requireNonNull(recipient);
+    }
+
+
+    public boolean isParticipant(User user) {
+        return Set.of(sender.getId(), recipient.getId())
+                .contains(Objects.requireNonNull(user).getId());
+    }
+
+
+    public Message sendMessage(int fromId, String content) {
+
+        if (sender.getId().equals(fromId)) {
+            return sendMessage(sender, content);
+        } else if (recipient.getId().equals(fromId)) {
+            return sendMessage(recipient, content);
+        }
+
+        throw new IllegalStateException("User not in chat");
+    }
+
+
+    public Message sendMessage(User from, String content) {
+        if (!isParticipant(from))
+            throw new IllegalStateException("User not in chat");
+
+        var recipient = from.getId().equals(sender.getId()) ? this.recipient : sender;
+        if (recipient.hasBlocked(from)) {
+            throw new IllegalStateException("User is blocked by the recipient");
+        }
+
+        var message = new Message(this, from, content);
+        messages.add(message);
+        return message;
+    }
 }
