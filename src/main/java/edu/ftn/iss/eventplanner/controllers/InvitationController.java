@@ -1,6 +1,5 @@
 package edu.ftn.iss.eventplanner.controllers;
 import edu.ftn.iss.eventplanner.dtos.invitations.InvitationRequestDTO;
-import edu.ftn.iss.eventplanner.dtos.invitations.InvitationResponseDTO;
 import edu.ftn.iss.eventplanner.entities.Invitation;
 import edu.ftn.iss.eventplanner.enums.Status;
 import edu.ftn.iss.eventplanner.services.InvitationService;
@@ -9,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/invitations")
@@ -19,15 +19,10 @@ public class InvitationController {
 
     @PostMapping("/bulk")
     public ResponseEntity<?> sendBulkInvitations(@RequestBody InvitationRequestDTO dto) {
-        System.out.println("DTO received: " + dto);
-        System.out.println("Event ID: " + dto.getEventId());
-        System.out.println("Guest Emails: " + dto.getGuestEmails());
-        if (dto.getEventId() == null || dto.getGuestEmails() == null || dto.getGuestEmails().isEmpty()) {
-            return ResponseEntity.badRequest().body("Invalid invitation request.");
-        }
-
+        System.out.println(dto);
         List<Invitation> created = invitationService.createInvitation(dto);
-        return ResponseEntity.ok(created.size() + " invitations sent.");
+        return ResponseEntity.ok(Map.of("message", created.size() + " invitations sent."));
+
     }
 
 
