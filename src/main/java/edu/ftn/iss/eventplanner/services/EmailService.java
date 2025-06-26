@@ -3,6 +3,7 @@ package edu.ftn.iss.eventplanner.services;
 import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -119,6 +120,27 @@ public class EmailService {
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(body, true);
+
+        mailSender.send(message);
+    }
+
+    public void sendInvitationEmail(String recipientEmail, String eventName, String link) {
+        String subject = "Pozivnica za događaj: " + eventName;
+
+        String content = """
+                Pozvani ste na događaj: %s
+                
+                Da biste pratili događaj, kliknite na sledeći link:
+                %s
+
+                Ako nemate nalog, moći ćete da se registrujete brzo pomoću ovog linka.
+                Ako imate nalog, bićete preusmereni na prijavu i događaj će biti dodat u vaš kalendar.
+                """.formatted(eventName, link);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(recipientEmail);
+        message.setSubject(subject);
+        message.setText(content);
 
         mailSender.send(message);
     }

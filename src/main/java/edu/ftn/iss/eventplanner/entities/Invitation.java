@@ -1,5 +1,6 @@
 package edu.ftn.iss.eventplanner.entities;
 
+import edu.ftn.iss.eventplanner.enums.Status;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -14,7 +15,7 @@ public class Invitation {
     private Integer id;
 
     private String guestEmail;
-    private String status;
+    private Status status;
 
     @ManyToOne
     @JoinColumn(name = "event_id")
