@@ -54,7 +54,7 @@ public class EmailService {
         }
 
         LocalDateTime tokenCreationTime = user.getTokenCreationDate();
-        if (tokenCreationTime.plusHours(24).isBefore(LocalDateTime.now())) {
+        if (tokenCreationTime == null ||tokenCreationTime.plusHours(24).isBefore(LocalDateTime.now())) {
             return false; // Token has expired
         }
 
