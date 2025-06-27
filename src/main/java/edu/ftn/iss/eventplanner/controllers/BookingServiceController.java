@@ -46,7 +46,7 @@ public class BookingServiceController {
     }
 
     @PutMapping("/approve")
-    public ResponseEntity<BookingServiceRequestsForProviderDTO> approveComment(@Valid @RequestBody ApproveRequestDTO approveRequestDTO) {
+    public ResponseEntity<BookingServiceRequestsForProviderDTO> approveRequest(@Valid @RequestBody ApproveRequestDTO approveRequestDTO) {
         BookingServiceRequestsForProviderDTO response = bookingServiceService.approveRequest(approveRequestDTO);
         return ResponseEntity.ok(response);
     }

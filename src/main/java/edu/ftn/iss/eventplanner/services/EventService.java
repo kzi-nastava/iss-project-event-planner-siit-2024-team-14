@@ -158,13 +158,7 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("Event Type not found"));
         event.setEventType(eventType);
 
-        if (eventType.getId() == 1) {
-            event.setPrivacyType(PrivacyType.OPEN); // Set event as open if type is 1
-        } else if (eventType.getId() == 2) {
-            event.setPrivacyType(PrivacyType.CLOSED); // Set event as closed if type is 2
-        } else {
-            event.setPrivacyType(PrivacyType.OPEN); // Default to open
-        }
+        event.setPrivacyType(PrivacyType.valueOf(dto.getType()));
 
         EventOrganizer organizer = eventOrganizerRepository.findById(dto.getOrganizer());
         event.setOrganizer(organizer);
