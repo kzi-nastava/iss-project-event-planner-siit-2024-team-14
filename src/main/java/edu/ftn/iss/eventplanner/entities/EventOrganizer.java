@@ -2,7 +2,10 @@ package edu.ftn.iss.eventplanner.entities;
 
 import lombok.*;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.Collection;
 import java.util.List;
 
 @Data
@@ -23,4 +26,10 @@ public class EventOrganizer extends User {
             inverseJoinColumns = @JoinColumn(name = "event_id")
     )
     private List<Event> myEvents;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_ORGANIZER"));
+    }
+
 }
