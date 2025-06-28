@@ -1,10 +1,6 @@
-package edu.ftn.iss.eventplanner.dtos;
+package edu.ftn.iss.eventplanner.dtos.homepage;
 
-import edu.ftn.iss.eventplanner.entities.Comment;
-import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
 import lombok.*;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor

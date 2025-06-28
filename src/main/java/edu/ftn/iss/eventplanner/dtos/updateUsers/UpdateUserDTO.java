@@ -1,10 +1,9 @@
-package edu.ftn.iss.eventplanner.dtos;
+package edu.ftn.iss.eventplanner.dtos.updateUsers;
 
 import lombok.Data;
 
 @Data
-public class UpdatedUserDTO {
-    private Long id;
+public class UpdateUserDTO {
     private String firstName;
     private String lastName;
     private String profilePicture;

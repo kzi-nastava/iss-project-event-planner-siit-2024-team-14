@@ -25,7 +25,6 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    // Endpoint za Top 5 događaja
     @GetMapping("/api/events/top5")
     public ResponseEntity<List<EventDTO>> getTop5Events(
             @RequestParam String city) {

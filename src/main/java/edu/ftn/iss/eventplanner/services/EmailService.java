@@ -3,6 +3,7 @@ package edu.ftn.iss.eventplanner.services;
 import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -48,12 +49,12 @@ public class EmailService {
     public boolean verifyActivationToken(String token) {
         User user = userRepository.findByActivationToken(token);
         if (user == null) {
-            System.out.println("NEMA USERA------------------------------------------------------------------------------------------------------------");
+            System.out.println("USERA NOT FIND------------------------------------------------------------------------------------------------------------");
             return false; // Token is invalid
         }
 
         LocalDateTime tokenCreationTime = user.getTokenCreationDate();
-        if (tokenCreationTime.plusHours(24).isBefore(LocalDateTime.now())) {
+        if (tokenCreationTime == null ||tokenCreationTime.plusHours(24).isBefore(LocalDateTime.now())) {
             return false; // Token has expired
         }
 
@@ -122,5 +123,27 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+    public void sendInvitationEmail(String recipientEmail, String eventName, String link) {
+        String subject = "You're invited to the event: " + eventName;
+
+        String content = """
+            You have been invited to the event: %s
+
+            To follow the event, click the following link:
+            %s
+
+            If you don't have an account, you will be able to register quickly using this link.
+            If you already have an account, you will be redirected to the login page and the event will be added to your calendar.
+            """.formatted(eventName, link);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(recipientEmail);
+        message.setSubject(subject);
+        message.setText(content);
+
+        mailSender.send(message);
+    }
+
 
 }

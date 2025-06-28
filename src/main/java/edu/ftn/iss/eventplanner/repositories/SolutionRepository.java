@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface SolutionRepository extends JpaRepository<Solution, Integer> {
+
     List<Solution> findFirst5ByLocation(String location);
 
     Optional<Solution> findByName(String name);

@@ -27,18 +27,25 @@ import java.util.stream.Collectors;
 
 @Service
 public class EventService {
+
     private final EventRepository eventRepository;
     private final EventTypeRepository eventTypeRepository;
     private final EventOrganizerRepository eventOrganizerRepository;
     private final SolutionCategoryRepository solutionCategoryRepository;
 
-    public EventService(EventRepository eventRepository, EventTypeRepository eventTypeRepository, EventOrganizerRepository eventOrganizerRepository, SolutionCategoryRepository solutionCategoryRepository) {
+    public EventService(EventRepository eventRepository,
+                        EventTypeRepository eventTypeRepository,
+                        EventOrganizerRepository eventOrganizerRepository,
+                        SolutionCategoryRepository solutionCategoryRepository) {
         this.eventRepository = eventRepository;
         this.eventTypeRepository = eventTypeRepository;
         this.eventOrganizerRepository = eventOrganizerRepository;
         this.solutionCategoryRepository = solutionCategoryRepository;
     }
 
+    /**
+     * Returns the top 5 latest public events for a given city.
+     */
     public List<EventDTO> getTop5Events(String city) {
         List<Event> events = eventRepository.findFirst5ByLocationOrderByStartDateDesc(city);
         List<Event> publicEvents = events.stream()
@@ -48,6 +55,9 @@ public class EventService {
         return mapToDTO(publicEvents);
     }
 
+    /**
+     * Returns all public events.
+     */
     public List<EventDTO> getEvents() {
         List<Event> events = eventRepository.findAll();
         List<Event> publicEvents = events.stream()
@@ -57,27 +67,37 @@ public class EventService {
         return mapToDTO(publicEvents);
     }
 
+    /**
+     * Retrieves all unique event locations from the database.
+     */
     public List<String> getAllLocations() {
         return eventRepository.findAllLocations();
     }
 
+    /**
+     * Retrieves all unique categories from the database.
+     */
     public List<String> getAllCategories() {
         return eventRepository.findAllCategories();
     }
 
+    /**
+     * Finds all events created by a specific organizer.
+     */
     public List<EventDTO> findEventsByOrganizer(Integer organizerId) {
         List<Event> events =  eventRepository.findByOrganizerId(organizerId);
         return mapToDTO(events);
     }
 
+    /**
+     * Returns filtered events by optional start date, end date, category, and location, with pagination support.
+     */
     public Page<EventDTO> getFilteredEvents(String startDate, String endDate, String category, String location, Pageable pageable) {
         LocalDate start = (startDate != null && !startDate.isEmpty()) ? LocalDate.parse(startDate) : null;
         LocalDate end = (endDate != null && !endDate.isEmpty()) ? LocalDate.parse(endDate) : null;
 
-        // Pozivanje novog metoda sa konsolidovanim filtriranjem
         Page<Event> eventPage = eventRepository.findFilteredEvents(category, start, end, location, pageable);
 
-        // Mapiranje Event objekata na EventDTO
         return eventPage.map(event -> {
             EventDTO dto = new EventDTO();
             dto.setId(event.getId());
@@ -97,6 +117,9 @@ public class EventService {
         });
     }
 
+    /**
+     * Returns a detailed DTO for a specific event by ID.
+     */
     public EventDTO getEventById(Integer id) {
         return eventRepository.findById(id)
                 .map(event -> new EventDTO(
@@ -113,9 +136,12 @@ public class EventService {
                         event.getOrganizer() != null ? event.getOrganizer().getId() : null,
                         event.getOrganizer() != null ? event.getOrganizer().getProfilePhoto() : null
                 ))
-                .orElse(null); // Ako event ne postoji, vrati null
+                .orElse(null); // Return null if event does not exist
     }
 
+    /**
+     * Maps a list of Event entities to a list of EventDTOs.
+     */
     private List<EventDTO> mapToDTO(List<Event> events) {
         return events.stream().map(event -> {
             EventDTO dto = new EventDTO();
@@ -138,11 +164,17 @@ public class EventService {
         }).collect(Collectors.toList());
     }
 
+    /**
+     * Returns the Event entity by ID or throws NotFoundException if not found.
+     */
     public Event getEventById(int id) {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event not found"));
     }
 
+    /**
+     * Creates and saves a new event, including optional image file upload and category/type assignments.
+     */
     public Event createEvent(CreateEventDTO dto, MultipartFile photo) throws IOException {
         System.out.println("EVENT FOR SAVING: " + dto);
 
@@ -154,25 +186,23 @@ public class EventService {
         event.setEndDate(dto.getEndDate());
         event.setMaxParticipants(dto.getGuestNumber());
 
+        // Set event type
         EventType eventType = eventTypeRepository.findByName(dto.getEventType())
                 .orElseThrow(() -> new NotFoundException("Event Type not found"));
         event.setEventType(eventType);
 
-        if (eventType.getId() == 1) {
-            event.setPrivacyType(PrivacyType.OPEN); // Set event as open if type is 1
-        } else if (eventType.getId() == 2) {
-            event.setPrivacyType(PrivacyType.CLOSED); // Set event as closed if type is 2
-        } else {
-            event.setPrivacyType(PrivacyType.OPEN); // Default to open
-        }
+        // Set privacy type (OPEN, PRIVATE, etc.)
+        event.setPrivacyType(PrivacyType.valueOf(dto.getType()));
 
+        // Set organizer
         EventOrganizer organizer = eventOrganizerRepository.findById(dto.getOrganizer());
         event.setOrganizer(organizer);
 
-        List<SolutionCategory> selectedCategories =
-                solutionCategoryRepository.findByNameIn(dto.getCategories());
+        // Set selected categories
+        List<SolutionCategory> selectedCategories = solutionCategoryRepository.findByNameIn(dto.getCategories());
         event.setSelectedCategories(selectedCategories);
 
+        // Handle image file if present
         if (photo != null && !photo.isEmpty()) {
             String photoFilename = dto.getName() + "_" + dto.getOrganizer() + ".png";
             String uploadDir = "src/main/resources/static/event-photo/";
@@ -182,15 +212,9 @@ public class EventService {
             Files.write(filePath, photo.getBytes());
 
             dto.setPhoto(photoFilename);
-
             event.setImageUrl(photoFilename);
         }
 
-
-        if (event.getPrivacyType() == PrivacyType.CLOSED) {
-            // ADD LOGIC FOR CLOSED EVENT AND INVITATIONS
-        }
         return eventRepository.save(event);
     }
-
 }

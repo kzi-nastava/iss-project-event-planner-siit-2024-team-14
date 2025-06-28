@@ -64,6 +64,4 @@ public class NotificationController {
         Integer unreadCount = notificationService.getUnreadNotificationCount(userId);
         return ResponseEntity.ok(unreadCount);
     }
-
-
 }

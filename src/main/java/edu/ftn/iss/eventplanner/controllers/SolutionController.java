@@ -1,5 +1,5 @@
 package edu.ftn.iss.eventplanner.controllers;
-import edu.ftn.iss.eventplanner.dtos.SolutionDTO;
+import edu.ftn.iss.eventplanner.dtos.homepage.SolutionDTO;
 import edu.ftn.iss.eventplanner.services.SolutionService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,6 @@ public class SolutionController {
         this.solutionService = solutionService;
     }
 
-    // Endpoint za Top 5 događaja
     @GetMapping("/api/solutions/top5")
     public ResponseEntity<List<SolutionDTO>> getTop5Solutions(
             @RequestParam String city) {

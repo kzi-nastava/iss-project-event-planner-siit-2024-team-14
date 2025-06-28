@@ -61,6 +61,7 @@ public class SecurityConfig {
                             // should only contain routes that don't require authentication (ex. login)
                             .requestMatchers(
                                     "/api/login", "/api/*/login", "/api/register", "/api/*/register",
+                                    "/photos/**", "/event-photo/**",
                                     "/api/**"   // TODO: remove "/api/**", and add other public routes
                             ).permitAll()
                             .anyRequest().authenticated();
