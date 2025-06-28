@@ -30,8 +30,10 @@ public class SolutionService {
      * @return List of SolutionDTOs representing top 5 solutions
      */
     public List<SolutionDTO> getTop5Solutions(String city) {
-        List<Solution> solutions = solutionRepository
-                .findFirst5ByLocationAndDeletedFalseAndAvailableTrueAndVisibleTrue(city);
+        List<Solution> solutions = solutionRepository.findFirst5ByLocation(city).stream()
+                .filter(s -> !s.isDeleted() && s.isVisible() && s.isAvailable())
+                .limit(5)
+                .toList();
         return mapToDTO(solutions);
     }
 
@@ -41,7 +43,9 @@ public class SolutionService {
      * @return List of SolutionDTOs representing all solutions
      */
     public List<SolutionDTO> getSolutions() {
-        List<Solution> solutions = solutionRepository.findAllByDeletedFalseAndAvailableTrueAndVisibleTrue();
+        List<Solution> solutions = solutionRepository.findAll().stream()
+                .filter(s -> !s.isDeleted() && s.isVisible() && s.isAvailable())
+                .toList();
         return mapToDTO(solutions);
     }
 
