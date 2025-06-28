@@ -22,8 +22,8 @@ public class InvitationController {
     public ResponseEntity<?> sendBulkInvitations(@RequestBody InvitationRequestDTO dto) {
         System.out.println(dto);
         List<Invitation> created = invitationService.createInvitation(dto);
-        return ResponseEntity.ok(Map.of("message", created.size() + " invitations sent."));
 
+        return ResponseEntity.ok(Map.of("message", created.size() + " invitations sent."));
     }
 
     @PutMapping("/{invitationId}/status")
@@ -32,6 +32,7 @@ public class InvitationController {
             @RequestParam Status status
     ) {
         invitationService.updateInvitationStatus(invitationId, status);
+
         return ResponseEntity.ok().build();
     }
 

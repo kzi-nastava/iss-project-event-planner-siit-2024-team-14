@@ -12,9 +12,14 @@ import java.util.Optional;
 
 @Repository
 public interface SolutionRepository extends JpaRepository<Solution, Integer> {
+
     List<Solution> findFirst5ByLocation(String location);
 
+    List<Solution> findFirst5ByLocationAndDeletedFalseAndAvailableTrueAndVisibleTrue(String city);
+
     Optional<Solution> findByName(String name);
+
+    List<Solution> findAllByDeletedFalseAndAvailableTrueAndVisibleTrue();
 
     List<Solution> findByLocation(String location);
 

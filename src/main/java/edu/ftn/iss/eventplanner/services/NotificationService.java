@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,13 +35,19 @@ public class NotificationService {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
+    /**
+     * Creates a notification for a user, optionally linked to a comment or event,
+     * stores it in the database, and sends it via WebSocket.
+     */
     public NotificationDTO createNotification(Integer userId, String message, Integer commentId, Integer eventId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        // Find optional comment and event
         Comment comment = (commentId != null) ? commentRepository.findById(commentId).orElse(null) : null;
         Event event = (eventId != null) ? eventRepository.findById(eventId).orElse(null) : null;
 
+        // Create and save notification
         Notification notification = new Notification();
         notification.setUser(user);
         notification.setMessage(message);
@@ -53,7 +58,7 @@ public class NotificationService {
 
         Notification savedNotification = notificationRepository.save(notification);
 
-        // Slanje WebSocket notifikacije
+        // Send WebSocket message to the user
         String destination = "/topic/notifications/" + userId;
         messagingTemplate.convertAndSend(destination, new NotificationDTO(
                 savedNotification.getId(),
@@ -65,6 +70,7 @@ public class NotificationService {
                 savedNotification.getEvent() != null ? savedNotification.getEvent().getId() : null
         ));
 
+        // Return DTO
         return new NotificationDTO(
                 savedNotification.getId(),
                 savedNotification.getMessage(),
@@ -76,6 +82,9 @@ public class NotificationService {
         );
     }
 
+    /**
+     * Retrieves all notifications for a given user, ordered by date descending.
+     */
     public List<NotificationDTO> getUserNotifications(Integer userId) {
         return notificationRepository.findByUserIdOrderByDateDesc(userId)
                 .stream()
@@ -91,6 +100,9 @@ public class NotificationService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Marks all notifications for a user as read.
+     */
     public void markAllAsRead(Integer userId) {
         List<Notification> notifications = notificationRepository.findByUserId(userId);
         for (Notification notification : notifications) {
@@ -99,6 +111,10 @@ public class NotificationService {
         notificationRepository.saveAll(notifications);
     }
 
+    /**
+     * Toggles the user's mute setting for notifications.
+     * This method is transactional to ensure consistency.
+     */
     @Transactional
     public void toggleMuteNotifications(Integer userId, boolean isMuted) {
         User user = userRepository.findById(userId)
@@ -108,12 +124,18 @@ public class NotificationService {
         userRepository.save(user);
     }
 
+    /**
+     * Returns whether the user has muted notifications.
+     */
     public boolean getMuteNotificationsStatus(Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return user.isMuted();
     }
 
+    /**
+     * Returns the number of unread notifications for a user.
+     */
     public Integer getUnreadNotificationCount(Integer userId) {
         List<Notification> notifications = notificationRepository.findByUserId(userId);
         return (int) notifications.stream().filter(n -> !n.isRead()).count();

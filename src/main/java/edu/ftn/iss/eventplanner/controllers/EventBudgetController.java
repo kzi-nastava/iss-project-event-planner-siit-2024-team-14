@@ -26,13 +26,10 @@ public class EventBudgetController {
     private final EventBudgetService budgetService;
     private final ModelMapper modelMapper;
 
-
     public EventBudgetController(EventBudgetService budgetService, ModelMapper modelMapper) {
         this.budgetService = budgetService;
         this.modelMapper = modelMapper;
     }
-
-
 
     // GET organizer[Organizes the event with id 1]@*/api/events/1/budget
     @GetMapping
@@ -43,7 +40,6 @@ public class EventBudgetController {
         Object budget = budgetService.getBudgetByEventId(eventId);
         return modelMapper.map(budget, EventBudgetDTO.class);
     }
-
 
     // POST organizer[Organizes the event with id 1]@*/api/events/1/budget
     @PostMapping
@@ -64,8 +60,6 @@ public class EventBudgetController {
                 .body(modelMapper.map(budget, EventBudgetDTO.class));
     }
 
-
-
     // GET organizer[Organizes the event with id 1]@*/api/events/1/budget/1
     @GetMapping(path = "/{categoryId:\\d+}")
     @ResponseStatus(HttpStatus.OK)
@@ -77,7 +71,6 @@ public class EventBudgetController {
         return modelMapper.map(item, EventBudgetItemDTO.class);
     }
 
-
     // GET ...*/api/events/1/budget?category=1
     @GetMapping(params = "category")
     @ResponseStatus(HttpStatus.OK)
@@ -87,7 +80,6 @@ public class EventBudgetController {
     ) {
         return getEventBudgetItem(eventId, category);
     }
-
 
     // POST organizer[Organizes the event with id 1]@*/api/events/1/budget/1
     @PostMapping(path = "/{categoryId:\\d+}")
@@ -109,7 +101,6 @@ public class EventBudgetController {
                 .body(modelMapper.map(item, EventBudgetItemDTO.class));
     }
 
-
     // PUT organizer[Organizes the event with id 1]@*/api/events/1/budget/1
     @PutMapping(path = "/{categoryId:\\d+}")
     @ResponseStatus(HttpStatus.OK)
@@ -122,7 +113,6 @@ public class EventBudgetController {
         return modelMapper.map(item, EventBudgetItemDTO.class);
     }
 
-
     // DELETE organizer[Organizes the event with id 1]@*/api/events/1/budget/1
     @DeleteMapping(path = "/{categoryId:\\d+}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -132,5 +122,4 @@ public class EventBudgetController {
     ) {
         budgetService.deleteEventBudgetItem(eventId, categoryId);
     }
-
 }

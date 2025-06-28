@@ -49,7 +49,7 @@ public class EmailService {
     public boolean verifyActivationToken(String token) {
         User user = userRepository.findByActivationToken(token);
         if (user == null) {
-            System.out.println("NEMA USERA------------------------------------------------------------------------------------------------------------");
+            System.out.println("USERA NOT FIND------------------------------------------------------------------------------------------------------------");
             return false; // Token is invalid
         }
 
@@ -125,17 +125,17 @@ public class EmailService {
     }
 
     public void sendInvitationEmail(String recipientEmail, String eventName, String link) {
-        String subject = "Pozivnica za događaj: " + eventName;
+        String subject = "You're invited to the event: " + eventName;
 
         String content = """
-                Pozvani ste na događaj: %s
-                
-                Da biste pratili događaj, kliknite na sledeći link:
-                %s
+            You have been invited to the event: %s
 
-                Ako nemate nalog, moći ćete da se registrujete brzo pomoću ovog linka.
-                Ako imate nalog, bićete preusmereni na prijavu i događaj će biti dodat u vaš kalendar.
-                """.formatted(eventName, link);
+            To follow the event, click the following link:
+            %s
+
+            If you don't have an account, you will be able to register quickly using this link.
+            If you already have an account, you will be redirected to the login page and the event will be added to your calendar.
+            """.formatted(eventName, link);
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(recipientEmail);
@@ -144,5 +144,6 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
 
 }
