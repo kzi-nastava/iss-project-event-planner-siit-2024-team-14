@@ -1,6 +1,5 @@
-package edu.ftn.iss.eventplanner.dtos;
+package edu.ftn.iss.eventplanner.dtos.getUsers;
 
-import edu.ftn.iss.eventplanner.dtos.getUsers.ProviderDTO;
 import lombok.Data;
 
 @Data

@@ -1,6 +1,6 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.GetProviderDTO;
+import edu.ftn.iss.eventplanner.dtos.getUsers.GetProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewProviderProfileDTO;

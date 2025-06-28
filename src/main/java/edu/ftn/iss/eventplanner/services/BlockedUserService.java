@@ -45,7 +45,6 @@ public class BlockedUserService {
     public List<Integer> getBlockedUsers(Integer userId) {
         Optional<User> user = userRepository.findById(userId);
         List<BlockedUser> blockedUsers = blockedUserRepository.findByBlocker(user.get());
-        System.out.println(" blokirano: " + blockedUsers);
         return blockedUsers.stream().map(blockedUser -> blockedUser.getBlocked().getId()).collect(Collectors.toList());
     }
 
