@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -79,6 +80,7 @@ public class ProductPurchaseController {
 
     // POST organizer[Organizes the event 1]@*/api/events/1/purchases
     @PostMapping("/purchases")
+    @PreAuthorize("hasRole('ORGANIZER') and authentication.principal.organizesEvent(#eventId)")
     public ResponseEntity<ProductPurchaseDTO> purchaseProductForEvent(
             @PathVariable int eventId,
             @RequestBody int productId,

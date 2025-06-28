@@ -4,20 +4,21 @@ import edu.ftn.iss.eventplanner.dtos.login.LoginDTO;
 import edu.ftn.iss.eventplanner.dtos.login.LoginResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.ChangePasswordDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.ChangedPasswordDTO;
+import edu.ftn.iss.eventplanner.entities.User;
 import jakarta.validation.constraints.Email;
 import edu.ftn.iss.eventplanner.services.UserService;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @Validated
 @RestController
@@ -45,6 +46,14 @@ public class UserController {
     UserDTO getByEmail(@PathVariable @Email String email) {
         var user = userService.getUserByEmail(email);
         return modelMapper.map(user, UserDTO.class);
+    }
+
+    @GetMapping(path = {"whoami"})
+    @PreAuthorize("isAuthenticated()")
+    UserDTO whoAmI(
+            @AuthenticationPrincipal @NotNull User principal
+    ) {
+        return modelMapper.map(principal, UserDTO.class);
     }
 
 }

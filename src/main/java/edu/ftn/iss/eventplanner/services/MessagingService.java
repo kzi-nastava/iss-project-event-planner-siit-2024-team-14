@@ -7,9 +7,8 @@ import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
 import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ChatRepository;
-import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,10 +84,17 @@ public class MessagingService {
     }
 
 
-    @Nullable
+    @NotNull
     private static User getCurrentUser() { // should be in some auth service
         var auth = SecurityContextHolder.getContext().getAuthentication();
-        return (auth != null && auth.getPrincipal() instanceof User user) ? user : null;
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            if (auth.getPrincipal() instanceof User user)
+                return user;
+
+            throw new InternalServerError("Principal not instance of User");
+        }
+
+        throw new BadRequestException("Not logged in");
     }
 
 }

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -70,6 +71,7 @@ public class ServiceController {
 
     // PUT provider[Provides the service]|admin@*/api/services/1
     @PutMapping(path = "/{id:\\d+}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROVIDER') and true") //
     ResponseEntity<ServiceDTO> putUpdateService(
             @PathVariable int id,
             @RequestBody @Validated UpdateServiceDTO updateServiceDTO
@@ -82,6 +84,7 @@ public class ServiceController {
     // DELETE provider[Provides the service]|admin@*/api/services/1
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(path = "/{id:\\d+}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROVIDER') and true")
     void deleteService(
             @PathVariable(name = "id") int id
     ) {
@@ -92,6 +95,7 @@ public class ServiceController {
     // DELETE admin@*/api/services
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping
+    @PreAuthorize("hasRole('ADMIN')")
     void deleteAllServices() {
         serviceService.deleteAllServices();
     }

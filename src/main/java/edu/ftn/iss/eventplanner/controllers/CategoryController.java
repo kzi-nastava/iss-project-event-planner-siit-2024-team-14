@@ -13,6 +13,7 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -82,6 +83,7 @@ public class CategoryController {
 
     // POST admin@*/api/categories
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CategoryDTO> createCategory(
             @RequestBody @Valid CreateCategoryDTO categoryData,
             UriComponentsBuilder uriBuilder
@@ -100,6 +102,7 @@ public class CategoryController {
 
     // PUT admin@*/api/categories/1
     @PutMapping(path = {"/{id:\\d+}"})
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CategoryDTO> putUpdateCategory(
             @PathVariable int id,
             @RequestBody @Valid UpdateCategoryDTO categoryData
@@ -113,6 +116,7 @@ public class CategoryController {
 
     // DELETE admin@*/api/categories/1
     @DeleteMapping(path = {"/{id:\\d+}"})
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteCategory(
             @PathVariable(name = "id") int id
     ) {
@@ -124,6 +128,7 @@ public class CategoryController {
 
     // DELETE admin@*/api/categories
     @DeleteMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteAllCategories() {
         categoryService.deleteAllCategories();
         return ResponseEntity.noContent().build();

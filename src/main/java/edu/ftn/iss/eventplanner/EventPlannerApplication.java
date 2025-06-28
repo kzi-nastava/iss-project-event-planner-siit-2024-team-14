@@ -1,6 +1,7 @@
 package edu.ftn.iss.eventplanner;
 
 import edu.ftn.iss.eventplanner.dtos.budget.SolutionItemDTO;
+import edu.ftn.iss.eventplanner.dtos.getUsers.ProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.getUsers.UserDTO;
 import edu.ftn.iss.eventplanner.entities.*;
 import org.modelmapper.ModelMapper;
@@ -37,6 +38,9 @@ public class EventPlannerApplication {
 
 		mapper.createTypeMap(ServiceAndProductProvider.class, UserDTO.class)
 				.addMapping(pup -> "ServiceAndProductProvider", UserDTO::setRole);
+
+		mapper.createTypeMap(ServiceAndProductProvider.class, ProviderDTO.class)
+				.addMapping(pup -> "ServiceAndProductProvider", ProviderDTO::setRole);
 
 		return mapper;
 	}
