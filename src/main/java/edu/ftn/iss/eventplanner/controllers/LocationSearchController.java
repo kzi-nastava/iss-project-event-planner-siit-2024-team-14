@@ -17,7 +17,7 @@ public class LocationSearchController {
 
     @GetMapping("/api/location/search")
     public ResponseEntity<String> searchLocation(@RequestParam String query) {
-        String url = "https://nominatim.openstreetmap.org/search?format=json&q=" + URLEncoder.encode(query, StandardCharsets.UTF_8) + "&addressdetails=1&limit=5";
+        String url = "https://nominatim.openstreetmap.org/search?format=json&q=" + URLEncoder.encode(query, StandardCharsets.UTF_8) + "&addressdetails=1&limit=25";
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.set("User-Agent", "EventPlannerApp");

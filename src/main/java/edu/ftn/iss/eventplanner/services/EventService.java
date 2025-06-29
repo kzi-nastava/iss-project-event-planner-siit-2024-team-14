@@ -85,7 +85,7 @@ public class EventService {
      * Finds all events created by a specific organizer.
      */
     public List<EventDTO> findEventsByOrganizer(Integer organizerId) {
-        List<Event> events =  eventRepository.findByOrganizerId(organizerId);
+        List<Event> events =  eventRepository.findAllByOrganizerId(organizerId);
         return mapToDTO(events);
     }
 
