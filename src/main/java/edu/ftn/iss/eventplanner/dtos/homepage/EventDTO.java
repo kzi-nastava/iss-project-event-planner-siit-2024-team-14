@@ -23,4 +23,5 @@ public class EventDTO {
     private String organizerLastName;
     private Integer organizerId;
     private String organizerProfilePicture;
+    private Integer maxParticipants;
 }

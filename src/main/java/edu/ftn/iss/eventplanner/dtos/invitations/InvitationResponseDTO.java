@@ -1,13 +1,13 @@
 package edu.ftn.iss.eventplanner.dtos.invitations;
-
 import edu.ftn.iss.eventplanner.enums.Status;
+import lombok.*;
 
-import lombok.Data;
+@AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
 @Data
 public class InvitationResponseDTO {
-    private Integer id;
     private String guestEmail;
     private Status status;
-    private String eventTitle;
-    private Integer eventId;
 }

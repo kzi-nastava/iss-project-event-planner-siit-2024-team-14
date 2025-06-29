@@ -33,7 +33,7 @@ public class SecurityConfig {
                         "/api/services",
                         "/api/products", "/api/products/search",
                         "/api/bookings", "/api/bookings/delete", "/api/bookings/reserve", "/api/bookings/approve", "/api/bookings/all", "/api/bookings/requests", "/api/bookings/available-start-times",
-                        "/api/invitations", "/api/invitations/bulk","/api/invitations/register", "/api/invitations/activate",
+                        "/api/invitations", "/api/invitations/bulk","/api/invitations/register", "/api/invitations/activate", "/api/invitations/by-organizer/{organizerId}",
                         "/api/reports", "/api/reports/approve", "/api/reports/delete", "/api/reports/pending", "/api/reports/all", "/api/reports/requests",
                         "/photos/**", "/event-photo/**",
                         "/api/chat", "/api/chat/blocked-users",

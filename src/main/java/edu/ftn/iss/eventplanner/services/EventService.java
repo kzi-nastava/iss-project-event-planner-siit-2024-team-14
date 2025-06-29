@@ -134,7 +134,8 @@ public class EventService {
                         event.getOrganizer() != null ? event.getOrganizer().getName() : null,
                         event.getOrganizer() != null ? event.getOrganizer().getSurname() : null,
                         event.getOrganizer() != null ? event.getOrganizer().getId() : null,
-                        event.getOrganizer() != null ? event.getOrganizer().getProfilePhoto() : null
+                        event.getOrganizer() != null ? event.getOrganizer().getProfilePhoto() : null,
+                        event.getMaxParticipants()
                 ))
                 .orElse(null); // Return null if event does not exist
     }
@@ -152,6 +153,7 @@ public class EventService {
             dto.setStartDate(event.getStartDate());
             dto.setEndDate(event.getEndDate());
             dto.setImageUrl(event.getImageUrl());
+            dto.setMaxParticipants(event.getMaxParticipants());
 
             if (event.getOrganizer() != null) {
                 dto.setOrganizerFirstName(event.getOrganizer().getName());
