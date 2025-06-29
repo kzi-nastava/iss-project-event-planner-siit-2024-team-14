@@ -5,6 +5,7 @@ import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewProviderProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateProviderDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateToProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdatedProviderDTO;
 import edu.ftn.iss.eventplanner.services.ServiceAndProductProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,12 @@ public class ServiceAndProductProviderController {
                                                            @RequestParam("photoIndex") int photoIndex) {
 
         return providerService.updatePhoto(userId, photo, photoIndex);
+    }
+
+    @PostMapping("/upgrade-to-provider")
+    public ResponseEntity<?> upgradeToProvider(@RequestBody UpdateToProviderDTO dto) {
+        providerService.upgradeUserToProvider(dto);
+        return ResponseEntity.ok("User upgraded to Service and Product Provider successfully.");
     }
 
     @PutMapping("/deactivate/{id}")

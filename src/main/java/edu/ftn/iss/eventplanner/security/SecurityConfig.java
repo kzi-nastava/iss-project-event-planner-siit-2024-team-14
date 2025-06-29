@@ -22,7 +22,7 @@ public class SecurityConfig {
         http
                 .cors().and().csrf().disable()  // Disabling CSRF if not needed (adjust as per your need)
                 .authorizeHttpRequests()
-                .requestMatchers("/api/providers/get/","/api/providers/deactivate/", "/api/providers/register", "/api/providers/activate", "/api/providers/update", "/api/providers/get-photos/", "/api/providers/update-photo/",
+                .requestMatchers("/api/providers/get/","/api/providers/deactivate/", "/api/providers/register", "/api/providers/activate", "/api/providers/update", "/api/providers/get-photos/", "/api/providers/update-photo/", "/api/providers/upgrade-to-provider",
                         "/api/users/changePassword",  "/api/users/login","/api/users/register", "/api/users/activate",
                         "/api/organizers/register", "/api/organizers/update-photo/", "/api/organizers/update", "/api/organizers/get/", "/api/organizers/*", "/api/organizers/**", "/api/organizers/deactivate/", "/api/organizers/activate", "/api/organizers/get-photo/",
                         "/api/events/*/products", "/api/events/filter", "/api/events/categories", "/api/events/top5", "/api/events/create-event", "/api/events/all", "/api/events/by-organizer/", "/api/events/locations", "/api/events/*/budget", "/api/events/*/purchases", "/api/events/*/purchases/", "/api/events/*/budget/", "api/events/by-organizer/{organizerId}",

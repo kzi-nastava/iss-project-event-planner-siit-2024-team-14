@@ -6,14 +6,18 @@ import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewProviderProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateProviderDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateToProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdatedProviderDTO;
 import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
+import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ServiceAndProductProviderRepository;
+import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,6 +36,9 @@ public class ServiceAndProductProviderService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public ResponseEntity<RegisterResponseDTO> register(RegisterSppDTO dto, List<MultipartFile> photos) {
         try {
@@ -267,6 +274,42 @@ public class ServiceAndProductProviderService {
         }
         providerRepository.save(provider);
         return ResponseEntity.ok(new RegisterResponseDTO("Provider deactivated successfully!", true));
+    }
+
+    @Transactional
+    public void upgradeUserToProvider(UpdateToProviderDTO dto) {
+        User existingUser = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + dto.getEmail()));
+
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match.");
+        }
+
+        ServiceAndProductProvider provider = new ServiceAndProductProvider();
+
+        provider.setId(existingUser.getId());
+        provider.setEmail(existingUser.getEmail());
+        provider.setPassword(existingUser.getPassword());
+        provider.setAddress(dto.getAddress());
+        provider.setCity(dto.getCity());
+        provider.setPhoneNumber(Integer.parseInt(dto.getPhoneNumber()));
+        provider.setActive(existingUser.isActive());
+        provider.setVerified(existingUser.isVerified());
+        provider.setSuspended(existingUser.isSuspended());
+        provider.setMuted(existingUser.isMuted());
+        provider.setBlockedUsers(existingUser.getBlockedUsers());
+        provider.setFavoriteSolutions(existingUser.getFavoriteSolutions());
+        provider.setFavouriteEvents(existingUser.getFavouriteEvents());
+        provider.setJoinedEvents(existingUser.getJoinedEvents());
+        provider.setActivationToken(existingUser.getActivationToken());
+        provider.setTokenCreationDate(existingUser.getTokenCreationDate());
+
+        provider.setCompanyName(dto.getCompanyName());
+        provider.setDescription(dto.getCompanyDescription());
+        provider.setPhotos(dto.getPhotos());
+
+        userRepository.delete(existingUser);
+        userRepository.save(provider);
     }
 }
 
