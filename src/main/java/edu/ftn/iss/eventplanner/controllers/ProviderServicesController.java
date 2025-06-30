@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +60,7 @@ public class ProviderServicesController {
 
     // POST provider[Is identified by id 1]|admin@*/api/providers/1/services
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ADMIN') || hasRole('PROVIDER') && #providerId == authentication.principal.id")
     public ResponseEntity<ServiceDTO> createService(
             @PathVariable(name = "providerId") int providerId,
             @RequestBody @Valid CreateServiceDTO serviceRequestDTO,

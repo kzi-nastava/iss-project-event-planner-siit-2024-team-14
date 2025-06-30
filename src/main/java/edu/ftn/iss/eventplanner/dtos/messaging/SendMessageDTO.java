@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SendMessageDTO {
-    private int senderId; //
+    private Integer senderId; //
     @JsonIgnore
     private int recipientId;
     private String content;

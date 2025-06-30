@@ -11,9 +11,12 @@ import edu.ftn.iss.eventplanner.enums.Status;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ReportRequestRepository;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import edu.ftn.iss.eventplanner.security.JWTUtil;
@@ -23,19 +26,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
-public class UserService {
+@NoArgsConstructor
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
-
-    private  final ReportRequestRepository reportRepository;
+    @Autowired
+    private  ReportRequestRepository reportRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;  // Fix here!
 
-    public UserService(ReportRequestRepository reportRepository) {
-        this.reportRepository = reportRepository;
-    }
 
     public ResponseEntity<LoginResponseDTO> login(LoginDTO loginDTO) {
         Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail());
@@ -138,5 +139,14 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User with email '" + email + "' not found"));
+    }
+
+    @Override
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+        try {
+            return getUserByEmail(username);
+        } catch (NotFoundException e) {
+            throw new UsernameNotFoundException(e.getMessage());
+        }
     }
 }
