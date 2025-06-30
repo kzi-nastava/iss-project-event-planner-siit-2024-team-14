@@ -76,6 +76,17 @@ public class InvitationService {
             // Build appropriate link depending on whether the user is registered
             String invitationLink;
             if (alreadyRegistered) {
+                userRepository.findByEmail(email.trim()).ifPresent(user -> {
+                    if (user.getJoinedEvents() == null) {
+                        user.setJoinedEvents(new ArrayList<>());
+                    }
+
+                    if (!user.getJoinedEvents().contains(event)) {
+                        user.getJoinedEvents().add(event);
+                        userRepository.save(user);
+                    }
+                });
+
                 invitationLink = frontendBaseUrl + "/invitation/login?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&eventId=" + event.getId();
                 inv.setStatus(Status.APPROVED);
                 invitationRepository.save(inv);
@@ -121,7 +132,7 @@ public class InvitationService {
         // Create new user with inactive and unverified status
         User newUser = new User();
         newUser.setEmail(dto.getEmail());
-        newUser.setPassword(dto.getPassword()); // 🔐 Should be hashed in production!
+        newUser.setPassword(dto.getPassword());
         newUser.setActive(false);
         newUser.setVerified(false);
         newUser.setSuspended(false);
@@ -133,11 +144,21 @@ public class InvitationService {
         // Update invitation status if invitation exists
         Event event = eventRepository.findById(dto.getEventId())
                 .orElseThrow(() -> new RuntimeException("Event not found."));
+
         Optional<Invitation> invitationOpt = invitationRepository.findByGuestEmailAndEventId(dto.getEmail(), event.getId());
         invitationOpt.ifPresent(invitation -> {
             invitation.setStatus(Status.APPROVED);
             invitationRepository.save(invitation);
         });
+
+        if (newUser.getJoinedEvents() == null) {
+            newUser.setJoinedEvents(new ArrayList<>());
+        }
+
+        if (!newUser.getJoinedEvents().contains(event)) {
+            newUser.getJoinedEvents().add(event);
+            userRepository.save(newUser);
+        }
 
         // Send activation email
         try {

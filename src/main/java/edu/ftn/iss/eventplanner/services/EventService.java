@@ -2,16 +2,10 @@ package edu.ftn.iss.eventplanner.services;
 
 import edu.ftn.iss.eventplanner.dtos.events.CreateEventDTO;
 import edu.ftn.iss.eventplanner.dtos.homepage.EventDTO;
-import edu.ftn.iss.eventplanner.entities.Event;
-import edu.ftn.iss.eventplanner.entities.EventOrganizer;
-import edu.ftn.iss.eventplanner.entities.EventType;
-import edu.ftn.iss.eventplanner.entities.SolutionCategory;
+import edu.ftn.iss.eventplanner.entities.*;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.enums.PrivacyType;
-import edu.ftn.iss.eventplanner.repositories.EventOrganizerRepository;
-import edu.ftn.iss.eventplanner.repositories.EventRepository;
-import edu.ftn.iss.eventplanner.repositories.EventTypeRepository;
-import edu.ftn.iss.eventplanner.repositories.SolutionCategoryRepository;
+import edu.ftn.iss.eventplanner.repositories.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,15 +27,18 @@ public class EventService {
     private final EventTypeRepository eventTypeRepository;
     private final EventOrganizerRepository eventOrganizerRepository;
     private final SolutionCategoryRepository solutionCategoryRepository;
+    private final UserRepository userRepository;
 
     public EventService(EventRepository eventRepository,
                         EventTypeRepository eventTypeRepository,
                         EventOrganizerRepository eventOrganizerRepository,
-                        SolutionCategoryRepository solutionCategoryRepository) {
+                        SolutionCategoryRepository solutionCategoryRepository,
+                        UserRepository userRepository) {
         this.eventRepository = eventRepository;
         this.eventTypeRepository = eventTypeRepository;
         this.eventOrganizerRepository = eventOrganizerRepository;
         this.solutionCategoryRepository = solutionCategoryRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -219,4 +217,40 @@ public class EventService {
 
         return eventRepository.save(event);
     }
+
+    public List<EventDTO> getJoinedEventsForUser(Integer userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found with ID: " + userId);
+        }
+
+        User user = userOptional.get();
+        List<Event> joinedEvents = user.getJoinedEvents();
+
+        return joinedEvents.stream()
+                .map(event -> {
+                    EventDTO dto = new EventDTO();
+                    dto.setId(event.getId());
+                    dto.setName(event.getName());
+                    dto.setDescription(event.getDescription());
+                    dto.setLocation(event.getLocation());
+                    dto.setPrivacyType(event.getPrivacyType().toString());
+                    dto.setStartDate(event.getStartDate());
+                    dto.setEndDate(event.getEndDate());
+                    dto.setImageUrl(event.getImageUrl());
+                    dto.setMaxParticipants(event.getMaxParticipants());
+
+                    if (event.getOrganizer() != null) {
+                        dto.setOrganizerFirstName(event.getOrganizer().getName());
+                        dto.setOrganizerLastName(event.getOrganizer().getSurname());
+                        dto.setOrganizerId(event.getOrganizer().getId());
+                        dto.setOrganizerProfilePicture(event.getOrganizer().getProfilePhoto());
+                    }
+
+                    return dto;
+                })
+                .toList();
+    }
+
+
 }
