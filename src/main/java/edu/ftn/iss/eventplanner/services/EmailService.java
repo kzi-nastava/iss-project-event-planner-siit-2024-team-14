@@ -1,5 +1,6 @@
 package edu.ftn.iss.eventplanner.services;
 
+import edu.ftn.iss.eventplanner.entities.Event;
 import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,18 +125,39 @@ public class EmailService {
         mailSender.send(message);
     }
 
-    public void sendInvitationEmail(String recipientEmail, String eventName, String link) {
-        String subject = "You're invited to the event: " + eventName;
+    public void sendInvitationEmail(String recipientEmail, Event event, String link) {
+        String subject = "You're invited to the event: " + event.getName();
 
         String content = """
-            You have been invited to the event: %s
+        Hello,
 
-            To follow the event, click the following link:
-            %s
+        You have been invited to the event:
 
-            If you don't have an account, you will be able to register quickly using this link.
-            If you already have an account, you will be redirected to the login page and the event will be added to your calendar.
-            """.formatted(eventName, link);
+        📝 Name: %s
+        🗒️ Description: %s
+        📍 Location: %s
+        📅 Start: %s
+        📅 End: %s
+        👤 Organizer: %s %s
+
+        ➡️ To follow the event, click the following link:
+        %s
+
+        If you don't have an account, you'll be able to register quickly using this link.
+        If you already have an account, you'll be redirected to login and the event will be added to your calendar.
+
+        Best regards,
+        EventPlanner Team
+        """.formatted(
+                event.getName(),
+                event.getDescription(),
+                event.getLocation(),
+                event.getStartDate().toString(),
+                event.getEndDate().toString(),
+                event.getOrganizer().getName(),
+                event.getOrganizer().getSurname(),
+                link
+        );
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(recipientEmail);
@@ -144,6 +166,7 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
 
 
 }

@@ -95,7 +95,7 @@ public class InvitationService {
             }
 
             // Send invitation email
-            emailService.sendInvitationEmail(email, event.getName(), invitationLink);
+            emailService.sendInvitationEmail(email, event, invitationLink);
         }
 
         return created;
