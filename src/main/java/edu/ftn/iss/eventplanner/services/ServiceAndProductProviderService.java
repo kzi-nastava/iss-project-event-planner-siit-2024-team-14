@@ -14,6 +14,8 @@ import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ServiceAndProductProviderRepository;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,10 @@ public class ServiceAndProductProviderService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
 
     public ResponseEntity<RegisterResponseDTO> register(RegisterSppDTO dto, List<MultipartFile> photos) {
         try {
@@ -276,8 +282,9 @@ public class ServiceAndProductProviderService {
         return ResponseEntity.ok(new RegisterResponseDTO("Provider deactivated successfully!", true));
     }
 
+
     @Transactional
-    public void upgradeUserToProvider(UpdateToProviderDTO dto) {
+    public void upgradeUserToProvider(UpdateToProviderDTO dto, List<MultipartFile> photos) throws IOException {
         User existingUser = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + dto.getEmail()));
 
@@ -285,9 +292,15 @@ public class ServiceAndProductProviderService {
             throw new IllegalArgumentException("Passwords do not match.");
         }
 
-        ServiceAndProductProvider provider = new ServiceAndProductProvider();
+        Integer userId = existingUser.getId();
 
-        provider.setId(existingUser.getId());
+        // Prvo ga ručno obriši iz persistence konteksta i baze
+        userRepository.delete(existingUser);
+        entityManager.flush(); // Obavezno, da zaista obriše iz baze odmah
+
+        // Kreiraj PROVIDER entitet sa istim ID
+        ServiceAndProductProvider provider = new ServiceAndProductProvider();
+        provider.setId(userId);
         provider.setEmail(existingUser.getEmail());
         provider.setPassword(existingUser.getPassword());
         provider.setAddress(dto.getAddress());
@@ -303,13 +316,33 @@ public class ServiceAndProductProviderService {
         provider.setJoinedEvents(existingUser.getJoinedEvents());
         provider.setActivationToken(existingUser.getActivationToken());
         provider.setTokenCreationDate(existingUser.getTokenCreationDate());
-
         provider.setCompanyName(dto.getCompanyName());
         provider.setDescription(dto.getCompanyDescription());
+
+        if (dto.getPhotos() == null) {
+            dto.setPhotos(new ArrayList<>());
+        }
+
+        if (photos != null && !photos.isEmpty()) {
+            String uploadDir = "src/main/resources/static/photos/";
+            Files.createDirectories(Paths.get(uploadDir));
+
+            for (int i = 0; i < Math.min(photos.size(), 3); i++) {
+                MultipartFile photo = photos.get(i);
+                if (photo != null && !photo.isEmpty()) {
+                    String photoFilename = dto.getEmail() + (i + 1) + ".png";
+                    Path filePath = Paths.get(uploadDir + photoFilename);
+                    Files.write(filePath, photo.getBytes());
+                    dto.getPhotos().add(photoFilename);
+                }
+            }
+        }
+
         provider.setPhotos(dto.getPhotos());
 
-        userRepository.delete(existingUser);
+        // Sada sigurno možeš sačuvati providera pod ISTIM ID-jem
         userRepository.save(provider);
     }
+
 }
 

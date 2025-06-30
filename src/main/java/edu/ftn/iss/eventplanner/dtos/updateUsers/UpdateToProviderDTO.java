@@ -4,6 +4,7 @@ import java.util.List;
 
 @Data
 public class UpdateToProviderDTO {
+    private Integer id;
     private String email;
     private String password;
     private String confirmPassword;

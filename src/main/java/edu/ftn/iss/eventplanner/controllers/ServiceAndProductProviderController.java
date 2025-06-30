@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -77,11 +78,24 @@ public class ServiceAndProductProviderController {
         return providerService.updatePhoto(userId, photo, photoIndex);
     }
 
-    @PostMapping("/upgrade-to-provider")
-    public ResponseEntity<?> upgradeToProvider(@RequestBody UpdateToProviderDTO dto) {
-        providerService.upgradeUserToProvider(dto);
-        return ResponseEntity.ok("User upgraded to Service and Product Provider successfully.");
+    @PostMapping(value = "/upgrade-to-provider", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> upgradeToProvider(
+            @RequestPart("dto") UpdateToProviderDTO dto,
+            @RequestPart(value = "photos", required = false) List<MultipartFile> photos
+    ) {
+        try {
+            providerService.upgradeUserToProvider(dto, photos);
+            return ResponseEntity.ok("User upgraded to Service and Product Provider successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error saving photos: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(400).body("Upgrade failed: " + e.getMessage());
+        }
     }
+
+
 
     @PutMapping("/deactivate/{id}")
     public ResponseEntity<RegisterResponseDTO> deactivate(@PathVariable int id) {
