@@ -5,6 +5,8 @@ import edu.ftn.iss.eventplanner.dtos.registration.RegisterEoDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewOrganizerProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateOrganizerDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateToOrganizerDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateToProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdatedOrganizerDTO;
 import edu.ftn.iss.eventplanner.services.EventOrganizerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/organizers")
@@ -68,6 +72,19 @@ public class EventOrganizerController {
     public ResponseEntity<RegisterResponseDTO> updateProfilePhoto(@PathVariable("id") int id,
                                                                   @RequestParam("photo") MultipartFile photo) {
         return organizerService.updateProfilePhoto(id, photo);
+    }
+
+    @PostMapping("/upgrade-to-organizer")
+    public ResponseEntity<Void> upgradeToOrganizer(
+            @RequestPart("dto") UpdateToOrganizerDTO dto,
+            @RequestPart("photo") MultipartFile photo
+    ) {
+        try {
+            organizerService.upgradeUserToOrganizer(dto, photo);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/deactivate/{id}")

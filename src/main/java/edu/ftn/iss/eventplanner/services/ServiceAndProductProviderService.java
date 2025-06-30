@@ -6,14 +6,20 @@ import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewProviderProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateProviderDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateToProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdatedProviderDTO;
 import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
+import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ServiceAndProductProviderRepository;
+import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,6 +38,13 @@ public class ServiceAndProductProviderService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
 
     public ResponseEntity<RegisterResponseDTO> register(RegisterSppDTO dto, List<MultipartFile> photos) {
         try {
@@ -268,5 +281,66 @@ public class ServiceAndProductProviderService {
         providerRepository.save(provider);
         return ResponseEntity.ok(new RegisterResponseDTO("Provider deactivated successfully!", true));
     }
+
+
+    @Transactional
+    public void upgradeUserToProvider(UpdateToProviderDTO dto, List<MultipartFile> photos) throws IOException {
+        User existingUser = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + dto.getEmail()));
+
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match.");
+        }
+
+        Integer userId = existingUser.getId();
+
+        userRepository.delete(existingUser);
+        entityManager.flush();
+
+        ServiceAndProductProvider provider = new ServiceAndProductProvider();
+        provider.setId(userId);
+        provider.setEmail(existingUser.getEmail());
+        provider.setPassword(existingUser.getPassword());
+        provider.setAddress(dto.getAddress());
+        provider.setCity(dto.getCity());
+        provider.setPhoneNumber(Integer.parseInt(dto.getPhoneNumber()));
+        provider.setActive(existingUser.isActive());
+        provider.setVerified(existingUser.isVerified());
+        provider.setSuspended(existingUser.isSuspended());
+        provider.setMuted(existingUser.isMuted());
+        provider.setBlockedUsers(existingUser.getBlockedUsers());
+        provider.setFavoriteSolutions(existingUser.getFavoriteSolutions());
+        provider.setFavouriteEvents(existingUser.getFavouriteEvents());
+        provider.setJoinedEvents(existingUser.getJoinedEvents());
+        provider.setActivationToken(existingUser.getActivationToken());
+        provider.setTokenCreationDate(existingUser.getTokenCreationDate());
+        provider.setCompanyName(dto.getCompanyName());
+        provider.setDescription(dto.getCompanyDescription());
+
+        if (dto.getPhotos() == null) {
+            dto.setPhotos(new ArrayList<>());
+        }
+
+        if (photos != null && !photos.isEmpty()) {
+            String uploadDir = "src/main/resources/static/photos/";
+            Files.createDirectories(Paths.get(uploadDir));
+
+            for (int i = 0; i < Math.min(photos.size(), 3); i++) {
+                MultipartFile photo = photos.get(i);
+                if (photo != null && !photo.isEmpty()) {
+                    String photoFilename = dto.getEmail() + (i + 1) + ".png";
+                    Path filePath = Paths.get(uploadDir + photoFilename);
+                    Files.write(filePath, photo.getBytes());
+                    dto.getPhotos().add(photoFilename);
+                }
+            }
+        }
+
+        provider.setPhotos(dto.getPhotos());
+
+        // Sada sigurno možeš sačuvati providera pod ISTIM ID-jem
+        userRepository.save(provider);
+    }
+
 }
 

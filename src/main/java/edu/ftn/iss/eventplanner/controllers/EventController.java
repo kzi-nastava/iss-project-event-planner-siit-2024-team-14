@@ -101,4 +101,10 @@ public class EventController {
 
         return eventDTO;
     }
+
+    @GetMapping("/api/events/joined/{userId}")
+    public ResponseEntity<List<EventDTO>> getJoinedEvents(@PathVariable Integer userId) {
+        List<EventDTO> events = eventService.getJoinedEventsForUser(userId);
+        return ResponseEntity.ok(events);
+    }
 }

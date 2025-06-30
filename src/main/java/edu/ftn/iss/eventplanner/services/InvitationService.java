@@ -1,10 +1,14 @@
 package edu.ftn.iss.eventplanner.services;
+import edu.ftn.iss.eventplanner.dtos.homepage.EventDTO;
+import edu.ftn.iss.eventplanner.dtos.invitations.EventWithInvitationsDTO;
 import edu.ftn.iss.eventplanner.dtos.invitations.InvitationRequestDTO;
+import edu.ftn.iss.eventplanner.dtos.invitations.InvitationResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.QuickRegistrationDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.entities.Event;
 import edu.ftn.iss.eventplanner.entities.Invitation;
 import edu.ftn.iss.eventplanner.entities.User;
+import edu.ftn.iss.eventplanner.enums.PrivacyType;
 import edu.ftn.iss.eventplanner.enums.Status;
 import edu.ftn.iss.eventplanner.exceptions.ConflictException;
 import edu.ftn.iss.eventplanner.repositories.EventRepository;
@@ -28,15 +32,19 @@ public class InvitationService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final EventService eventService;
+
 
     public InvitationService(InvitationRepository invitationRepository,
                              EventRepository eventRepository,
                              UserRepository userRepository,
-                             EmailService emailService) {
+                             EmailService emailService,
+                             EventService eventService) {
         this.invitationRepository = invitationRepository;
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
+        this.eventService = eventService;
     }
 
     /**
@@ -68,13 +76,26 @@ public class InvitationService {
             // Build appropriate link depending on whether the user is registered
             String invitationLink;
             if (alreadyRegistered) {
+                userRepository.findByEmail(email.trim()).ifPresent(user -> {
+                    if (user.getJoinedEvents() == null) {
+                        user.setJoinedEvents(new ArrayList<>());
+                    }
+
+                    if (!user.getJoinedEvents().contains(event)) {
+                        user.getJoinedEvents().add(event);
+                        userRepository.save(user);
+                    }
+                });
+
                 invitationLink = frontendBaseUrl + "/invitation/login?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&eventId=" + event.getId();
+                inv.setStatus(Status.APPROVED);
+                invitationRepository.save(inv);
             } else {
                 invitationLink = frontendBaseUrl + "/invitation/register?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&eventId=" + event.getId();
             }
 
             // Send invitation email
-            emailService.sendInvitationEmail(email, event.getName(), invitationLink);
+            emailService.sendInvitationEmail(email, event, invitationLink);
         }
 
         return created;
@@ -111,7 +132,7 @@ public class InvitationService {
         // Create new user with inactive and unverified status
         User newUser = new User();
         newUser.setEmail(dto.getEmail());
-        newUser.setPassword(dto.getPassword()); // 🔐 Should be hashed in production!
+        newUser.setPassword(dto.getPassword());
         newUser.setActive(false);
         newUser.setVerified(false);
         newUser.setSuspended(false);
@@ -123,11 +144,21 @@ public class InvitationService {
         // Update invitation status if invitation exists
         Event event = eventRepository.findById(dto.getEventId())
                 .orElseThrow(() -> new RuntimeException("Event not found."));
+
         Optional<Invitation> invitationOpt = invitationRepository.findByGuestEmailAndEventId(dto.getEmail(), event.getId());
         invitationOpt.ifPresent(invitation -> {
             invitation.setStatus(Status.APPROVED);
             invitationRepository.save(invitation);
         });
+
+        if (newUser.getJoinedEvents() == null) {
+            newUser.setJoinedEvents(new ArrayList<>());
+        }
+
+        if (!newUser.getJoinedEvents().contains(event)) {
+            newUser.getJoinedEvents().add(event);
+            userRepository.save(newUser);
+        }
 
         // Send activation email
         try {
@@ -162,5 +193,22 @@ public class InvitationService {
         userRepository.save(user);
 
         return ResponseEntity.ok(new RegisterResponseDTO("Your email is verified successfully!", true));
+    }
+
+    public List<EventWithInvitationsDTO> getInvitationsByOrganizer(Integer organizerId) {
+        List<Event> events = eventRepository.findByOrganizerId(organizerId).stream()
+                .filter(event -> event.getPrivacyType() == PrivacyType.CLOSED)
+                .toList();
+
+        return events.stream().map(event -> {
+            List<Invitation> invitations = invitationRepository.findByEvent(event);
+            List<InvitationResponseDTO> invitationDTOs = invitations.stream()
+                    .map(inv -> new InvitationResponseDTO(inv.getGuestEmail(), inv.getStatus()))
+                    .toList();
+
+            EventDTO eventDTO = eventService.getEventById(event.getId());
+
+            return new EventWithInvitationsDTO(eventDTO, invitationDTOs);
+        }).toList();
     }
 }

@@ -1,4 +1,5 @@
 package edu.ftn.iss.eventplanner.controllers;
+import edu.ftn.iss.eventplanner.dtos.invitations.EventWithInvitationsDTO;
 import edu.ftn.iss.eventplanner.dtos.invitations.InvitationRequestDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.QuickRegistrationDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
@@ -44,5 +45,11 @@ public class InvitationController {
     @GetMapping("/activate")
     public ResponseEntity<RegisterResponseDTO> activate(@RequestParam("token") String token) {
         return invitationService.activate(token);
+    }
+
+    @GetMapping("/by-organizer/{organizerId}")
+    public ResponseEntity<List<EventWithInvitationsDTO>> getInvitationsByOrganizer(@PathVariable Integer organizerId) {
+        List<EventWithInvitationsDTO> result = invitationService.getInvitationsByOrganizer(organizerId);
+        return ResponseEntity.ok(result);
     }
 }
