@@ -95,8 +95,6 @@ public class ServiceAndProductProviderController {
         }
     }
 
-
-
     @PutMapping("/deactivate/{id}")
     public ResponseEntity<RegisterResponseDTO> deactivate(@PathVariable int id) {
         return providerService.deactivate(id);

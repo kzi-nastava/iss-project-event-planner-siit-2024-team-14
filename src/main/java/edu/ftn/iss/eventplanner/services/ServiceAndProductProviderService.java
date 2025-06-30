@@ -294,11 +294,9 @@ public class ServiceAndProductProviderService {
 
         Integer userId = existingUser.getId();
 
-        // Prvo ga ručno obriši iz persistence konteksta i baze
         userRepository.delete(existingUser);
-        entityManager.flush(); // Obavezno, da zaista obriše iz baze odmah
+        entityManager.flush();
 
-        // Kreiraj PROVIDER entitet sa istim ID
         ServiceAndProductProvider provider = new ServiceAndProductProvider();
         provider.setId(userId);
         provider.setEmail(existingUser.getEmail());
