@@ -5,6 +5,7 @@ import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterSppDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewProviderProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateProviderDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateToProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdatedProviderDTO;
 import edu.ftn.iss.eventplanner.services.ServiceAndProductProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -74,6 +76,23 @@ public class ServiceAndProductProviderController {
                                                            @RequestParam("photoIndex") int photoIndex) {
 
         return providerService.updatePhoto(userId, photo, photoIndex);
+    }
+
+    @PostMapping(value = "/upgrade-to-provider", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> upgradeToProvider(
+            @RequestPart("dto") UpdateToProviderDTO dto,
+            @RequestPart(value = "photos", required = false) List<MultipartFile> photos
+    ) {
+        try {
+            providerService.upgradeUserToProvider(dto, photos);
+            return ResponseEntity.ok("User upgraded to Service and Product Provider successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error saving photos: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(400).body("Upgrade failed: " + e.getMessage());
+        }
     }
 
     @PutMapping("/deactivate/{id}")
