@@ -232,7 +232,7 @@ public class CommentService {
                 comment.getCommenter() != null ? comment.getCommenter().getId() : null,
                 commenterInfo.firstName,
                 commenterInfo.lastName,
-                commenterInfo.profilePicture,
+                "profile-photos/" +commenterInfo.profilePicture,
                 getEntityName(comment),
                 getProvider(comment)
         );

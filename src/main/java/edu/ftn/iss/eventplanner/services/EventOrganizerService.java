@@ -149,7 +149,7 @@ public class EventOrganizerService {
         organizerDTO.setAddress(organizer.getAddress());
         organizerDTO.setPhoneNumber(String.valueOf(organizer.getPhoneNumber()));
         organizerDTO.setRole("EventOrganizer");
-        organizerDTO.setProfilePhoto(organizer.getProfilePhoto());
+        organizerDTO.setProfilePhoto("profile-photos/" + organizer.getProfilePhoto());
 
         GetOrganizerDTO getOrganizerDTO = new GetOrganizerDTO();
         getOrganizerDTO.setMessage("ok");
@@ -248,7 +248,7 @@ public class EventOrganizerService {
                         organizer.getAddress(),
                         organizer.getCity(),
                         organizer.getPhoneNumber(),
-                        organizer.getProfilePhoto()
+                        "profile-photos/" + organizer.getProfilePhoto()
                   ))
                 .orElse(null);
     }
@@ -304,7 +304,7 @@ public class EventOrganizerService {
 
         // Save profile photo
         if (photo != null && !photo.isEmpty()) {
-            String uploadDir = "src/main/resources/static/photos/";
+            String uploadDir = "src/main/resources/static/profile-photos/";
             Files.createDirectories(Paths.get(uploadDir));
             String photoFilename = dto.getEmail() + "_profile.png";
             Path filePath = Paths.get(uploadDir + photoFilename);

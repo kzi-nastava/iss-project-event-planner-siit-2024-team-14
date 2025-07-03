@@ -145,7 +145,7 @@ public class ServiceAndProductProviderService {
                         provider.getAddress(),
                         provider.getCity(),
                         provider.getPhoneNumber(),
-                        provider.getPhotos().get(0)
+                        "profile-photos/" + provider.getPhotos().get(0)
                 ))
                 .orElse(null);
     }
@@ -190,7 +190,7 @@ public class ServiceAndProductProviderService {
 
         // Convert filenames into accessible URLs
         return provider.getPhotos().stream()
-                .map(photo -> "http://localhost:8080/photos/" + photo) // Change based on deployment
+                .map(photo -> "http://localhost:8080/profile-photos/" + photo) // Change based on deployment
                 .collect(Collectors.toList());
     }
 
@@ -239,14 +239,14 @@ public class ServiceAndProductProviderService {
             // Get the current photo to delete
             String oldPhoto = photos.get(photoIndex);  // Use the correct method to get the photo from the list
             if (oldPhoto != null) {
-                Path oldPhotoPath = Paths.get("src/main/resources/static/photos/" + oldPhoto);
+                Path oldPhotoPath = Paths.get("src/main/resources/static/profile-photos/" + oldPhoto);
                 Files.deleteIfExists(oldPhotoPath);  // Delete the old photo if it exists
             }
 
             int index = photoIndex + 1;
             // Generate a new photo filename, using the email + photoIndex to make it unique
             String photoFilename = provider.getEmail()  + index + ".png";  // Unique filename per index
-            String uploadDir = "src/main/resources/static/photos/";
+            String uploadDir = "src/main/resources/static/profile-photos/";
 
             // Ensure the directory exists
             Path filePath = Paths.get(uploadDir + photoFilename);
@@ -322,7 +322,7 @@ public class ServiceAndProductProviderService {
         }
 
         if (photos != null && !photos.isEmpty()) {
-            String uploadDir = "src/main/resources/static/photos/";
+            String uploadDir = "src/main/resources/static/profile-photos/";
             Files.createDirectories(Paths.get(uploadDir));
 
             for (int i = 0; i < Math.min(photos.size(), 3); i++) {
@@ -338,7 +338,6 @@ public class ServiceAndProductProviderService {
 
         provider.setPhotos(dto.getPhotos());
 
-        // Sada sigurno možeš sačuvati providera pod ISTIM ID-jem
         userRepository.save(provider);
     }
 

@@ -129,7 +129,7 @@ public class SolutionService {
         dto.setDescription(solution.getDescription());
         dto.setPrice(solution.getPrice());
         dto.setDiscount(solution.getDiscount());
-        dto.setImageUrl(solution.getImageUrl());
+        dto.setImageUrl("product-service-photo/" +solution.getImageUrl());
         dto.setLocation(solution.getLocation());
         dto.setSolutionType(solution.getClass().getSimpleName());
 
@@ -154,7 +154,7 @@ public class SolutionService {
             dto.setDescription(solution.getDescription());
             dto.setPrice(solution.getPrice());
             dto.setDiscount(solution.getDiscount());
-            dto.setImageUrl(solution.getImageUrl());
+            dto.setImageUrl("product-service-photo/" +solution.getImageUrl());
             dto.setLocation(solution.getLocation());
             dto.setSolutionType(solution.getClass().getSimpleName());
 
