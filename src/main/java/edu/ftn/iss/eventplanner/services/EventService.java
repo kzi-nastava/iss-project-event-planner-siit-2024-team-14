@@ -104,11 +104,11 @@ public class EventService {
             dto.setLocation(event.getLocation());
             dto.setStartDate(event.getStartDate());
             dto.setEndDate(event.getEndDate());
-            dto.setImageUrl(event.getImageUrl());
+            dto.setImageUrl("event-photo/" + event.getImageUrl());
 
             if (event.getOrganizer() != null) {
                 dto.setOrganizerFirstName(event.getOrganizer().getName());
-                dto.setOrganizerLastName(event.getOrganizer().getSurname());
+                dto.setOrganizerLastName("profile-photo/" +event.getOrganizer().getSurname());
                 dto.setOrganizerProfilePicture(event.getOrganizer().getProfilePhoto());
             }
             return dto;
@@ -150,13 +150,13 @@ public class EventService {
             dto.setLocation(event.getLocation());
             dto.setStartDate(event.getStartDate());
             dto.setEndDate(event.getEndDate());
-            dto.setImageUrl(event.getImageUrl());
+            dto.setImageUrl("event-photo/" +event.getImageUrl());
             dto.setMaxParticipants(event.getMaxParticipants());
 
             if (event.getOrganizer() != null) {
                 dto.setOrganizerFirstName(event.getOrganizer().getName());
                 dto.setOrganizerLastName(event.getOrganizer().getSurname());
-                dto.setOrganizerProfilePicture(event.getOrganizer().getProfilePhoto());
+                dto.setOrganizerProfilePicture("profile-photo/" + event.getOrganizer().getProfilePhoto());
                 dto.setOrganizerId(event.getOrganizer().getId());
             }
 
@@ -202,20 +202,21 @@ public class EventService {
         List<SolutionCategory> selectedCategories = solutionCategoryRepository.findByNameIn(dto.getCategories());
         event.setSelectedCategories(selectedCategories);
 
-        // Handle image file if present
+        Event savedEvent = eventRepository.save(event);
+
         if (photo != null && !photo.isEmpty()) {
-            String photoFilename = dto.getName() + "_" + dto.getOrganizer() + ".png";
+            String photoFilename = dto.getName() + "_" + savedEvent.getId() + ".png";
             String uploadDir = "src/main/resources/static/event-photo/";
             Path filePath = Paths.get(uploadDir + photoFilename);
 
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, photo.getBytes());
 
-            dto.setPhoto(photoFilename);
-            event.setImageUrl(photoFilename);
+            savedEvent.setImageUrl(photoFilename);
+            eventRepository.save(savedEvent);
         }
 
-        return eventRepository.save(event);
+        return savedEvent;
     }
 
     public List<EventDTO> getJoinedEventsForUser(Integer userId) {
@@ -237,14 +238,14 @@ public class EventService {
                     dto.setPrivacyType(event.getPrivacyType().toString());
                     dto.setStartDate(event.getStartDate());
                     dto.setEndDate(event.getEndDate());
-                    dto.setImageUrl(event.getImageUrl());
+                    dto.setImageUrl("event-photo/" +event.getImageUrl());
                     dto.setMaxParticipants(event.getMaxParticipants());
 
                     if (event.getOrganizer() != null) {
                         dto.setOrganizerFirstName(event.getOrganizer().getName());
                         dto.setOrganizerLastName(event.getOrganizer().getSurname());
                         dto.setOrganizerId(event.getOrganizer().getId());
-                        dto.setOrganizerProfilePicture(event.getOrganizer().getProfilePhoto());
+                        dto.setOrganizerProfilePicture("profile-photo/" +event.getOrganizer().getProfilePhoto());
                     }
 
                     return dto;

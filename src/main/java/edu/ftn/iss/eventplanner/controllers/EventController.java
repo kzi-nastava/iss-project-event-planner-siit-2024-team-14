@@ -96,7 +96,8 @@ public class EventController {
         eventDTO.setLocation(createdEvent.getLocation());
         eventDTO.setStartDate(createdEvent.getStartDate());
         eventDTO.setEndDate(createdEvent.getEndDate());
-        eventDTO.setImageUrl(createdEvent.getImageUrl());
+
+        eventDTO.setImageUrl("event-photo/" + createdEvent.getImageUrl());
         eventDTO.setPrivacyType(createdEvent.getPrivacyType().toString());
 
         return eventDTO;

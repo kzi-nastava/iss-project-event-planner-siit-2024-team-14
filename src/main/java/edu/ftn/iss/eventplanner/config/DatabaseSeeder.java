@@ -88,7 +88,7 @@ public class DatabaseSeeder {
                         newOrganizer.setPassword("ana123");
                         newOrganizer.setName("Ana");
                         newOrganizer.setSurname("Jovanovic");
-                        newOrganizer.setProfilePhoto("assets/images/profile1.png");
+                        newOrganizer.setProfilePhoto("profile1.png");
                         newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
@@ -105,7 +105,7 @@ public class DatabaseSeeder {
                         newOrganizer.setPassword("milos123");
                         newOrganizer.setName("Milos");
                         newOrganizer.setSurname("Nikolic");
-                        newOrganizer.setProfilePhoto("assets/images/profile2.png");
+                        newOrganizer.setProfilePhoto("profile2.png");
                         newOrganizer.setCity("Belgrade");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
@@ -121,7 +121,7 @@ public class DatabaseSeeder {
                         newOrganizer.setPassword("nikolina123");
                         newOrganizer.setName("Nikolina");
                         newOrganizer.setSurname("Petrovic");
-                        newOrganizer.setProfilePhoto("assets/images/profile3.png");
+                        newOrganizer.setProfilePhoto("profile3.png");
                         newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
@@ -136,7 +136,7 @@ public class DatabaseSeeder {
                         newOrganizer.setPassword("dragana123");
                         newOrganizer.setName("Dragana");
                         newOrganizer.setSurname("Milivojevic");
-                        newOrganizer.setProfilePhoto("assets/images/profile4.png");
+                        newOrganizer.setProfilePhoto("profile4.png");
                         newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
@@ -151,7 +151,7 @@ public class DatabaseSeeder {
                         newOrganizer.setPassword("nikola123");
                         newOrganizer.setName("Nikola");
                         newOrganizer.setSurname("Matijevic");
-                        newOrganizer.setProfilePhoto("assets/images/profile5.png");
+                        newOrganizer.setProfilePhoto("profile5.png");
                         newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
@@ -165,49 +165,49 @@ public class DatabaseSeeder {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(1));
                 System.out.println("Categories for 'Birthday Party': " + categories);
                 eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, PrivacyType.OPEN, "Belgrade",
-                        LocalDate.of(2025, 6, 2), LocalDate.of(2025, 6, 2), "assets/images/event1.png", partyType, categories));
+                        LocalDate.of(2025, 6, 2), LocalDate.of(2025, 6, 2), "event1.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Horse Riding").isEmpty()) {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(2));
                 System.out.println("Categories for 'Horse Riding': " + categories);
                 eventRepository.save(new Event(null, organizer, "Horse Riding", "For horse lovers, free entry", 30, PrivacyType.OPEN, "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event2.png", partyType, categories));
+                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "event2.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Bakery opening").isEmpty()) {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(3, 4));
                 System.out.println("Categories for 'Bakery opening': " + categories);
                 eventRepository.save(new Event(null, organizer3, "Bakery opening", "Come with an empty stomach!", 30, PrivacyType.OPEN, "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event6.png", partyType, categories));
+                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "event6.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Rooftop theatre").isEmpty()) {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(1));
                 System.out.println("Categories for 'Rooftop theatre': " + categories);
                 eventRepository.save(new Event(null, organizer, "Rooftop theatre", "Free entry, bring popcorn and drinks!", 30, PrivacyType.OPEN, "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event3.png", partyType, categories));
+                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "event3.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Graduation party").isEmpty()) {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(4));
                 System.out.println("Categories for 'Graduation party': " + categories);
                 eventRepository.save(new Event(null, organizer5, "Graduation party", "All college graduates wellcome :)", 30, PrivacyType.OPEN, "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "assets/images/event5.png", theatreType, categories));
+                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "event5.png", theatreType, categories));
             }
 
             if (eventRepository.findByName("EXIT Festival").isEmpty()) {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(3));
                 System.out.println("Categories for 'EXIT Festival': " + categories);
                 eventRepository.save(new Event(null, organizer2, "EXIT Festival", "Together, always", 30, PrivacyType.OPEN, "Novi Sad",
-                        LocalDate.of(2025, 7, 7), LocalDate.of(2025, 7, 10), "assets/images/event8.png", partyType, categories));
+                        LocalDate.of(2025, 7, 7), LocalDate.of(2025, 7, 10), "event8.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Proba").isEmpty()) {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(2));
                 System.out.println("Categories for 'Proba': " + categories);
                 eventRepository.save(new Event(null, organizer, "Proba", "For horse lovers, free entry", 30, PrivacyType.OPEN, "Novi Sad",
-                        LocalDate.of(2025, 2, 27), LocalDate.of(2025, 2, 28), "assets/images/event2.png", partyType, categories));
+                        LocalDate.of(2025, 2, 27), LocalDate.of(2025, 2, 28), "event2.png", partyType, categories));
             }
 
 
@@ -236,7 +236,7 @@ public class DatabaseSeeder {
                         newProvider.setCity("Novi Sad");
                         newProvider.setActive(true);
                         newProvider.setVerified(true);
-                        newProvider.setPhotos(List.of("assets/images/profile2.png"));
+                        newProvider.setPhotos(List.of("profile2.png"));
                         return userRepository.save(newProvider);
                     });
 
@@ -250,7 +250,7 @@ public class DatabaseSeeder {
                         newProvider.setDescription("Galop beyond limits");
                         newProvider.setActive(true);
                         newProvider.setVerified(true);
-                        newProvider.setPhotos(List.of("assets/images/profile3.png", "lights2.png"));
+                        newProvider.setPhotos(List.of("profile3.png", "lights2.png"));
                         return userRepository.save(newProvider);
                     });
 
@@ -292,7 +292,7 @@ public class DatabaseSeeder {
                 balloonDecoration.setLocation("Belgrade");
                 balloonDecoration.setPrice(22000.0);
                 balloonDecoration.setDiscount(10.0);
-                balloonDecoration.setImageUrl("assets/images/service1.png");
+                balloonDecoration.setImageUrl("service1.png");
                 balloonDecoration.setAvailable(true);
                 balloonDecoration.setVisible(true);
                 balloonDecoration.setDeleted(false);
@@ -310,7 +310,7 @@ public class DatabaseSeeder {
                 gourmetCatering.setLocation("Novi Sad");
                 gourmetCatering.setPrice(15000.0);
                 gourmetCatering.setDiscount(15.0);
-                gourmetCatering.setImageUrl("assets/images/service3.png");
+                gourmetCatering.setImageUrl("service3.png");
                 gourmetCatering.setAvailable(true);
                 gourmetCatering.setVisible(true);
                 gourmetCatering.setDeleted(false);
@@ -329,7 +329,7 @@ public class DatabaseSeeder {
                 gourmetCatering.setLocation("Novi Sad");
                 gourmetCatering.setPrice(15000.0);
                 gourmetCatering.setDiscount(15.0);
-                gourmetCatering.setImageUrl("assets/images/service4.png");
+                gourmetCatering.setImageUrl("service4.png");
                 gourmetCatering.setAvailable(true);
                 gourmetCatering.setVisible(true);
                 gourmetCatering.setDeleted(false);
@@ -347,7 +347,7 @@ public class DatabaseSeeder {
                 ledLighting.setLocation("Belgrade");
                 ledLighting.setPrice(20000.0);
                 ledLighting.setDiscount(5.0);
-                ledLighting.setImageUrl("assets/images/service8.png");
+                ledLighting.setImageUrl("service8.png");
                 ledLighting.setAvailable(true);
                 ledLighting.setVisible(true);
                 ledLighting.setDeleted(false);
@@ -365,7 +365,7 @@ public class DatabaseSeeder {
                 weddingDJ.setLocation("Novi Sad");
                 weddingDJ.setPrice(60000.0);
                 weddingDJ.setDiscount(10.0);
-                weddingDJ.setImageUrl("assets/images/service6.png");
+                weddingDJ.setImageUrl("service6.png");
                 weddingDJ.setAvailable(true);
                 weddingDJ.setVisible(true);
                 weddingDJ.setDeleted(false);
@@ -386,7 +386,7 @@ public class DatabaseSeeder {
                 weddingDJ.setLocation("Novi Sad");
                 weddingDJ.setPrice(80000.0);
                 weddingDJ.setDiscount(10.0);
-                weddingDJ.setImageUrl("assets/images/service5.png");
+                weddingDJ.setImageUrl("service5.png");
                 weddingDJ.setAvailable(true);
                 weddingDJ.setVisible(true);
                 weddingDJ.setDeleted(false);
@@ -409,7 +409,7 @@ public class DatabaseSeeder {
                 weddingDJ.setLocation("Novi Sad");
                 weddingDJ.setPrice(6000.0);
                 weddingDJ.setDiscount(10.0);
-                weddingDJ.setImageUrl("assets/images/service2.png");
+                weddingDJ.setImageUrl("service2.png");
                 weddingDJ.setAvailable(true);
                 weddingDJ.setVisible(true);
                 weddingDJ.setDeleted(false);
@@ -431,7 +431,7 @@ public class DatabaseSeeder {
                 weddingDJ.setLocation("Novi Sad");
                 weddingDJ.setPrice(30000.0);
                 weddingDJ.setDiscount(10.0);
-                weddingDJ.setImageUrl("assets/images/service7.png");
+                weddingDJ.setImageUrl("service7.png");
                 weddingDJ.setAvailable(true);
                 weddingDJ.setVisible(true);
                 weddingDJ.setDeleted(false);
