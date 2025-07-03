@@ -154,9 +154,10 @@ public class EventService {
             dto.setMaxParticipants(event.getMaxParticipants());
 
             if (event.getOrganizer() != null) {
+                EventOrganizer o = event.getOrganizer();
                 dto.setOrganizerFirstName(event.getOrganizer().getName());
                 dto.setOrganizerLastName(event.getOrganizer().getSurname());
-                dto.setOrganizerProfilePicture("profile-photo/" + event.getOrganizer().getProfilePhoto());
+                dto.setOrganizerProfilePicture("profile-photo/" + o.getProfilePhoto());
                 dto.setOrganizerId(event.getOrganizer().getId());
             }
 
