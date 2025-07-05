@@ -5,6 +5,10 @@ import edu.ftn.iss.eventplanner.dtos.CreatedProductDTO;
 import edu.ftn.iss.eventplanner.dtos.GetProductDTO;
 import edu.ftn.iss.eventplanner.dtos.UpdateProductDTO;
 import edu.ftn.iss.eventplanner.dtos.UpdatedProductDTO;
+import edu.ftn.iss.eventplanner.repositories.ProductRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +22,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping(value = "/api/products", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequiredArgsConstructor
 public class ProductController {
 
+    private final ProductRepository productRepository;
     Collection<GetProductDTO> products = new ArrayList<>();
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -140,4 +146,14 @@ public class ProductController {
         int toIndex = Math.min((page + 1) * size, products.size());
         return products.subList(fromIndex, toIndex);
     }
+
+    // only because get all products cannot filter by provider
+    @GetMapping(params = {"provider"})
+    Page<?> getProviderProducts(
+            @RequestParam int provider,
+            Pageable pageable
+    ) {
+        return this.productRepository.findByProvider_Id(provider, pageable);
+    }
+
 }
