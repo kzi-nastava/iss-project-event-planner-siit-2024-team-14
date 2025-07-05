@@ -17,4 +17,9 @@ public class SolutionDTO {
     private String providerCompanyName;
     private Integer providerId;
     private String solutionType;
+
+    public double getPriceWithDiscount() {
+        return price - price * (discount > 1 ? discount / 100 : discount);
+    }
+
 }

@@ -1,12 +1,23 @@
 package edu.ftn.iss.eventplanner.services;
+import com.lowagie.text.Document;
+import com.lowagie.text.Element;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import edu.ftn.iss.eventplanner.dtos.homepage.SolutionDTO;
+import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
 import edu.ftn.iss.eventplanner.entities.Solution;
+import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.repositories.SolutionBookingRepository;
 import edu.ftn.iss.eventplanner.repositories.SolutionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.PageRequest;
 
@@ -166,4 +177,46 @@ public class SolutionService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+
+    public byte[] getProviderPriceListPdf(ServiceAndProductProvider provider) {
+        var providerSolutions = solutionRepository.findByProvider_Id(Objects.requireNonNull(provider).getId());
+
+        try (
+                var out = new ByteArrayOutputStream()
+        ) {
+            var document = new Document();
+            PdfWriter.getInstance(document, out);
+            document.open();
+
+            String title = provider.getCompanyName() + " Price List";
+            var titleParagraph = new Paragraph(title);
+            titleParagraph.setAlignment(Element.ALIGN_CENTER);
+            titleParagraph.setSpacingAfter(20f);
+
+            document.add(titleParagraph);
+            document.addTitle(title);
+
+            final var headers = List.of("Name", "Price", "Discount", "Price with discount");
+            var table = new PdfPTable(headers.size());
+            headers.forEach(table::addCell);
+
+            Function<Double, String> format = x -> String.format("%.2f", x);
+
+            for (var solution : providerSolutions) {
+                table.addCell(solution.getName());
+                table.addCell(format.apply(solution.getPrice()));
+                table.addCell(format.apply(solution.getDiscount()));
+                table.addCell(format.apply(solution.getPriceWithDiscount()));
+            }
+
+            document.add(table);
+            document.close();
+            return out.toByteArray();
+        }
+        catch (Exception ex) {
+            throw new InternalServerError(ex.getMessage());
+        }
+    }
+
 }
