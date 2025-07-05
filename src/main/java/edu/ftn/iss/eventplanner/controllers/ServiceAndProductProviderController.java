@@ -116,7 +116,11 @@ public class ServiceAndProductProviderController {
             ModelMapper mapper
     ) {
         return solutionService.getProviderSolutions(id, pageable)
-                .map(s -> mapper.map(s, SolutionDTO.class));
+                .map(s -> {
+                    var dto = mapper.map(s, SolutionDTO.class);
+                    dto.setSolutionType(s.getClass().getSimpleName());
+                    return dto;
+                });
     }
 
 }
