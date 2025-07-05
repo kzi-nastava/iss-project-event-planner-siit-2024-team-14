@@ -11,6 +11,7 @@ import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.repositories.SolutionBookingRepository;
 import edu.ftn.iss.eventplanner.repositories.SolutionRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -25,13 +26,15 @@ import org.springframework.data.domain.PageRequest;
 public class SolutionService {
     private final SolutionRepository solutionRepository;
     private final SolutionBookingRepository solutionBookingRepository;
+    private final ServiceAndProductProviderService serviceAndProductProviderService;
 
     /**
      * Constructor injection of required repositories.
      */
-    public SolutionService(SolutionRepository solutionRepository, SolutionBookingRepository solutionBookingRepository) {
+    public SolutionService(SolutionRepository solutionRepository, SolutionBookingRepository solutionBookingRepository, ServiceAndProductProviderService serviceAndProductProviderService) {
         this.solutionRepository = solutionRepository;
         this.solutionBookingRepository = solutionBookingRepository;
+        this.serviceAndProductProviderService = serviceAndProductProviderService;
     }
 
     /**
@@ -217,6 +220,12 @@ public class SolutionService {
         catch (Exception ex) {
             throw new InternalServerError(ex.getMessage());
         }
+    }
+
+    @SuppressWarnings("unused")
+    public Page<Solution> getProviderSolutions(int providerId, Pageable pageable) {
+        var provider = serviceAndProductProviderService.getById(providerId);
+        return solutionRepository.findByProvider_Id(providerId, pageable);
     }
 
 }
