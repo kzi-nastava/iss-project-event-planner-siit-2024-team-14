@@ -40,4 +40,8 @@ public interface SolutionRepository extends JpaRepository<Solution, Integer> {
                                           @Param("bookedSolutionIds") List<Long> bookedSolutionIds,
                                           Pageable pageable);
 
+
+    List<Solution> findByProvider_Id(int providerId);
+    Page<Solution> findByProvider_Id(int providerId, Pageable pageable);
+
 }
