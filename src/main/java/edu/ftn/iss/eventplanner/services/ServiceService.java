@@ -127,12 +127,14 @@ public class ServiceService {
                 service.setImageUrl(request.getImages().get(0));
             }
 
-            List<EventType> applicableEventTypes = request.getApplicableEventTypeIds()
-                    .stream()
-                    .map(eventTypeService::getEventTypeById)
-                    .collect(Collectors.toList());
+            if (request.getApplicableEventTypeIds() != null) {
+                List<EventType> applicableEventTypes = request.getApplicableEventTypeIds()
+                        .stream()
+                        .map(eventTypeService::getEventTypeById)
+                        .collect(Collectors.toList());
 
-            service.setApplicableEventTypes(applicableEventTypes);
+                service.setApplicableEventTypes(applicableEventTypes);
+            }
 
             return service;
         } catch (NotFoundException e) {
