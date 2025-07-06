@@ -80,7 +80,7 @@ public class ProductPurchaseController {
 
     // POST organizer[Organizes the event 1]@*/api/events/1/purchases
     @PostMapping("/purchases")
-    @PreAuthorize("hasRole('ORGANIZER') and authentication.principal.organizesEvent(#eventId)")
+    @PreAuthorize("hasRole('ORGANIZER')")
     public ResponseEntity<ProductPurchaseDTO> purchaseProductForEvent(
             @PathVariable int eventId,
             @RequestBody int productId,
