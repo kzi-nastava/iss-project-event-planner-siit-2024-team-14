@@ -3,11 +3,16 @@ package edu.ftn.iss.eventplanner.controllers;
 import edu.ftn.iss.eventplanner.dtos.serviceDetails.ServiceDTO;
 import edu.ftn.iss.eventplanner.dtos.UpdateServiceDTO;
 import edu.ftn.iss.eventplanner.entities.Service;
+import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
 import edu.ftn.iss.eventplanner.entities.SolutionFilterParams;
 import edu.ftn.iss.eventplanner.entities.SolutionSearchRequest;
 import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
+import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.mappers.ServiceDTOMapper;
 import edu.ftn.iss.eventplanner.services.ServiceService;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,10 +20,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.MultiValueMap;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Optional;
 import java.util.Set;
@@ -66,6 +73,27 @@ public class ServiceController {
     ) {
         Service service = serviceService.getServiceById(id); // maybe hide services that are not publicly visible
         return ResponseEntity.ok(modelMapper.toServiceDTO(service));
+    }
+
+
+    @PostMapping
+    @PreAuthorize("hasRole('PROVIDER')")
+    void createServiceRedirect(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @AuthenticationPrincipal ServiceAndProductProvider principal,
+            UriComponentsBuilder uriBuilder
+    )
+    {
+        String path = uriBuilder.path("/api/providers/{id}/services")
+                .buildAndExpand(principal.getId())
+                .getPath();
+
+        try {
+            request.getRequestDispatcher(path).forward(request, response);
+        } catch (ServletException | IOException e) {
+            throw new InternalServerError(e.getMessage());
+        }
     }
 
 
