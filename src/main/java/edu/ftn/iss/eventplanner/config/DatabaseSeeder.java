@@ -88,7 +88,7 @@ public class DatabaseSeeder {
                         newOrganizer.setPassword("ana123");
                         newOrganizer.setName("Ana");
                         newOrganizer.setSurname("Jovanovic");
-                        newOrganizer.setProfilePhoto("profile1.png");
+                        newOrganizer.setProfilePhoto("milicabosancic03@gmail.com.png");
                         newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
@@ -105,7 +105,7 @@ public class DatabaseSeeder {
                         newOrganizer.setPassword("milos123");
                         newOrganizer.setName("Milos");
                         newOrganizer.setSurname("Nikolic");
-                        newOrganizer.setProfilePhoto("profile2.png");
+                        newOrganizer.setProfilePhoto("milosnikolic@example.com.png");
                         newOrganizer.setCity("Belgrade");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
@@ -121,7 +121,7 @@ public class DatabaseSeeder {
                         newOrganizer.setPassword("nikolina123");
                         newOrganizer.setName("Nikolina");
                         newOrganizer.setSurname("Petrovic");
-                        newOrganizer.setProfilePhoto("profile3.png");
+                        newOrganizer.setProfilePhoto("nikolinapetrovic@gmail.com.png");
                         newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
@@ -136,7 +136,7 @@ public class DatabaseSeeder {
                         newOrganizer.setPassword("dragana123");
                         newOrganizer.setName("Dragana");
                         newOrganizer.setSurname("Milivojevic");
-                        newOrganizer.setProfilePhoto("profile4.png");
+                        newOrganizer.setProfilePhoto("draganamilivojevic@example.com.png");
                         newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
@@ -151,7 +151,7 @@ public class DatabaseSeeder {
                         newOrganizer.setPassword("nikola123");
                         newOrganizer.setName("Nikola");
                         newOrganizer.setSurname("Matijevic");
-                        newOrganizer.setProfilePhoto("profile5.png");
+                        newOrganizer.setProfilePhoto("nikolamatijevic@example.com.png");
                         newOrganizer.setCity("Novi Sad");
                         newOrganizer.setVerified(true);
                         newOrganizer.setActive(true);
@@ -236,7 +236,7 @@ public class DatabaseSeeder {
                         newProvider.setCity("Novi Sad");
                         newProvider.setActive(true);
                         newProvider.setVerified(true);
-                        newProvider.setPhotos(List.of("profile2.png"));
+                        newProvider.setPhotos(List.of("milosnikolic@example.com.png"));
                         return userRepository.save(newProvider);
                     });
 
@@ -250,7 +250,7 @@ public class DatabaseSeeder {
                         newProvider.setDescription("Galop beyond limits");
                         newProvider.setActive(true);
                         newProvider.setVerified(true);
-                        newProvider.setPhotos(List.of("profile3.png", "lights2.png"));
+                        newProvider.setPhotos(List.of("nikolinapetrovic@gmail.com.png", "lights2.png"));
                         return userRepository.save(newProvider);
                     });
 
