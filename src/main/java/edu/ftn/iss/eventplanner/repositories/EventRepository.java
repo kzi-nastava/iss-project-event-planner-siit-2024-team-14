@@ -32,15 +32,4 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     @Query("SELECT e FROM Event e WHERE e.organizer.id = :organizerId")
     List<Event> findAllByOrganizerId(@Param("organizerId") Integer organizerId);
 
-
-    @Query("SELECT e FROM Event e WHERE " +
-            "(:category IS NULL OR e.eventType.name = :category) AND " +
-            "(:minDate IS NULL OR e.startDate >= :minDate) AND " +
-            "(:maxDate IS NULL OR e.endDate <= :maxDate) AND " +
-            "(:location IS NULL OR e.location = :location)")
-    Page<Event> findFilteredEvents(@Param("category") String category,
-                                   @Param("minDate") LocalDate minDate,
-                                   @Param("maxDate") LocalDate maxDate,
-                                   @Param("location") String location,
-                                   Pageable pageable);
 }

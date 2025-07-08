@@ -62,6 +62,7 @@ public class EventController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
 
+        System.out.println("kontroler:" + startDate);
         Pageable pageable = PageRequest.of(page, size);
         Page<EventDTO> eventDTOPage = eventService.getFilteredEvents(startDate, endDate, category, location, pageable);
         return ResponseEntity.ok(eventDTOPage);

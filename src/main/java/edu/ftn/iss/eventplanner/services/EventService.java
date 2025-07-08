@@ -7,6 +7,7 @@ import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.enums.PrivacyType;
 import edu.ftn.iss.eventplanner.repositories.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -90,13 +91,23 @@ public class EventService {
     /**
      * Returns filtered events by optional start date, end date, category, and location, with pagination support.
      */
-    public Page<EventDTO> getFilteredEvents(String startDate, String endDate, String category, String location, Pageable pageable) {
-        LocalDate start = (startDate != null && !startDate.isEmpty()) ? LocalDate.parse(startDate) : null;
-        LocalDate end = (endDate != null && !endDate.isEmpty()) ? LocalDate.parse(endDate) : null;
+    public Page<EventDTO> getFilteredEvents(String startDateStr, String endDateStr, String category, String location, Pageable pageable) {
+        System.out.println("krecem servis:" + startDateStr);
 
-        Page<Event> eventPage = eventRepository.findFilteredEvents(category, start, end, location, pageable);
+        LocalDate start = (startDateStr != null && !startDateStr.isEmpty()) ? LocalDate.parse(startDateStr) : null;
+        LocalDate end = (endDateStr != null && !endDateStr.isEmpty()) ? LocalDate.parse(endDateStr) : null;
 
-        return eventPage.map(event -> {
+        // Učitaj sve iz baze (ili koristi osnovne filtre, pa dodatno filtriraj u memoriji)
+        Page<Event> eventPage = eventRepository.findAll(pageable);
+
+        List<Event> filtered = eventPage.stream()
+                .filter(event -> category == null || category.isEmpty() || event.getEventType().getName().equals(category))
+                .filter(event -> location == null || location.isEmpty() || event.getLocation().equals(location))
+                .filter(event -> start == null || !event.getStartDate().isBefore(start))
+                .filter(event -> end == null || !event.getEndDate().isAfter(end))
+                .toList();
+
+        List<EventDTO> dtoList = filtered.stream().map(event -> {
             EventDTO dto = new EventDTO();
             dto.setId(event.getId());
             dto.setName(event.getName());
@@ -105,15 +116,17 @@ public class EventService {
             dto.setStartDate(event.getStartDate());
             dto.setEndDate(event.getEndDate());
             dto.setImageUrl("event-photo/" + event.getImageUrl());
-
             if (event.getOrganizer() != null) {
                 dto.setOrganizerFirstName(event.getOrganizer().getName());
                 dto.setOrganizerLastName(event.getOrganizer().getSurname());
                 dto.setOrganizerProfilePicture("profile-photos/" + event.getOrganizer().getProfilePhoto());
             }
             return dto;
-        });
+        }).toList();
+
+        return new PageImpl<>(dtoList, pageable, dtoList.size());
     }
+
 
     /**
      * Returns a detailed DTO for a specific event by ID.
