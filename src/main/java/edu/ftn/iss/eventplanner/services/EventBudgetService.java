@@ -22,9 +22,12 @@ public class EventBudgetService {
 
 
     public Budget getBudgetByEventId(int id) {
-        return Optional.of(getEventById(id)) // not null
-                .map(Event::getBudget)
-                .orElseThrow(() -> new NotFoundException("Event does not have a budget"));
+        var event = getEventById(id);
+        if (event.getBudget() == null) {
+            event.setBudget(new Budget());
+        }
+
+        return event.getBudget();
     }
 
 

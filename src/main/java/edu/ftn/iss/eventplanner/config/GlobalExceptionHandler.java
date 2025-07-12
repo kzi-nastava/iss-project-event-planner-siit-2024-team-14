@@ -3,6 +3,7 @@ package edu.ftn.iss.eventplanner.config;
 import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
 import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -19,9 +21,10 @@ public class GlobalExceptionHandler {
         return message(ex.getMessage());
     }
 
-    @ExceptionHandler(InternalServerError.class)
+    @ExceptionHandler({InternalServerError.class, Exception.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Object handleInternalServerError() {
+    public Object handleInternalServerError(Exception ex) {
+        log.error("Internal Server Error", ex);
         return message("An unexpected server error has occurred.");
     }
 
