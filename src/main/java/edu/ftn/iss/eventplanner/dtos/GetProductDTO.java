@@ -1,5 +1,6 @@
 package edu.ftn.iss.eventplanner.dtos;
 
+import edu.ftn.iss.eventplanner.dtos.serviceDetails.CategoryDTO;
 import lombok.Data;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public class GetProductDTO {
     private String imageUrl;
     private int categoryId;
     private boolean available;
+    private CategoryDTO category;
 }

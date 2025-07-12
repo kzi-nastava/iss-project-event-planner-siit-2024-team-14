@@ -1,5 +1,6 @@
 package edu.ftn.iss.eventplanner.controllers;
 
+import edu.ftn.iss.eventplanner.dtos.SolutionFilterParamsDto;
 import edu.ftn.iss.eventplanner.dtos.serviceDetails.ServiceDTO;
 import edu.ftn.iss.eventplanner.dtos.UpdateServiceDTO;
 import edu.ftn.iss.eventplanner.entities.Service;
@@ -50,18 +51,11 @@ public class ServiceController {
     @ResponseStatus(HttpStatus.OK)
     Page<ServiceDTO> getAllServices(
             @RequestParam(required = false) String q,
-            @RequestParam(required = false) Double price,
-            @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) Integer[] category,
-            @RequestParam(required = false) Integer[] eventType,
-            @RequestParam(required = false) Integer provider,
+            @ModelAttribute SolutionFilterParamsDto filters,
             Pageable pageable,
             Principal principal
     ) {
-        SolutionFilterParams params = buildFilterParams(price, minPrice, maxPrice, status, category, eventType, provider);
-        SolutionSearchRequest searchRequest = new SolutionSearchRequest(q, params, principal == null ? null : principal.getName());
+        SolutionSearchRequest searchRequest = new SolutionSearchRequest(q, filters.toFilterParams(), principal == null ? null : principal.getName());
         Page<Service> services = serviceService.getAllServices(searchRequest, pageable);
         return services.map(modelMapper::toServiceDTO);
     }
@@ -126,37 +120,6 @@ public class ServiceController {
     @PreAuthorize("hasRole('ADMIN')")
     void deleteAllServices() {
         serviceService.deleteAllServices();
-    }
-
-
-
-    SolutionFilterParams buildFilterParams(
-            Double price, Double minPrice, Double maxPrice, String status,
-            Integer[] categories, Integer[] eventTypes, Integer provider
-    ) {
-        SolutionFilterParams.SolutionFilterParamsBuilder builder = SolutionFilterParams.builder()
-                .providerId(provider)
-                .price(price)
-                .minPrice(Optional.ofNullable(minPrice).orElse(Double.MIN_VALUE))
-                .maxPrice(Optional.ofNullable(maxPrice).orElse(Double.MAX_VALUE));
-
-        if (status != null)
-            switch (status.toLowerCase()) {
-                case "available" -> builder.available(true);
-                case "unavailable" -> builder.available(false);
-                default -> throw new BadRequestException("Unexpected status: " + status.toLowerCase());
-
-            }
-
-        if (categories != null) {
-            builder.wantedCategories(Set.of(categories));
-        }
-
-        if (eventTypes != null) {
-            builder.wantedEventTypes(Set.of(eventTypes));
-        }
-
-        return builder.build();
     }
 
 }
