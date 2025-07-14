@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 
 @Slf4j
-@PreAuthorize("isAuthenticated()")
 @Controller
 @RequiredArgsConstructor
 public class DirectMessagingController {
@@ -55,6 +54,7 @@ public class DirectMessagingController {
             @Payload SendMessageDTO messageDto
     ) {
         messageDto.setRecipientId(recipientId);
+        messageDto.setSenderId(messageDto.getSenderId());
         sendMessage(messageDto);
     }
 
@@ -73,10 +73,7 @@ public class DirectMessagingController {
 
 
     private ChatMessageDTO sendMessage(SendMessageDTO messageDTO) {
-        var sentMessage = messageDTO.getSenderId() == null ?
-                messagingService.sendMessage(messageDTO.getRecipientId(), messageDTO.getContent()) :
-                messagingService.sendMessage(messageDTO.getSenderId(), messageDTO.getRecipientId(), messageDTO.getContent());
-
+        var sentMessage = messagingService.sendMessage(messageDTO.getSenderId(), messageDTO.getRecipientId(), messageDTO.getContent());
         var sentMessageDto = modelMapper.map(sentMessage, ChatMessageDTO.class);
         messagingTemplate.convertAndSend("/queue/" + messageDTO.getRecipientId(), sentMessageDto);
         messagingTemplate.convertAndSend("/queue/" + sentMessageDto.getSenderId(), sentMessageDto);
