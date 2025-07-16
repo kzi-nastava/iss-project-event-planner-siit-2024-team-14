@@ -3,9 +3,12 @@ package edu.ftn.iss.eventplanner.controllers;
 import edu.ftn.iss.eventplanner.dtos.comments.ApproveCommentDTO;
 import edu.ftn.iss.eventplanner.dtos.comments.CommentResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.comments.CreateCommentDTO;
+import edu.ftn.iss.eventplanner.dtos.notifications.NotificationDTO;
 import edu.ftn.iss.eventplanner.services.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -52,6 +55,5 @@ public class CommentController {
         List<CommentResponseDTO> comments = commentService.getApprovedComments();
         return ResponseEntity.ok(comments);
     }
-
 }
 

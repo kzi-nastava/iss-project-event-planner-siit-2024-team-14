@@ -62,7 +62,9 @@ public class SecurityConfig {
                             .requestMatchers(
                                     "/api/login", "/api/*/login", "/api/register", "/api/*/register",
                                     "/photos/**", "/event-photo/**", "/profile-photos/**", "/product-service-photo/**",
-                                    "/api/**"   // TODO: remove "/api/**", and add other public routes
+                                    "/api/**" , "/ws/**",           // WebSocket endpoint
+                                    "/topic/**",        // WebSocket teme (ako ti treba da budu javne)
+                                    "/queue/**"    // TODO: remove "/api/**", and add other public routes
                             ).permitAll()
                             .anyRequest().authenticated();
                 });

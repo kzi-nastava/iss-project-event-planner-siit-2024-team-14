@@ -92,6 +92,7 @@ public class UserService implements UserDetailsService {
         userDTO.setPassword(user.getPassword());
         userDTO.setRole(user.getClass().getSimpleName());
         userDTO.setCity(user.getCity());
+        userDTO.setMuted(user.isMuted());
 
         // Prepare UserLoginDTO
         LoginResponseDTO userLoginDTO = new LoginResponseDTO();

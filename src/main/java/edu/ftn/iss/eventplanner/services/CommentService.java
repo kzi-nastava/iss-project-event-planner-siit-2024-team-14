@@ -8,8 +8,11 @@ import edu.ftn.iss.eventplanner.enums.Status;
 import edu.ftn.iss.eventplanner.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -155,8 +158,9 @@ public class CommentService {
         NotificationDTO notification = notificationService.createNotification(userId, message, commentId, null);
         String destination = "/topic/notifications/" + userId;
         messagingTemplate.convertAndSend(destination, notification);
-        notificationWebSocketService.sendWebSocketNotification(userId, notification);
     }
+
+
 
     /**
      * Notifies the provider (of a product or service) that a new comment has been posted on their item.

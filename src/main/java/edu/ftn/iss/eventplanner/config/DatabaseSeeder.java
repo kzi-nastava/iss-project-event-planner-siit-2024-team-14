@@ -466,6 +466,23 @@ public class DatabaseSeeder {
 
             System.out.println("✅ Podaci uspešno dodati u bazu.");
 
+            Notification n = new Notification();
+            n.setRead(false);
+            n.setUser(organizer);
+            n.setDate(LocalDate.now());
+            n.setMessage("vasa notifikacija je ovde");
+            n.setComment(comment1);
+            n.setRead(true);
+            notificationRepository.save(n);
+
+            Notification n1 = new Notification();
+            n1.setRead(false);
+            n1.setUser(organizer);
+            n1.setDate(LocalDate.now());
+            n1.setMessage("vasa ne procitana notifikacija je ovde");
+            n1.setComment(comment1);
+            notificationRepository.save(n1);
+
         };
     }
 }
