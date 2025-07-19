@@ -16,4 +16,5 @@ public class GetProductDTO {
     private int categoryId;
     private boolean available;
     private CategoryDTO category;
+    private int providerId;
 }
