@@ -45,22 +45,26 @@ public class EventService {
     /**
      * Returns the top 5 latest public events for a given city.
      */
-    public List<EventDTO> getTop5Events(String city) {
+
+    public List<EventDTO> getTop5Events(String city, List<Integer> blockedUserIds) {
         List<Event> events = eventRepository.findFirst5ByLocationOrderByStartDateDesc(city);
         List<Event> publicEvents = events.stream()
                 .filter(event -> event.getPrivacyType() == PrivacyType.OPEN)
+                .filter(event -> blockedUserIds == null || !blockedUserIds.contains(event.getOrganizer().getId()))
                 .collect(Collectors.toList());
 
         return mapToDTO(publicEvents);
     }
 
+
     /**
      * Returns all public events.
      */
-    public List<EventDTO> getEvents() {
+    public List<EventDTO> getEvents(List<Integer> blockedUserIds) {
         List<Event> events = eventRepository.findAll();
         List<Event> publicEvents = events.stream()
                 .filter(event -> event.getPrivacyType() == PrivacyType.OPEN)
+                .filter(event -> blockedUserIds == null || !blockedUserIds.contains(event.getOrganizer().getId()))
                 .collect(Collectors.toList());
 
         return mapToDTO(publicEvents);
@@ -91,13 +95,11 @@ public class EventService {
     /**
      * Returns filtered events by optional start date, end date, category, and location, with pagination support.
      */
-    public Page<EventDTO> getFilteredEvents(String startDateStr, String endDateStr, String category, String location, Pageable pageable) {
-        System.out.println("krecem servis:" + startDateStr);
+    public Page<EventDTO> getFilteredEvents(String startDateStr, String endDateStr, String category, String location, List<Integer> blockedUserIds, Pageable pageable) {
 
         LocalDate start = (startDateStr != null && !startDateStr.isEmpty()) ? LocalDate.parse(startDateStr) : null;
         LocalDate end = (endDateStr != null && !endDateStr.isEmpty()) ? LocalDate.parse(endDateStr) : null;
 
-        // Učitaj sve iz baze (ili koristi osnovne filtre, pa dodatno filtriraj u memoriji)
         Page<Event> eventPage = eventRepository.findAll(pageable);
 
         List<Event> filtered = eventPage.stream()
@@ -105,6 +107,7 @@ public class EventService {
                 .filter(event -> location == null || location.isEmpty() || event.getLocation().equals(location))
                 .filter(event -> start == null || !event.getStartDate().isBefore(start))
                 .filter(event -> end == null || !event.getEndDate().isAfter(end))
+                .filter(event -> blockedUserIds == null || !blockedUserIds.contains(event.getOrganizer().getId()))
                 .toList();
 
         List<EventDTO> dtoList = filtered.stream().map(event -> {
@@ -120,6 +123,7 @@ public class EventService {
                 dto.setOrganizerFirstName(event.getOrganizer().getName());
                 dto.setOrganizerLastName(event.getOrganizer().getSurname());
                 dto.setOrganizerProfilePicture("profile-photos/" + event.getOrganizer().getProfilePhoto());
+                dto.setOrganizerId(event.getOrganizer().getId());
             }
             return dto;
         }).toList();

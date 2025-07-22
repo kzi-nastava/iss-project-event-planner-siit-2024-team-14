@@ -4,6 +4,7 @@ import edu.ftn.iss.eventplanner.dtos.events.CreateEventDTO;
 import edu.ftn.iss.eventplanner.dtos.homepage.EventDTO;
 import edu.ftn.iss.eventplanner.entities.Event;
 import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
+import edu.ftn.iss.eventplanner.services.BlockedUserService;
 import edu.ftn.iss.eventplanner.services.EventService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,20 +21,32 @@ import java.util.List;
 public class EventController {
 
     private final EventService eventService;
+    private final BlockedUserService blockedUserService;
 
-    public EventController(EventService eventService) {
+    public EventController(EventService eventService, BlockedUserService blockedUserService) {
         this.eventService = eventService;
+        this.blockedUserService = blockedUserService;
     }
 
     @GetMapping("/api/events/top5")
     public ResponseEntity<List<EventDTO>> getTop5Events(
-            @RequestParam String city) {
-        return ResponseEntity.ok(eventService.getTop5Events(city));
+            @RequestParam String city,
+            @RequestParam(required = false) Integer userId) {
+        List<Integer> blockedUserIds = List.of();
+        if (userId != null) {
+            blockedUserIds = blockedUserService.getBlockedUsers(userId);
+        }
+
+        return ResponseEntity.ok(eventService.getTop5Events(city, blockedUserIds));
     }
 
     @GetMapping("api/events/all")
-    public ResponseEntity<List<EventDTO>> getAllEvents() {
-        return ResponseEntity.ok(eventService.getEvents());
+    public ResponseEntity<List<EventDTO>> getAllEvents(@RequestParam(required = false) Integer userId) {
+        List<Integer> blockedUserIds = List.of();
+        if (userId != null) {
+            blockedUserIds = blockedUserService.getBlockedUsers(userId);
+        }
+        return ResponseEntity.ok(eventService.getEvents(blockedUserIds));
     }
 
     @GetMapping("api/events/locations")
@@ -52,7 +65,6 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
-    // Endpoint za pretragu i filtriranje događaja
     @GetMapping("/api/events/filter")
     public ResponseEntity<Page<EventDTO>> getFilteredEvents(
             @RequestParam(value = "startDate", required = false) String startDate,
@@ -60,11 +72,16 @@ public class EventController {
             @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "location", required = false) String location,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(required = false) Integer userId) {
 
-        System.out.println("kontroler:" + startDate);
+        List<Integer> blockedUserIds = List.of();
+        if (userId != null) {
+            blockedUserIds = blockedUserService.getBlockedUsers(userId);
+        }
+
         Pageable pageable = PageRequest.of(page, size);
-        Page<EventDTO> eventDTOPage = eventService.getFilteredEvents(startDate, endDate, category, location, pageable);
+        Page<EventDTO> eventDTOPage = eventService.getFilteredEvents(startDate, endDate, category, location, blockedUserIds, pageable);
         return ResponseEntity.ok(eventDTOPage);
     }
 

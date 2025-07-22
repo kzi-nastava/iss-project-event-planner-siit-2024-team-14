@@ -1,5 +1,6 @@
 package edu.ftn.iss.eventplanner.controllers;
 import edu.ftn.iss.eventplanner.dtos.homepage.SolutionDTO;
+import edu.ftn.iss.eventplanner.services.BlockedUserService;
 import edu.ftn.iss.eventplanner.services.SolutionService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -12,20 +13,29 @@ import java.util.List;
 public class SolutionController {
 
     private final SolutionService solutionService;
+    private final BlockedUserService blockedUserService;
 
-    public SolutionController(SolutionService solutionService) {
+    public SolutionController(SolutionService solutionService, BlockedUserService blockedUserService) {
         this.solutionService = solutionService;
+        this.blockedUserService = blockedUserService;
     }
 
     @GetMapping("/api/solutions/top5")
     public ResponseEntity<List<SolutionDTO>> getTop5Solutions(
-            @RequestParam String city) {
-        return ResponseEntity.ok(solutionService.getTop5Solutions(city));
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) Integer userId) {
+
+        List<Integer> blockedUserIds = userId != null ? blockedUserService.getBlockedUsers(userId) : List.of();
+        return ResponseEntity.ok(solutionService.getTop5Solutions(city, blockedUserIds));
     }
 
     @GetMapping("api/solutions/all")
-    public ResponseEntity<List<SolutionDTO>> getAllSolutions() {
-        return ResponseEntity.ok(solutionService.getSolutions());
+    public ResponseEntity<List<SolutionDTO>> getAllSolutions(@RequestParam(required = false) Integer userId) {
+        List<Integer> blockedUserIds = List.of();
+        if (userId != null) {
+            blockedUserIds = blockedUserService.getBlockedUsers(userId);
+        }
+        return ResponseEntity.ok(solutionService.getSolutions(blockedUserIds));
     }
 
     @GetMapping("api/solutions/locations")
@@ -49,9 +59,14 @@ public class SolutionController {
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) String location,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Integer userId) {
 
-        Page<SolutionDTO> solutions = solutionService.getFilteredSolutions(startDate, endDate, category, type, minPrice, maxPrice, location, page, size);
+        List<Integer> blockedUserIds = List.of();
+        if (userId != null) {
+            blockedUserIds = blockedUserService.getBlockedUsers(userId);
+        }
+        Page<SolutionDTO> solutions = solutionService.getFilteredSolutions(startDate, endDate, category, type, minPrice, maxPrice, location, page, size, blockedUserIds);
         return ResponseEntity.ok(solutions);
     }
 }

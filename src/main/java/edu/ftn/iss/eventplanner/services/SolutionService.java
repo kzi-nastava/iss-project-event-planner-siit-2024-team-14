@@ -11,11 +11,13 @@ import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
 import edu.ftn.iss.eventplanner.repositories.SolutionBookingRepository;
 import edu.ftn.iss.eventplanner.repositories.SolutionRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -43,12 +45,13 @@ public class SolutionService {
      * @param city The city to filter solutions by
      * @return List of SolutionDTOs representing top 5 solutions
      */
-    public List<SolutionDTO> getTop5Solutions(String city) {
-        List<Solution> solutions = solutionRepository.findFirst5ByLocation(city).stream()
+    public List<SolutionDTO> getTop5Solutions(String city, List<Integer> blockedUserIds) {
+        return solutionRepository.findFirst5ByLocation(city).stream()
                 .filter(s -> !s.isDeleted() && s.isVisible() && s.isAvailable())
+                .filter(s -> s.getProvider() == null || !blockedUserIds.contains(s.getProvider().getId()))
                 .limit(5)
+                .map(this::mapToDTO)
                 .toList();
-        return mapToDTO(solutions);
     }
 
     /**
@@ -56,10 +59,12 @@ public class SolutionService {
      *
      * @return List of SolutionDTOs representing all solutions
      */
-    public List<SolutionDTO> getSolutions() {
+    public List<SolutionDTO> getSolutions(List<Integer> blockedUserIds) {
         List<Solution> solutions = solutionRepository.findAll().stream()
                 .filter(s -> !s.isDeleted() && s.isVisible() && s.isAvailable())
+                .filter(s -> blockedUserIds == null || !blockedUserIds.contains(s.getProvider().getId()))
                 .toList();
+
         return mapToDTO(solutions);
     }
 
@@ -97,7 +102,7 @@ public class SolutionService {
      */
     public Page<SolutionDTO> getFilteredSolutions(String startDate, String endDate, String category,
                                                   String type, Double minPrice, Double maxPrice,
-                                                  String location, int page, int size) {
+                                                  String location, int page, int size, List<Integer> blockedUserIds) {
 
         // Parse input dates if provided
         LocalDate start = (startDate != null && !startDate.isEmpty()) ? LocalDate.parse(startDate) : null;
@@ -121,14 +126,21 @@ public class SolutionService {
                 ? solutionBookingRepository.findBookedSolutionIds(start, end)
                 : null;
 
-        // Retrieve filtered and available solutions with pagination
+        // Retrieve all matching solutions (paginated)
         Page<Solution> solutionPage = solutionRepository.findAvailableSolutions(
                 category, mappedType, minPrice, maxPrice, location, bookedSolutionIds, PageRequest.of(page, size)
         );
 
-        // Map entities to DTOs
-        return solutionPage.map(this::mapToDTO);
+        // Filter out blocked providers and map to DTO
+        List<SolutionDTO> filtered = solutionPage.getContent().stream()
+                .filter(s -> s.getProvider() == null || !blockedUserIds.contains(s.getProvider().getId()))
+                .map(this::mapToDTO)
+                .toList();
+
+        // Recreate Page object manually
+        return new PageImpl<>(filtered, PageRequest.of(page, size), solutionPage.getTotalElements());
     }
+
 
     /**
      * Converts a Solution entity to a SolutionDTO.
