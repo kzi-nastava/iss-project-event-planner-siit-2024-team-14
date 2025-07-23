@@ -92,7 +92,7 @@ public class EventBudgetController {
         Object item = budgetService.addEventBudgetItem(eventId, categoryId, itemDTO.getAmount());
 
         URI location = uriComponentsBuilder
-                .path("/api/events/{eventId}/{categoryId}")
+                .path("/api/events/{eventId}/budget/{categoryId}")
                 .buildAndExpand(eventId, categoryId)
                 .toUri();
 
