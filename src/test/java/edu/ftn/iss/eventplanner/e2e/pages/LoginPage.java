@@ -4,7 +4,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 
 
 public class LoginPage {
@@ -17,12 +20,14 @@ public class LoginPage {
     @FindBy(id = "password")
     private WebElement inputPassword;
 
-    @FindBy(xpath = "//form//button[type='submit']")
+    @FindBy(xpath = "//form//button[@type='submit']")
     private WebElement buttonSubmit;
 
+    private final WebDriver driver;
 
 
     public LoginPage(WebDriver driver) {
+        this.driver = driver;
         driver.get(URL);
         PageFactory.initElements(driver, this);
     }
@@ -36,6 +41,9 @@ public class LoginPage {
         inputEmail.sendKeys(email);
         inputPassword.sendKeys(password);
         buttonSubmit.click();
+
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.urlContains("home"));
     }
 
 }
