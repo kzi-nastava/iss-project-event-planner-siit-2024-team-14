@@ -30,6 +30,9 @@ public class LoginPage {
         this.driver = driver;
         driver.get(URL);
         PageFactory.initElements(driver, this);
+
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.visibilityOf(buttonSubmit));
     }
 
 
