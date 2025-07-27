@@ -72,9 +72,12 @@ public class InvitationService {
             // Check if user already exists
             boolean alreadyRegistered = userRepository.existsByEmail(email.trim());
             String frontendBaseUrl = "http://localhost:4200";
+            String androidBaseUrl = "http://10.0.2.2:8080";
+                    ;
 
             // Build appropriate link depending on whether the user is registered
-            String invitationLink;
+            String webLink;
+            String androidLink;
             if (alreadyRegistered) {
                 userRepository.findByEmail(email.trim()).ifPresent(user -> {
                     if (user.getJoinedEvents() == null) {
@@ -87,15 +90,20 @@ public class InvitationService {
                     }
                 });
 
-                invitationLink = frontendBaseUrl + "/invitation/login?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&eventId=" + event.getId();
+                webLink = frontendBaseUrl + "/invitation/login?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&eventId=" + event.getId();
+                androidLink = androidBaseUrl + "/invitation/login?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&eventId=" + event.getId();
+
                 inv.setStatus(Status.APPROVED);
                 invitationRepository.save(inv);
             } else {
-                invitationLink = frontendBaseUrl + "/invitation/register?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&eventId=" + event.getId();
+                webLink = frontendBaseUrl + "/invitation/register?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&eventId=" + event.getId();
+                androidLink = androidBaseUrl + "/invitation/register?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&eventId=" + event.getId();
+
             }
 
             // Send invitation email
-            emailService.sendInvitationEmail(email, event, invitationLink);
+            emailService.sendInvitationEmail(email, event, webLink, androidLink);
+
         }
 
         return created;
