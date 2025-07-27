@@ -50,7 +50,7 @@ public class Event {
     private List<BookingService> reservations = new ArrayList<>();
 
     @OneToOne(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Budget budget;
+    private Budget budget = new Budget(this);
 
 
     public Event(Integer id, EventOrganizer organizer, String name, String description, int maxParticipants, PrivacyType privacyType, String location, LocalDate startDate, LocalDate endDate, String imageUrl, EventType eventType, List<SolutionCategory> selectedCategories) {
