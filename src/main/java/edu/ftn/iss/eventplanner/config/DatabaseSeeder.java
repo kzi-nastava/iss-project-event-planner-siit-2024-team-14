@@ -8,13 +8,16 @@ import edu.ftn.iss.eventplanner.repositories.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
+@Profile("!test")
 public class DatabaseSeeder {
 
     @Bean
@@ -23,7 +26,7 @@ public class DatabaseSeeder {
                                    UserRepository userRepository,
                                    SolutionRepository solutionRepository,
                                    CategoryRepository solutionCategoryRepository,
-                                   ServiceAndProductProviderRepository providerRepository,
+                                   ProductPurchaseRepository purchaseRepository,
                                    CommentRepository commentRepository, NotificationRepository notificationRepository) {
         return args -> {
             System.out.println("🔍 Provera podataka u bazi...");
@@ -482,6 +485,20 @@ public class DatabaseSeeder {
             n1.setMessage("vasa ne procitana notifikacija je ovde");
             n1.setComment(comment1);
             notificationRepository.save(n1);
+
+            eventRepository.findById(1).ifPresent(event -> {
+                event.setBudget(new Budget());
+                event.getBudget().addItem(solutionCategoryRepository.findById(1).get(), 100_000);
+                event.getBudget().addItem(solutionCategoryRepository.findById(2).get(), 500_000);
+                eventRepository.save(event);
+            });
+
+            eventRepository.findById(2).ifPresent(event -> {
+                event.setBudget(new Budget());
+                var purchase = new PurchaseProduct(event, rooftop);
+                purchase.setPurchaseDate(event.getStartDate().minusDays(15).atStartOfDay());
+                purchaseRepository.save(purchase);
+            });
 
         };
     }
