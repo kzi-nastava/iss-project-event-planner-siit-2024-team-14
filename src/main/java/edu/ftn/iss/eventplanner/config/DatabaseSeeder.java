@@ -29,9 +29,6 @@ public class DatabaseSeeder {
                                    ProductPurchaseRepository purchaseRepository,
                                    CommentRepository commentRepository, NotificationRepository notificationRepository) {
         return args -> {
-            System.out.println("🔍 Provera podataka u bazi...");
-
-            // Dodavanje SolutionCategory
             SolutionCategory decorationCategory = solutionCategoryRepository.findByName("Decoration")
                     .orElseGet(() -> solutionCategoryRepository.save(new SolutionCategory(
                             null,
@@ -64,8 +61,6 @@ public class DatabaseSeeder {
                             Status.APPROVED
                     )));
 
-
-            // Proveri i dodaj EventType
             EventType partyType = eventTypeRepository.findByName("Party")
                     .orElseGet(() -> eventTypeRepository.save(new EventType(null, "Party", "Social gathering", true, new ArrayList<>())));
             EventType theatreType = eventTypeRepository.findByName("Theatre")
@@ -206,14 +201,12 @@ public class DatabaseSeeder {
                         LocalDate.of(2025, 10, 7), LocalDate.of(2025, 10, 10), "event8.png", partyType, categories));
             }
 
-            if (eventRepository.findByName("Proba").isEmpty()) {
+            if (eventRepository.findByName("Test").isEmpty()) {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(2));
-                System.out.println("Categories for 'Proba': " + categories);
-                eventRepository.save(new Event(null, organizer, "Proba", "For horse lovers, free entry", 30, PrivacyType.OPEN, "Novi Sad",
+                System.out.println("Categories for 'Test': " + categories);
+                eventRepository.save(new Event(null, organizer, "Test", "For horse lovers, free entry", 30, PrivacyType.OPEN, "Novi Sad",
                         LocalDate.of(2026, 2, 27), LocalDate.of(2026, 2, 28), "event2.png", partyType, categories));
             }
-
-
 
             // Add categories to event types
             partyType.getSolutionCategories().add(cateringCategory);
@@ -226,7 +219,6 @@ public class DatabaseSeeder {
             eventTypeRepository.save(partyType);
             eventTypeRepository.save(theatreType);
 
-            // Dodavanje ServiceAndProductProvider
             ServiceAndProductProvider provider1 = (ServiceAndProductProvider) userRepository.findByEmail("provider1@example.com")
                     .orElseGet(() -> {
                         ServiceAndProductProvider newProvider = new ServiceAndProductProvider();
@@ -283,8 +275,6 @@ public class DatabaseSeeder {
                         return userRepository.save(newProvider);
                     });
 
-
-            // Dodavanje Solution (proizvodi/usluge)
 
             Product champagne = (Product) solutionRepository.findByName("Champagne").orElseGet(() -> {
                 Product balloonDecoration = new Product();
@@ -446,14 +436,13 @@ public class DatabaseSeeder {
                 return solutionRepository.save(weddingDJ);
             });
 
-            // Dodavanje komentara sa statusom PENDING
             Comment comment1 = new Comment();
             comment1.setContent("Great event, looking forward to it!");
             comment1.setRating(5);
             comment1.setDate(LocalDate.now());
             comment1.setStatus(Status.PENDING);
             comment1.setProduct(champagne);
-            comment1.setCommenter(organizer); // Koristimo organizatora kao komentatora
+            comment1.setCommenter(organizer);
             commentRepository.save(comment1);
 
             Comment comment2 = new Comment();
@@ -462,7 +451,7 @@ public class DatabaseSeeder {
             comment2.setDate(LocalDate.now());
             comment2.setStatus(Status.PENDING);
             comment2.setProduct(photobooth);
-            comment2.setCommenter(organizer); // Koristimo organizatora kao komentatora
+            comment2.setCommenter(organizer);
             commentRepository.save(comment2);
 
             System.out.println("✅ Podaci uspešno dodati u bazu.");
@@ -471,7 +460,7 @@ public class DatabaseSeeder {
             n.setRead(false);
             n.setUser(organizer);
             n.setDate(LocalDate.now());
-            n.setMessage("vasa notifikacija je ovde");
+            n.setMessage("your test notification is here");
             n.setComment(comment1);
             n.setRead(true);
             notificationRepository.save(n);
@@ -480,7 +469,7 @@ public class DatabaseSeeder {
             n1.setRead(false);
             n1.setUser(organizer);
             n1.setDate(LocalDate.now());
-            n1.setMessage("vasa ne procitana notifikacija je ovde");
+            n1.setMessage("your test unread notification is here");
             n1.setComment(comment1);
             notificationRepository.save(n1);
 
