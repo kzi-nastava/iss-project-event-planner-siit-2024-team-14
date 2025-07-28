@@ -88,7 +88,7 @@ public class DatabaseSeeder {
                     .orElseGet(() -> {
                         EventOrganizer newOrganizer = new EventOrganizer();
                         newOrganizer.setEmail("milicabosancic03@gmail.com");
-                        newOrganizer.setPassword("ana123");
+                        newOrganizer.setPassword("milica123");
                         newOrganizer.setName("Ana");
                         newOrganizer.setSurname("Jovanovic");
                         newOrganizer.setProfilePhoto("milicabosancic03@gmail.com.png");
@@ -168,52 +168,50 @@ public class DatabaseSeeder {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(1));
                 System.out.println("Categories for 'Birthday Party': " + categories);
                 eventRepository.save(new Event(null, organizer, "Birthday Party", "Entry with present", 50, PrivacyType.OPEN, "Belgrade",
-                        LocalDate.of(2025, 6, 2), LocalDate.of(2025, 6, 2), "event1.png", partyType, categories));
+                        LocalDate.of(2025, 9, 2), LocalDate.of(2025, 9, 2), "event1.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Horse Riding").isEmpty()) {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(2));
                 System.out.println("Categories for 'Horse Riding': " + categories);
                 eventRepository.save(new Event(null, organizer, "Horse Riding", "For horse lovers, free entry", 30, PrivacyType.OPEN, "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "event2.png", partyType, categories));
+                        LocalDate.of(2025, 10, 25), LocalDate.of(2025, 10, 25), "event2.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Bakery opening").isEmpty()) {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(3, 4));
                 System.out.println("Categories for 'Bakery opening': " + categories);
                 eventRepository.save(new Event(null, organizer3, "Bakery opening", "Come with an empty stomach!", 30, PrivacyType.OPEN, "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "event6.png", partyType, categories));
+                        LocalDate.of(2025, 11, 25), LocalDate.of(2025, 11, 25), "event6.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Rooftop theatre").isEmpty()) {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(1));
                 System.out.println("Categories for 'Rooftop theatre': " + categories);
                 eventRepository.save(new Event(null, organizer, "Rooftop theatre", "Free entry, bring popcorn and drinks!", 30, PrivacyType.OPEN, "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "event3.png", partyType, categories));
+                        LocalDate.of(2025, 12, 25), LocalDate.of(2025, 12, 25), "event3.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Graduation party").isEmpty()) {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(4));
                 System.out.println("Categories for 'Graduation party': " + categories);
                 eventRepository.save(new Event(null, organizer5, "Graduation party", "All college graduates wellcome :)", 30, PrivacyType.OPEN, "Novi Sad",
-                        LocalDate.of(2025, 7, 25), LocalDate.of(2025, 7, 25), "event5.png", theatreType, categories));
+                        LocalDate.of(2025, 9, 25), LocalDate.of(2025, 9, 25), "event5.png", theatreType, categories));
             }
 
             if (eventRepository.findByName("EXIT Festival").isEmpty()) {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(3));
                 System.out.println("Categories for 'EXIT Festival': " + categories);
                 eventRepository.save(new Event(null, organizer2, "EXIT Festival", "Together, always", 30, PrivacyType.OPEN, "Novi Sad",
-                        LocalDate.of(2025, 7, 7), LocalDate.of(2025, 7, 10), "event8.png", partyType, categories));
+                        LocalDate.of(2025, 10, 7), LocalDate.of(2025, 10, 10), "event8.png", partyType, categories));
             }
 
             if (eventRepository.findByName("Proba").isEmpty()) {
                 List<SolutionCategory> categories = solutionCategoryRepository.findAllById(List.of(2));
                 System.out.println("Categories for 'Proba': " + categories);
                 eventRepository.save(new Event(null, organizer, "Proba", "For horse lovers, free entry", 30, PrivacyType.OPEN, "Novi Sad",
-                        LocalDate.of(2025, 2, 27), LocalDate.of(2025, 2, 28), "event2.png", partyType, categories));
+                        LocalDate.of(2026, 2, 27), LocalDate.of(2026, 2, 28), "event2.png", partyType, categories));
             }
-
-
 
 
 
