@@ -1,6 +1,7 @@
 package edu.ftn.iss.eventplanner.security;
 
 import edu.ftn.iss.eventplanner.services.UserService;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -62,11 +63,12 @@ public class SecurityConfig {
                             .requestMatchers(
                                     "/api/login", "/api/*/login", "/api/register", "/api/*/register",
                                     "/photos/**", "/event-photo/**", "/profile-photos/**", "/product-service-photo/**",
-                                    "/api/**" , "/ws/**",           // WebSocket endpoint
-                                    "/topic/**",        // WebSocket teme (ako ti treba da budu javne)
-                                    "/queue/**"    // TODO: remove "/api/**", and add other public routes
+                                    "/api/events/*/budget",
+                                    "/api/**" // TODO: remove "/api/**", and add other public routes
                             ).permitAll()
-                            .anyRequest().authenticated();
+                            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                            .requestMatchers("/api/**").authenticated()
+                            .anyRequest().permitAll();
                 });
 
         return http.build();
