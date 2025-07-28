@@ -1,10 +1,12 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.CreateProductDTO;
-import edu.ftn.iss.eventplanner.dtos.CreatedProductDTO;
-import edu.ftn.iss.eventplanner.dtos.GetProductDTO;
-import edu.ftn.iss.eventplanner.dtos.UpdateProductDTO;
-import edu.ftn.iss.eventplanner.dtos.UpdatedProductDTO;
+import edu.ftn.iss.eventplanner.dtos.*;
+import edu.ftn.iss.eventplanner.repositories.ProductRepository;
+import edu.ftn.iss.eventplanner.services.ProductService;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,49 +20,32 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping(value = "/api/products", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequiredArgsConstructor
 public class ProductController {
 
+    private final ProductService productService;
     Collection<GetProductDTO> products = new ArrayList<>();
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<GetProductDTO>> getProducts() {
-
-        GetProductDTO product1 = new GetProductDTO();
-        product1.setName("Balloons");
-        product1.setDescription("Best for Birthday Parties!");
-        product1.setPrice(100);
-        product1.setDiscount(20);
-        product1.setImageUrl("photo");
-
-        GetProductDTO product2 = new GetProductDTO();
-        product2.setName("Cake");
-        product2.setDescription("Best for Birthday Parties!");
-        product2.setPrice(100);
-        product2.setDiscount(20);
-        product2.setImageUrl("photo");
-
-        products.add(product1);
-        products.add(product2);
-
-        return new ResponseEntity<Collection<GetProductDTO>>(products, HttpStatus.OK);
+    @GetMapping
+    public Page<GetProductDTO> getProducts(
+            @RequestParam(required = false) String q,
+            @ModelAttribute SolutionFilterParamsDto filters,
+            Pageable pageable,
+            ModelMapper modelMapper,
+            ProductRepository _products
+    ) {
+        var products = _products.search(q, filters.toFilterParams().toSpecification(), pageable);
+        return products.map(p -> modelMapper.map(p, GetProductDTO.class));
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetProductDTO> getProduct(@PathVariable("id") Long id) {
-        GetProductDTO product = new GetProductDTO();
-
-        if (product == null) {
-            return new ResponseEntity<GetProductDTO>(HttpStatus.NOT_FOUND);
-        }
-
-        product.setName("Balloons");
-        product.setDescription("Best for Birthday Parties!");
-        product.setPrice(100);
-        product.setDiscount(20);
-        product.setImageUrl("photo");
-
-        return new ResponseEntity<GetProductDTO>(product, HttpStatus.OK);
+    @GetMapping("/{id:\\d+}")
+    public GetProductDTO getProduct(
+            @PathVariable("id") int id,
+            ModelMapper modelMapper
+    ) {
+        var product = productService.getProductById(id);
+        return modelMapper.map(product, GetProductDTO.class);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -140,4 +125,5 @@ public class ProductController {
         int toIndex = Math.min((page + 1) * size, products.size());
         return products.subList(fromIndex, toIndex);
     }
+
 }

@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface SolutionRepository extends JpaRepository<Solution, Integer> {
+
     List<Solution> findFirst5ByLocation(String location);
 
     Optional<Solution> findByName(String name);
@@ -38,5 +39,9 @@ public interface SolutionRepository extends JpaRepository<Solution, Integer> {
                                           @Param("location") String location,
                                           @Param("bookedSolutionIds") List<Long> bookedSolutionIds,
                                           Pageable pageable);
+
+
+    List<Solution> findByProvider_Id(int providerId);
+    Page<Solution> findByProvider_Id(int providerId, Pageable pageable);
 
 }

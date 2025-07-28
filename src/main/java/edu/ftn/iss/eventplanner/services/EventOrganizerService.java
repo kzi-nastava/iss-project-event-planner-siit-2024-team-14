@@ -6,16 +6,22 @@ import edu.ftn.iss.eventplanner.dtos.registration.RegisterEoDTO;
 import edu.ftn.iss.eventplanner.dtos.registration.RegisterResponseDTO;
 import edu.ftn.iss.eventplanner.dtos.reports.ViewOrganizerProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateOrganizerDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateToOrganizerDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdatedOrganizerDTO;
 import edu.ftn.iss.eventplanner.entities.EventOrganizer;
+import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.repositories.EventOrganizerRepository;
+import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.MalformedURLException;
@@ -25,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,7 +42,13 @@ public class EventOrganizerService {
     private EventOrganizerRepository organizerRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private EmailService emailService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public ResponseEntity<RegisterResponseDTO> register(RegisterEoDTO dto, MultipartFile photo) {
         try {
@@ -136,7 +149,7 @@ public class EventOrganizerService {
         organizerDTO.setAddress(organizer.getAddress());
         organizerDTO.setPhoneNumber(String.valueOf(organizer.getPhoneNumber()));
         organizerDTO.setRole("EventOrganizer");
-        organizerDTO.setProfilePhoto(organizer.getProfilePhoto());
+        organizerDTO.setProfilePhoto("profile-photos/" + organizer.getProfilePhoto());
 
         GetOrganizerDTO getOrganizerDTO = new GetOrganizerDTO();
         getOrganizerDTO.setMessage("ok");
@@ -235,7 +248,7 @@ public class EventOrganizerService {
                         organizer.getAddress(),
                         organizer.getCity(),
                         organizer.getPhoneNumber(),
-                        organizer.getProfilePhoto()
+                        "profile-photos/" + organizer.getProfilePhoto()
                   ))
                 .orElse(null);
     }
@@ -252,5 +265,53 @@ public class EventOrganizerService {
         }
         organizerRepository.save(organizer);
         return ResponseEntity.ok(new RegisterResponseDTO("Organizer deactivated successfully!", true));
+    }
+
+    @Transactional
+    public void upgradeUserToOrganizer(UpdateToOrganizerDTO dto, MultipartFile photo) throws IOException {
+        User existingUser = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + dto.getEmail()));
+
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match.");
+        }
+
+        Integer userId = existingUser.getId();
+
+        userRepository.delete(existingUser);
+        entityManager.flush();
+
+        EventOrganizer organizer = new EventOrganizer();
+        organizer.setId(userId);
+        organizer.setEmail(existingUser.getEmail());
+        organizer.setPassword(existingUser.getPassword());
+        organizer.setAddress(dto.getAddress());
+        organizer.setCity(dto.getCity());
+        organizer.setPhoneNumber(Integer.parseInt(dto.getPhoneNumber()));
+        organizer.setActive(existingUser.isActive());
+        organizer.setVerified(existingUser.isVerified());
+        organizer.setSuspended(existingUser.isSuspended());
+        organizer.setMuted(existingUser.isMuted());
+        organizer.setBlockedUsers(existingUser.getBlockedUsers());
+        organizer.setFavoriteSolutions(existingUser.getFavoriteSolutions());
+        organizer.setFavouriteEvents(existingUser.getFavouriteEvents());
+        organizer.setJoinedEvents(existingUser.getJoinedEvents());
+        organizer.setActivationToken(existingUser.getActivationToken());
+        organizer.setTokenCreationDate(existingUser.getTokenCreationDate());
+
+        organizer.setName(dto.getName());
+        organizer.setSurname(dto.getSurname());
+
+        // Save profile photo
+        if (photo != null && !photo.isEmpty()) {
+            String uploadDir = "src/main/resources/static/profile-photos/";
+            Files.createDirectories(Paths.get(uploadDir));
+            String photoFilename = dto.getEmail() + "_profile.png";
+            Path filePath = Paths.get(uploadDir + photoFilename);
+            Files.write(filePath, photo.getBytes());
+            organizer.setProfilePhoto(photoFilename);
+        }
+
+        userRepository.save(organizer);
     }
 }

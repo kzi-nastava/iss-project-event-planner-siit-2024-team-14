@@ -8,11 +8,15 @@ import edu.ftn.iss.eventplanner.dtos.updateUsers.ChangedPasswordDTO;
 import edu.ftn.iss.eventplanner.entities.ReportRequest;
 import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.enums.Status;
+import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.ReportRequestRepository;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import edu.ftn.iss.eventplanner.security.JWTUtil;
@@ -22,19 +26,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
-public class UserService {
+@NoArgsConstructor
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
-
-    private  final ReportRequestRepository reportRepository;
+    @Autowired
+    private  ReportRequestRepository reportRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;  // Fix here!
 
-    public UserService(ReportRequestRepository reportRepository) {
-        this.reportRepository = reportRepository;
-    }
 
     public ResponseEntity<LoginResponseDTO> login(LoginDTO loginDTO) {
         Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail());
@@ -81,14 +83,16 @@ public class UserService {
         }
 
         // Generate token
-        String token = JWTUtil.generateToken(user.getEmail());
+        String token = JWTUtil.generateToken(user);
 
         // Prepare User DTO
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setEmail(user.getEmail());
+        userDTO.setPassword(user.getPassword());
         userDTO.setRole(user.getClass().getSimpleName());
         userDTO.setCity(user.getCity());
+        userDTO.setMuted(user.isMuted());
 
         // Prepare UserLoginDTO
         LoginResponseDTO userLoginDTO = new LoginResponseDTO();
@@ -125,6 +129,25 @@ public class UserService {
             ChangedPasswordDTO response = new ChangedPasswordDTO();
             response.setMessage("User not found");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    public User getUserById(int id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User with email '" + email + "' not found"));
+    }
+
+    @Override
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+        try {
+            return getUserByEmail(username);
+        } catch (NotFoundException e) {
+            throw new UsernameNotFoundException(e.getMessage());
         }
     }
 }

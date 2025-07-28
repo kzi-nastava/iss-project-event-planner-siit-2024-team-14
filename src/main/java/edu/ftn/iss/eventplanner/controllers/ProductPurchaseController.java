@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -37,7 +38,7 @@ public class ProductPurchaseController {
     @GetMapping("/products")
     public List<GetProductDTO> getAvailableXorPurchasedProductsForEvent(
             @PathVariable int eventId,
-            @RequestParam String status // purchased | available
+            @RequestParam(required = false, defaultValue = "available") String status // purchased | available
     ) {
         List<Product> products = switch (status.toLowerCase()) {
             case "purchased" -> productService.getPurchasedProductsForEvent(eventId);
@@ -79,6 +80,7 @@ public class ProductPurchaseController {
 
     // POST organizer[Organizes the event 1]@*/api/events/1/purchases
     @PostMapping("/purchases")
+    @PreAuthorize("hasRole('ORGANIZER')")
     public ResponseEntity<ProductPurchaseDTO> purchaseProductForEvent(
             @PathVariable int eventId,
             @RequestBody int productId,

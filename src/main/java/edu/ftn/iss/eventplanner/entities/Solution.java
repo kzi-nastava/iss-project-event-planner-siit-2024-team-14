@@ -40,6 +40,12 @@ public class Solution {
     @JoinColumn(name = "provider_id")
     private ServiceAndProductProvider provider;
 
-    @OneToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<EventType> applicableEventTypes;
+
+    @Transient
+    public double getPriceWithDiscount() {
+        return price - price * (discount > 1 ? discount / 100 : discount);
+    }
+
 }

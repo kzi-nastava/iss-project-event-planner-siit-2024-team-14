@@ -8,5 +8,5 @@ import lombok.Data;
 public class ApproveCommentDTO {
 
     private Integer commentId;
-    private String approved;  // Da li se komentar odobrava (true) ili briše (false)
+    private String approved;
 }

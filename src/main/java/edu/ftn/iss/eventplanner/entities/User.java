@@ -1,9 +1,14 @@
 package edu.ftn.iss.eventplanner.entities;
 import lombok.*;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Data
@@ -15,7 +20,7 @@ import java.util.UUID;
 @DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("USER")  // Add this to set the discriminator value for the base class
 
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,5 +71,23 @@ public class User {
     // Optionally, a method to generate a token
     public void generateActivationToken() {
         this.activationToken = UUID.randomUUID().toString();
+    }
+
+
+    public boolean hasBlocked(User other) {
+        return blockedUsers.stream()
+                .map(BlockedUser::getBlocked)
+                .map(User::getId)
+                .anyMatch(Objects.requireNonNull(other).getId()::equals);
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 }

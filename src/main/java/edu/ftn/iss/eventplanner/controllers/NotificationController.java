@@ -38,6 +38,7 @@ public class NotificationController {
 
     @GetMapping
     public List<NotificationDTO> getNotifications(@RequestParam("userId") Integer userId) {
+        System.out.println("korisnik id za notifikacije: " + userId);
         return notificationService.getUserNotifications(userId);
     }
 
@@ -64,6 +65,4 @@ public class NotificationController {
         Integer unreadCount = notificationService.getUnreadNotificationCount(userId);
         return ResponseEntity.ok(unreadCount);
     }
-
-
 }

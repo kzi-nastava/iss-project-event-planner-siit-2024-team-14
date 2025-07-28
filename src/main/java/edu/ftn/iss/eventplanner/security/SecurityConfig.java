@@ -1,15 +1,28 @@
 package edu.ftn.iss.eventplanner.security;
 
+import edu.ftn.iss.eventplanner.services.UserService;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -18,18 +31,45 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public UserDetailsService userDetailsService() { return new UserService(); }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        var provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
+    }
+
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, TokenAuthFilter tokenAuthFilter, DaoAuthenticationProvider authProvider, RestAuthenticationEntryPoint restAuthenticationEntryPoint) throws Exception {
         http
-                .cors().and().csrf().disable()  // Disabling CSRF if not needed (adjust as per your need)
-                .authorizeHttpRequests()
-                .requestMatchers("/api/providers/**", "/api/users/**", "/api/organizers/**",
-                        "/api/events/*", "/api/events/**",  "/api/solutions/*", "/api/comments/*", "/api/notifications/*", "/api/notifications", "/api/notifications/**",
-                        "/api/providers/register", "/api/providers/activate", "/api/users/register",
-                        "/api/users/activate", "/api/users/login", "/ws/**", "/api/services", "/api/services/*", "/api/services/**", "/api/products", "/api/products/*", "/api/bookings/*", "/api/bookings/**", "/api/bookings/reserve", "/api/reports", "/api/reports/*",
-                        "/api/reports/**", "/photos/**", "/event-photo/**", "/api/chat", "/api/chat/*", "/api/chat/**", "/api/chat/***", "/api/chat/blocked-users/", "api/event-types/**", "api/categories/**").permitAll()
-                .anyRequest().authenticated()  // Ostale rute zahtevaju autentifikaciju
-                .and()
-                .formLogin().disable();  // Disable form login (ako koristiš JWT ili neki drugi metod)
+                .cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .formLogin(AbstractHttpConfigurer::disable)
+                .exceptionHandling(configurer -> configurer.authenticationEntryPoint(restAuthenticationEntryPoint))
+                .authenticationProvider(authProvider)
+                .addFilterBefore(tokenAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests( registry -> {
+                    registry
+                            // should only contain routes that don't require authentication (ex. login)
+                            .requestMatchers(
+                                    "/api/login", "/api/*/login", "/api/register", "/api/*/register",
+                                    "/photos/**", "/event-photo/**", "/profile-photos/**", "/product-service-photo/**",
+                                    "/api/events/*/budget",
+                                    "/api/**" // TODO: remove "/api/**", and add other public routes
+                            ).permitAll()
+                            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                            .requestMatchers("/api/**").authenticated()
+                            .anyRequest().permitAll();
+                });
 
         return http.build();
     }

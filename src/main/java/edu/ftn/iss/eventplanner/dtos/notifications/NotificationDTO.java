@@ -14,7 +14,7 @@ public class NotificationDTO {
     private Integer id;
     private String message;
     private LocalDate date;
-    private boolean isRead;
+    private boolean read;
     private Integer userId;
     private Integer commentId;
     private Integer eventId;

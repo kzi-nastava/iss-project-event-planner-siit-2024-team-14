@@ -1,6 +1,8 @@
 package edu.ftn.iss.eventplanner.controllers;
 
 import edu.ftn.iss.eventplanner.dtos.*;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateAdminDTO;
+import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdatedAdminDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

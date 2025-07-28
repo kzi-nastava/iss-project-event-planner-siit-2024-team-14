@@ -45,6 +45,13 @@ public class ServiceDTO {
     public boolean isIsVisible() { return visibility == null || visibility == OfferingVisibility.PUBLIC; }
     public Integer getProviderId() { return provider == null ? null : provider.getId(); }
     public boolean isIsAvailable() { return available; }
+    public String getImageUrl() {
+        try {
+            return this.images[0];
+        } catch (NullPointerException | IndexOutOfBoundsException ex) {
+            return null;
+        }
+    }
 
     // TODO: Model and DTO field names should match in order for clients to know sort parameters
 }

@@ -1,41 +1,44 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.PriceDTO;
+import edu.ftn.iss.eventplanner.entities.ServiceAndProductProvider;
+import edu.ftn.iss.eventplanner.services.SolutionService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
-@RequestMapping(path = {"/api/providers/{providerId}/prices"})
-public class PriceListController { // not sure how the service this will interact with will look
+@RequestMapping("/api")
+@PreAuthorize("hasRole('PROVIDER')")
+public class PriceListController {
 
-    protected static final String
-            SERVICE_URL_FORMAT = "api/services/%d",
-            PRODUCT_URL_FORMAT = "api/products/%d";
+    private final SolutionService solutionService;
 
-    @GetMapping
-    ResponseEntity<Collection<PriceDTO>> getProviderPriceList(
-            @PathVariable(name = "providerId") Long providerId,
-            @RequestParam(name = "exclude-products", required = false) String excludeProducts,
-            @RequestParam(name = "exclude-services", required = false) String excludeServices,
-            @RequestParam(name = "name", required = false) String name
-    ) {
-        if (excludeProducts != null && excludeServices != null) {
-            // throw new "Can't exclude both services and products!";
-            return ResponseEntity.badRequest().build();
-        }
 
-        PriceDTO dummy = new PriceDTO();
-        dummy.setOffering(SERVICE_URL_FORMAT.formatted(1));
-        dummy.setOfferingName(name);
-        dummy.setPrice(101);
-        dummy.setDiscount(0.2);
+    @GetMapping(path = {"/solutions/price-list", "/solutions/price-list.pdf", "/price-list", "/price-list.pdf"})
+    Object exportPriceList2PDF(
+            @AuthenticationPrincipal ServiceAndProductProvider principal
+           )
+    {
+        var priceList = solutionService.getProviderPriceListPdf(principal);
 
-        return ResponseEntity.ok(List.of(dummy));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDisposition(
+                ContentDisposition.inline().filename("price-list.pdf").build()
+        );
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(priceList);
     }
+
 
 }
 
