@@ -39,7 +39,7 @@ class EventBudgetControllerIntegrationTest {
     @BeforeAll
     void setupAll() {
         adminToken = login("admin@gmail.com", "admin").getToken();
-        organizerToken = login("milicabosancic03@gmail.com", "ana123").getToken();
+        organizerToken = login("milicabosancic03@gmail.com", "milica123").getToken();
     }
 
     @BeforeEach

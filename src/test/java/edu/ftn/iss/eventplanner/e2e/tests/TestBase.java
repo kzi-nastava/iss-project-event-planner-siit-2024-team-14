@@ -63,7 +63,7 @@ public class TestBase {
         @BeforeClass
         public void loginOrganizer() {
             new LoginPage(driver)
-                    .logIn("milicabosancic03@gmail.com", "ana123");
+                    .logIn("milicabosancic03@gmail.com", "milica123");
         }
 
     }
