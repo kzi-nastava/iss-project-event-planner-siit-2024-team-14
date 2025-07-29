@@ -28,7 +28,7 @@ public class EmailService {
     public void sendActivationEmail(String to, String activationToken, String role) throws MessagingException {
         String subject = "Activate Your Account";
 
-        String frontendWebUrl = "http://localhost:4200";
+        String frontendWebUrl = "http://localhost:8080";
         String androidAppUrl = "http://10.0.2.2:8080";
 
         String webLink = frontendWebUrl + "/activate?token=" + activationToken + "&role=" + role;

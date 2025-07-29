@@ -71,7 +71,7 @@ public class InvitationService {
 
             // Check if user already exists
             boolean alreadyRegistered = userRepository.existsByEmail(email.trim());
-            String frontendBaseUrl = "http://localhost:4200";
+            String frontendBaseUrl = "http://localhost:8080";
             String androidBaseUrl = "http://10.0.2.2:8080";
                     ;
 
