@@ -122,7 +122,7 @@
 			<artifactId>junit-platform-suite</artifactId>
 			<scope>test</scope>
 		</dependency>
-    
+
     <dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
@@ -136,6 +136,12 @@
 			<version>3.141.59</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
 
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -166,8 +172,28 @@
 			<version>2.1.7</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.squareup.okio</groupId>
+			<artifactId>okio</artifactId>
+			<version>3.3.0</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>4.11.0</version>
+		</dependency>
+
+		<!-- WebDriver Manager (automatski preuzima driver-e) -->
+		<dependency>
+			<groupId>io.github.bonigarcia</groupId>
+			<artifactId>webdrivermanager</artifactId>
+			<version>5.5.1</version>
+		</dependency>
 
 	</dependencies>
+
 
 
 	<build>

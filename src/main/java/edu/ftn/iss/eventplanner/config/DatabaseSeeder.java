@@ -24,6 +24,7 @@ public class DatabaseSeeder {
     CommandLineRunner initDatabase(EventRepository eventRepository,
                                    EventTypeRepository eventTypeRepository,
                                    UserRepository userRepository,
+                                   BookingServiceRepository bookingServiceRepository,
                                    SolutionRepository solutionRepository,
                                    CategoryRepository solutionCategoryRepository,
                                    ProductPurchaseRepository purchaseRepository,
