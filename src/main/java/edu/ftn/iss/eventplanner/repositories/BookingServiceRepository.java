@@ -24,4 +24,5 @@ public interface BookingServiceRepository extends JpaRepository<BookingService, 
     List<BookingService> findBookingsStartingAt(Time oneHourLater);
 
     List<BookingService> findByConfirmed(Status confirmed);
+
 }

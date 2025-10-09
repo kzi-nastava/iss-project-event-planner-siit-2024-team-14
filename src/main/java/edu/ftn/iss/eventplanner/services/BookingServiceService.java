@@ -98,6 +98,21 @@ public class BookingServiceService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
 
+        if (bookingDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Booking date cannot be in the past.");
+        }
+
+        boolean isOverlapping = checkForOverlappingBookings(serviceId, bookingDate, startTime, duration);
+        if (isOverlapping) {
+            throw new IllegalArgumentException("The selected time slot is already booked.");
+        }
+
+        LocalTime startLocalTime = startTime.toLocalTime();
+        if (startLocalTime.isBefore(LocalTime.of(8, 0)) || startLocalTime.plus(duration).isAfter(LocalTime.of(23, 45))) {
+            throw new IllegalArgumentException("Booking time must be between 08:00 and 23:45.");
+        }
+
+
         BookingService booking = new BookingService();
         booking.setService(service);
         booking.setEvent(event);
@@ -203,6 +218,10 @@ public class BookingServiceService {
             BookingService booking = bookingServiceRepository.findById(dto.getRequestId())
                     .orElseThrow(() -> new IllegalArgumentException("Booking request not found with ID: " + dto.getRequestId()));
 
+            if (booking.getConfirmed() == Status.APPROVED) {
+                throw new IllegalStateException("Request is already approved");
+            }
+
             boolean isOverlapping = checkForOverlappingBookings(
                     booking.getService().getId(),
                     booking.getBookingDate(),
@@ -254,6 +273,7 @@ public class BookingServiceService {
                     newEndTime.isAfter(existingBooking.getStartTime().toLocalTime())) {
                 return true;
             }
+
         }
         return false;
     }

@@ -38,6 +38,8 @@ public class BookingService {
     protected void addBudgetItemIfNecessary() {
         if (confirmed != Status.APPROVED)
             return;
+        if (service == null || service.getCategory() == null || event == null || event.getBudget() == null)
+            return;
 
         var category = service.getCategory();
         var budget = Optional.ofNullable(event.getBudget())
