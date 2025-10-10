@@ -6,13 +6,18 @@ import edu.ftn.iss.eventplanner.entities.*;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.enums.PrivacyType;
 import edu.ftn.iss.eventplanner.repositories.*;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -271,5 +276,33 @@ public class EventService {
                 .toList();
     }
 
+    public void toggleFavoriteEvent(Integer userId, Integer eventId) {
+        System.out.println("ENTERED toggleFavoriteEvent in EventService");
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Event not found"));
+
+        if (user.getFavouriteEvents().contains(event)) {
+            user.getFavouriteEvents().remove(event);
+        } else {
+            user.getFavouriteEvents().add(event);
+        }
+        userRepository.save(user);
+    }
+
+    public ResponseEntity<Resource> getEventPhoto(int id) throws MalformedURLException {
+        Event event = getEventById(id);
+
+        Path path = Paths.get("src/main/resources/static/event-photo/" + event.getImageUrl());
+        Resource resource = new UrlResource(path.toUri());
+
+        // Return the image as a Resource
+        if (resource.exists() || resource.isReadable()) {
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource); // Adjust type if JPEG
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }
