@@ -8,8 +8,10 @@ import edu.ftn.iss.eventplanner.dtos.reports.ViewOrganizerProfileDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateOrganizerDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateToOrganizerDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdatedOrganizerDTO;
+import edu.ftn.iss.eventplanner.entities.Event;
 import edu.ftn.iss.eventplanner.entities.EventOrganizer;
 import edu.ftn.iss.eventplanner.entities.User;
+import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.repositories.EventOrganizerRepository;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
 import jakarta.mail.MessagingException;
@@ -314,4 +316,44 @@ public class EventOrganizerService {
 
         userRepository.save(organizer);
     }
+
+
+    public List<Event> getFavoriteEventsByUserId(Integer userId) {
+        System.out.println("ENTERED getFavoriteEventsByUserId in EventOrganizerService");
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with ID: " + userId));
+
+        System.out.println("user.getFavouriteEvents(): " + user.getFavouriteEvents());
+
+        return user.getFavouriteEvents();
+    }
+
+    public boolean toggleFavoriteEvent(Integer userId, Integer eventId) {
+        System.out.println("ENTERED toggleFavoriteEvent in EventOrganizerService");
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with ID: " + userId));
+
+        Event event = entityManager.find(Event.class, eventId);
+        if (event == null) {
+            throw new NotFoundException("Event not found with ID: " + eventId);
+        }
+
+        boolean isFavorite;
+
+        if (user.getFavouriteEvents().contains(event)) {
+            user.getFavouriteEvents().remove(event);
+            isFavorite = false;
+            System.out.println("Removed event " + eventId + " from favorites");
+        } else {
+            user.getFavouriteEvents().add(event);
+            isFavorite = true;
+            System.out.println("Added event " + eventId + " to favorites");
+        }
+
+        userRepository.save(user);
+        return isFavorite;
+    }
+
 }

@@ -8,6 +8,7 @@ import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateOrganizerDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateToOrganizerDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdateToProviderDTO;
 import edu.ftn.iss.eventplanner.dtos.updateUsers.UpdatedOrganizerDTO;
+import edu.ftn.iss.eventplanner.entities.Event;
 import edu.ftn.iss.eventplanner.services.EventOrganizerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/organizers")
@@ -91,4 +93,20 @@ public class EventOrganizerController {
     public ResponseEntity<RegisterResponseDTO> deactivate(@PathVariable int id) {
         return organizerService.deactivate(id);
     }
+
+
+    @GetMapping("/{userId}/favorite-events")
+    public ResponseEntity<List<Event>> getFavoriteEvents(@PathVariable Integer userId) {
+        List<Event> favoriteEvents = organizerService.getFavoriteEventsByUserId(userId);
+        return ResponseEntity.ok(favoriteEvents);
+    }
+
+    @PostMapping("/{userId}/favorite-events/{eventId}")
+    public ResponseEntity<Map<String, Boolean>> toggleFavoriteEvent(
+            @PathVariable Integer userId,
+            @PathVariable Integer eventId) {
+        boolean isFavorite = organizerService.toggleFavoriteEvent(userId, eventId);
+        return ResponseEntity.ok(Map.of("isFavorite", isFavorite));
+    }
+
 }
