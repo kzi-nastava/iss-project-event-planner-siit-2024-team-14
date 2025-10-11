@@ -142,4 +142,5 @@ public class EventController {
         System.out.println("ENTERED getPhoto CONTROLLER for Event");
         return eventService.getEventPhoto(id);
     }
+
 }

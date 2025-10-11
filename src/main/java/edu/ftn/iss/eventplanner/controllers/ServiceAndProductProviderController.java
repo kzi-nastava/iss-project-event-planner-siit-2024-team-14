@@ -12,15 +12,19 @@ import edu.ftn.iss.eventplanner.services.ServiceAndProductProviderService;
 import edu.ftn.iss.eventplanner.services.SolutionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/providers")
@@ -59,13 +63,21 @@ public class ServiceAndProductProviderController {
 
     @GetMapping("/get-photos/{id}")
     public ResponseEntity<List<String>> getPhotos(@PathVariable int id) {
-        List<String> photoUrls = providerService.getPhotos(id);
+        List<String> filenames = providerService.getPhotos(id); // returns filenames
+        // Build full URLs pointing to the image-serving endpoint:
+        List<String> urls = filenames.stream()
+                .map(fn -> ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path("/api/providers/get-photo/")
+                        .path(id + "/")
+                        .path(fn)
+                        .toUriString())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(urls);
+    }
 
-        if (photoUrls.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(photoUrls);
+    @GetMapping("/get-photo/{id}/{filename:.+}")
+    public ResponseEntity<Resource> getPhoto(@PathVariable int id, @PathVariable String filename) throws MalformedURLException, IOException {
+        return providerService.getPhotoResponse(id, filename);
     }
 
     @PutMapping("/update")
