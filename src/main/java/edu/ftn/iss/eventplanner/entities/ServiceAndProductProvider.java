@@ -35,5 +35,4 @@ public class ServiceAndProductProvider extends User {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_PROVIDER"));
     }
-
 }

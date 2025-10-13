@@ -63,7 +63,8 @@ public class SecurityConfig {
                             .requestMatchers(
                                     "/api/login", "/api/*/login", "/api/register", "/api/*/register",
                                     "/photos/**", "/event-photo/**", "/profile-photos/**", "/product-service-photo/**",
-                                    "/api/events/*/budget",
+                                    "/api/events/*/budget", "/api/events/*/toggle-favorite/*", "api/providers/get-photos/*",
+                                    "api/solutions",
                                     "/api/**" // TODO: remove "/api/**", and add other public routes
                             ).permitAll()
                             .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()

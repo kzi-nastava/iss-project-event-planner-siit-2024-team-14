@@ -17,12 +17,16 @@ import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.nio.file.Files;
@@ -181,18 +185,28 @@ public class ServiceAndProductProviderService {
         return ResponseEntity.ok(getProviderDTO);
     }
 
+    // getPhotos just returns the filenames saved in DB/entity:
     public List<String> getPhotos(int id) {
         ServiceAndProductProvider provider = providerRepository.findById(id);
-
-        if (provider == null || provider.getPhotos().isEmpty()) {
-            return Collections.emptyList(); // Return empty list if no photos found
+        if (provider == null || provider.getPhotos() == null) {
+            return Collections.emptyList();
         }
-
-        // Convert filenames into accessible URLs
-        return provider.getPhotos().stream()
-                .map(photo -> "http://localhost:8080/profile-photos/" + photo) // Change based on deployment
-                .collect(Collectors.toList());
+        return provider.getPhotos(); // e.g. ["email1.png","email2.png"]
     }
+
+    // serve a photo by filename
+    public ResponseEntity<Resource> getPhotoResponse(int id, String filename) throws MalformedURLException, IOException {
+        // Ensure path points to folder where you saved photos (match registration/upload code)
+        Path path = Paths.get("src/main/resources/static/photos/" + filename);
+        Resource resource = new UrlResource(path.toUri());
+        if (!resource.exists() || !resource.isReadable()) {
+            return ResponseEntity.notFound().build();
+        }
+        String contentType = Files.probeContentType(path);
+        MediaType mediaType = contentType != null ? MediaType.parseMediaType(contentType) : MediaType.APPLICATION_OCTET_STREAM;
+        return ResponseEntity.ok().contentType(mediaType).body(resource);
+    }
+
 
 
     public UpdatedProviderDTO update(Integer userId, UpdateProviderDTO updateDTO) {

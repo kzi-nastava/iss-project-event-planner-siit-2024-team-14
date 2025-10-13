@@ -6,6 +6,7 @@ import edu.ftn.iss.eventplanner.entities.Event;
 import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
 import edu.ftn.iss.eventplanner.services.BlockedUserService;
 import edu.ftn.iss.eventplanner.services.EventService;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 
 @RestController
@@ -126,4 +128,19 @@ public class EventController {
         List<EventDTO> events = eventService.getJoinedEventsForUser(userId);
         return ResponseEntity.ok(events);
     }
+
+    @PostMapping("/api/events/{eventId}/toggle-favorite/{userId}")
+    public ResponseEntity<String> toggleFavorite(
+            @PathVariable Integer eventId,
+            @PathVariable Integer userId) {
+        eventService.toggleFavoriteEvent(userId, eventId);
+        return ResponseEntity.ok("Favorite toggled successfully");
+    }
+
+    @GetMapping("/api/events/get-photo/{id}")
+    public ResponseEntity<Resource> getPhoto(@PathVariable("id") int id) throws MalformedURLException {
+        System.out.println("ENTERED getPhoto CONTROLLER for Event");
+        return eventService.getEventPhoto(id);
+    }
+
 }
