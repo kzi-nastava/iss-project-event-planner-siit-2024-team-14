@@ -10,7 +10,6 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "solution_type", discriminatorType = DiscriminatorType.STRING)
-
 public class Solution {
 
     @Id
@@ -24,10 +23,13 @@ public class Solution {
     private double price;
     private double discount;
     private String imageUrl;
-    private boolean isAvailable;
-    private boolean isVisible;
-    private boolean isDeleted;
-    private Status status;      // when new category is requested
+
+    private boolean isAvailable = true;
+    private boolean isVisible = true;
+    private boolean isDeleted = false;
+
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.APPROVED; // default value
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Comment> comments;
@@ -47,5 +49,4 @@ public class Solution {
     public double getPriceWithDiscount() {
         return price - price * (discount > 1 ? discount / 100 : discount);
     }
-
 }

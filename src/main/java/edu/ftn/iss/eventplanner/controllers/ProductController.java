@@ -1,129 +1,152 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.*;
+import edu.ftn.iss.eventplanner.dtos.CreateProductDTO;
+import edu.ftn.iss.eventplanner.dtos.SolutionFilterParamsDto;
+import edu.ftn.iss.eventplanner.dtos.SolutionFilterParamsDto;
+import edu.ftn.iss.eventplanner.dtos.productDetails.ProductDTO;
+import edu.ftn.iss.eventplanner.dtos.UpdateProductDTO;
+import edu.ftn.iss.eventplanner.entities.*;
+import edu.ftn.iss.eventplanner.entities.SolutionSearchRequest;
+import edu.ftn.iss.eventplanner.enums.OfferingVisibility;
+import edu.ftn.iss.eventplanner.exceptions.InternalServerError;
+import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
+import edu.ftn.iss.eventplanner.mappers.ProductDTOMapper;
+import edu.ftn.iss.eventplanner.repositories.CategoryRepository;
 import edu.ftn.iss.eventplanner.repositories.ProductRepository;
 import edu.ftn.iss.eventplanner.services.ProductService;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.io.IOException;
+import java.security.Principal;
 
 @RestController
-@RequestMapping(value = "/api/products", produces = MediaType.APPLICATION_JSON_VALUE)
-@RequiredArgsConstructor
+@RequestMapping(path = {"api/products"}, produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProductController {
 
     private final ProductService productService;
-    Collection<GetProductDTO> products = new ArrayList<>();
+    private final ProductDTOMapper modelMapper;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
+    @Autowired
+    public ProductController(ProductService productService, ProductDTOMapper modelMapper, ProductRepository productRepository, CategoryRepository categoryRepository) {
+        this.productService = productService;
+        this.modelMapper = modelMapper;
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+    }
+
+    // GET */api/products (Result differs across user roles)
     @GetMapping
-    public Page<GetProductDTO> getProducts(
+    @ResponseStatus(HttpStatus.OK)
+    public Page<ProductDTO> getAllProducts(
             @RequestParam(required = false) String q,
             @ModelAttribute SolutionFilterParamsDto filters,
             Pageable pageable,
-            ModelMapper modelMapper,
-            ProductRepository _products
+            Principal principal
     ) {
-        var products = _products.search(q, filters.toFilterParams().toSpecification(), pageable);
-        return products.map(p -> modelMapper.map(p, GetProductDTO.class));
+        SolutionSearchRequest searchRequest = new SolutionSearchRequest(q, filters.toFilterParams(), principal == null ? null : principal.getName());
+        Page<Product> products = productService.getAllProducts(searchRequest, pageable);
+        return products.map(modelMapper::toProductDTO);
     }
 
-    @GetMapping("/{id:\\d+}")
-    public GetProductDTO getProduct(
-            @PathVariable("id") int id,
-            ModelMapper modelMapper
+    // GET @*/api/products/1
+    @GetMapping(path = "/{id:\\d+}")
+    public ResponseEntity<ProductDTO> getProductById(
+            @PathVariable(name = "id") int id
     ) {
-        var product = productService.getProductById(id);
-        return modelMapper.map(product, GetProductDTO.class);
+        Product product = productService.getProductById(id); // maybe hide products that are not publicly visible
+        return ResponseEntity.ok(modelMapper.toProductDTO(product));
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UpdatedProductDTO> updateProduct(@PathVariable Long id, @RequestBody UpdateProductDTO product) throws Exception{
-        UpdatedProductDTO updatedProduct = new UpdatedProductDTO();
+    @PostMapping
+    @PreAuthorize("hasRole('PROVIDER')")
+    public ResponseEntity<ProductDTO> createProduct(
+            @RequestBody @Validated CreateProductDTO productDTO,
+            @AuthenticationPrincipal ServiceAndProductProvider principal
+    ) {
+        try {
+            // ✅ Set logged-in provider ID
+            productDTO.setProviderId(principal.getId());
 
-        updatedProduct.setId(id);
-        product.setName(product.getName());
-        product.setDescription("Best for Birthday Parties!");
-        product.setPrice(100);
-        product.setDiscount(20);
-        product.setImageUrl("photo");
+            // ✅ Create product
+            Product product = productService.createProduct(productDTO);
 
-        return new ResponseEntity<UpdatedProductDTO>(updatedProduct, HttpStatus.OK);
+            // ✅ Map to response DTO
+            ProductDTO responseDTO = modelMapper.toProductDTO(product);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+        } catch (Exception e) {
+            throw new InternalServerError("Failed to create product: " + e.getMessage());
+        }
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CreatedProductDTO> createProduct(@RequestBody CreateProductDTO product) throws Exception{
-        Collection<CreatedProductDTO> products = new ArrayList<>();
 
-        CreatedProductDTO savedProduct = new CreatedProductDTO();
-
-        savedProduct.setId(1L);
-        savedProduct.setName(product.getName());
-        savedProduct.setDescription(product.getDescription());
-        savedProduct.setPrice(product.getPrice());
-        savedProduct.setDiscount(product.getDiscount());
-        savedProduct.setImageUrl(product.getImageUrl());
-        savedProduct.setCategoryId(product.getCategoryId());
-        savedProduct.setEventTypes(product.getEventTypes());
-        savedProduct.setAvailable(product.isAvailable());
-        savedProduct.setVisible(product.isVisible());
-        products.add(savedProduct);
-        return new ResponseEntity<CreatedProductDTO>(savedProduct, HttpStatus.CREATED);
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductDTO> putUpdateProduct(
+            @PathVariable int id,
+            @RequestBody @Validated UpdateProductDTO updateProductDTO
+    ) {
+        updateProductDTO.setId(id);
+        Product product = productService.updateProduct(updateProductDTO);
+        return ResponseEntity.ok(modelMapper.toProductDTO(product));
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @Transactional
+    public Product updateProduct(UpdateProductDTO dto) {
+        Product product = productRepository.findById(dto.getId())
+                .orElseThrow(() -> new NotFoundException("Product not found"));
+
+        product.setName(dto.getName());
+        product.setDescription(dto.getDescription());
+        product.setSpecificities(dto.getSpecificities());
+        product.setPrice(dto.getPrice());
+        product.setDiscount(dto.getDiscount());
+        product.setImageUrl(dto.getImages() != null && !dto.getImages().isEmpty() ? dto.getImages().get(0) : null);
+        product.setAvailable(dto.getAvailable() != null ? dto.getAvailable() : product.isAvailable());
+        product.setVisible(dto.getVisibility() != null && dto.getVisibility() == OfferingVisibility.PUBLIC);
+
+        if (dto.getCategoryIds() != null && !dto.getCategoryIds().isEmpty()) {
+            SolutionCategory category = categoryRepository.findById(dto.getCategoryIds().get(0))
+                    .orElseThrow(() -> new NotFoundException("Category not found"));
+            product.setCategory(category);
+        }
+
+        return productRepository.save(product);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<GetProductDTO>> searchProducts(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String eventType,
-            @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice,
-            @RequestParam(required = false) Boolean available,
-            @RequestParam(required = false) Boolean visible,
-            @RequestParam(required = false) String description,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
 
-        List<GetProductDTO> filteredProducts = filterProducts(name, category, eventType, minPrice, maxPrice, available, visible, description);
 
-        List<GetProductDTO> paginatedProducts = paginateProducts(filteredProducts, page, size);
-
-        return ResponseEntity.ok(paginatedProducts);
+    // DELETE provider[Provides the product]|admin@*/api/products/1
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(path = "/{id:\\d+}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROVIDER') and true")
+    public void deleteProduct(
+            @PathVariable(name = "id") int id
+    ) {
+        productService.deleteProduct(id);
     }
 
-    private List<GetProductDTO> filterProducts(String name, String category, String eventType,
-                                               Double minPrice, Double maxPrice, Boolean available,
-                                               Boolean visible, String description) {
-        return products.stream()
-                .filter(p -> (name == null || p.getName().toLowerCase().contains(name.toLowerCase())) &&
-                        (category == null || p.getCategoryId() > 0) &&
-                        (minPrice == null || p.getPrice() >= minPrice) &&
-                        (maxPrice == null || p.getPrice() <= maxPrice) &&
-                        (available == null || p.isAvailable() == available) &&
-                        (description == null || p.getDescription().toLowerCase().contains(description.toLowerCase())))
-                .collect(Collectors.toList());
-    }
-
-    private List<GetProductDTO> paginateProducts(List<GetProductDTO> products, int page, int size) {
-        int fromIndex = Math.min(page * size, products.size());
-        int toIndex = Math.min((page + 1) * size, products.size());
-        return products.subList(fromIndex, toIndex);
+    // DELETE admin@*/api/products
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteAllProducts() {
+        productService.deleteAllProducts();
     }
 
 }
