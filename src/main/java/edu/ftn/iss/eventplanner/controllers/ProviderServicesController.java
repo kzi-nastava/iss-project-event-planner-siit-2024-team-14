@@ -1,10 +1,16 @@
 package edu.ftn.iss.eventplanner.controllers;
 
+import edu.ftn.iss.eventplanner.dtos.CreateProductDTO;
 import edu.ftn.iss.eventplanner.dtos.CreateServiceDTO;
+import edu.ftn.iss.eventplanner.dtos.productDetails.ProductDTO;
 import edu.ftn.iss.eventplanner.dtos.serviceDetails.ServiceDTO;
+import edu.ftn.iss.eventplanner.entities.CreateProductRequest;
 import edu.ftn.iss.eventplanner.entities.CreateServiceRequest;
+import edu.ftn.iss.eventplanner.entities.Product;
 import edu.ftn.iss.eventplanner.entities.Service;
+import edu.ftn.iss.eventplanner.mappers.ProductDTOMapper;
 import edu.ftn.iss.eventplanner.mappers.ServiceDTOMapper;
+import edu.ftn.iss.eventplanner.services.ProductService;
 import edu.ftn.iss.eventplanner.services.ServiceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,21 +31,28 @@ import java.util.Set;
 
 
 @RestController
-@RequestMapping(path = {"api/providers/{providerId:\\d+}/services"})
+@RequestMapping(path = {"api/providers/{providerId:\\d+}"})
 public class ProviderServicesController {
 
     private final ServiceService serviceService;
-    private final ServiceDTOMapper modelMapper;
+    private final ProductService productService;
+    private final ServiceDTOMapper serviceMapper;
+    private final ProductDTOMapper productMapper;
 
     @Autowired
-    public ProviderServicesController(ServiceService serviceService, ServiceDTOMapper modelMapper) {
-        this.modelMapper = modelMapper;
+    public ProviderServicesController(ServiceService serviceService,
+                                      ServiceDTOMapper modelMapper,
+                                      ProductService productService,
+                                      ProductDTOMapper productMapper) {
+        this.serviceMapper = modelMapper;
         this.serviceService = serviceService;
+        this.productService = productService;
+        this.productMapper = productMapper;
     }
 
 
     // GET */api/providers/1/services (Result differs across roles)
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path ="/services", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ServiceDTO>> getProviderServices(
             @PathVariable(name = "providerId") int providerId,
             @RequestParam MultiValueMap<String, String> params,
@@ -59,18 +72,34 @@ public class ProviderServicesController {
     }
 
     // POST provider[Is identified by id 1]|admin@*/api/providers/1/services
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path ="/products", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN') || hasRole('PROVIDER') && #providerId == authentication.principal.id")
     public ResponseEntity<ServiceDTO> createService(
             @PathVariable(name = "providerId") int providerId,
             @RequestBody @Valid CreateServiceDTO serviceRequestDTO,
             UriComponentsBuilder uriBuilder
     ) {
-        CreateServiceRequest request = modelMapper.toCreateServiceRequest(serviceRequestDTO, providerId);
+        CreateServiceRequest request = serviceMapper.toCreateServiceRequest(serviceRequestDTO, providerId);
         Service createdService = serviceService.createService(request);
 
         return ResponseEntity
                 .created(uriBuilder.path("/api/services/{id}").buildAndExpand(createdService.getId()).toUri())
-                .body(modelMapper.toServiceDTO(createdService));
+                .body(serviceMapper.toServiceDTO(createdService));
+    }
+
+    // POST provider[Is identified by id 1]|admin@*/api/providers/1/products
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ADMIN') || hasRole('PROVIDER') && #providerId == authentication.principal.id")
+    public ResponseEntity<ProductDTO> createProduct(
+            @PathVariable(name = "providerId") int providerId,
+            @RequestBody @Valid CreateProductDTO productRequestDTO,
+            UriComponentsBuilder uriBuilder
+    ) {
+        CreateProductRequest request = productMapper.toCreateProductRequest(productRequestDTO, providerId);
+        Product createdProduct = productService.createProduct(request);
+
+        return ResponseEntity
+                .created(uriBuilder.path("/api/products/{id}").buildAndExpand(createdProduct.getId()).toUri())
+                .body(productMapper.toProductDTO(createdProduct));
     }
 }
