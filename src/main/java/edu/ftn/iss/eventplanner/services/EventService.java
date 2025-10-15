@@ -1,10 +1,13 @@
 package edu.ftn.iss.eventplanner.services;
 
+import edu.ftn.iss.eventplanner.dtos.activity.ActivityDTO;
+import edu.ftn.iss.eventplanner.dtos.activity.CreateActivityDTO;
 import edu.ftn.iss.eventplanner.dtos.events.CreateEventDTO;
 import edu.ftn.iss.eventplanner.dtos.homepage.EventDTO;
 import edu.ftn.iss.eventplanner.entities.*;
 import edu.ftn.iss.eventplanner.exceptions.NotFoundException;
 import edu.ftn.iss.eventplanner.enums.PrivacyType;
+import edu.ftn.iss.eventplanner.mappers.ActivityMapper;
 import edu.ftn.iss.eventplanner.repositories.*;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -34,17 +37,23 @@ public class EventService {
     private final EventOrganizerRepository eventOrganizerRepository;
     private final SolutionCategoryRepository solutionCategoryRepository;
     private final UserRepository userRepository;
+    private final ActivityRepository activityRepository;
+    private final ActivityMapper activityMapper;
 
     public EventService(EventRepository eventRepository,
                         EventTypeRepository eventTypeRepository,
                         EventOrganizerRepository eventOrganizerRepository,
                         SolutionCategoryRepository solutionCategoryRepository,
-                        UserRepository userRepository) {
+                        UserRepository userRepository,
+                        ActivityRepository activityRepository,
+                        ActivityMapper activityMapper) {
         this.eventRepository = eventRepository;
         this.eventTypeRepository = eventTypeRepository;
         this.eventOrganizerRepository = eventOrganizerRepository;
         this.solutionCategoryRepository = solutionCategoryRepository;
         this.userRepository = userRepository;
+        this.activityRepository = activityRepository;
+        this.activityMapper = activityMapper;
     }
 
     /**
@@ -303,6 +312,24 @@ public class EventService {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    public ActivityDTO addActivity(Integer eventId, CreateActivityDTO dto) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        Activity activity = activityMapper.toEntity(dto);
+        activity.setEvent(event);
+        activityRepository.save(activity);
+
+        return activityMapper.toDTO(activity);
+    }
+
+    public List<ActivityDTO> getActivities(Integer eventId) {
+        return activityRepository.findByEventId(eventId)
+                .stream()
+                .map(activityMapper::toDTO)
+                .toList();
     }
 
 }
