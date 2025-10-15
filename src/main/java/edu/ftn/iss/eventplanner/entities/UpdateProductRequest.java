@@ -3,6 +3,8 @@ package edu.ftn.iss.eventplanner.entities;
 import edu.ftn.iss.eventplanner.enums.OfferingVisibility;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class UpdateProductRequest {
     private Integer id;
@@ -11,10 +13,11 @@ public class UpdateProductRequest {
     private String specificities;
     private Double price;
     private Double discount;
-    private String imageUrl;        // ← add this
+    private String imageUrl;
+    private List<Integer> applicableEventTypeIds;
     private Boolean available;
-    private Boolean visible;        // ← add this
-    private Integer categoryId;     // ← add this
+    private Boolean visible;
+    private Integer categoryId;
     private String categoryName;
     private String categoryDescription;
 }

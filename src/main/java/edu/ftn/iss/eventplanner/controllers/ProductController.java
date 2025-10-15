@@ -1,10 +1,9 @@
 package edu.ftn.iss.eventplanner.controllers;
 
-import edu.ftn.iss.eventplanner.dtos.CreateProductDTO;
-import edu.ftn.iss.eventplanner.dtos.SolutionFilterParamsDto;
+import edu.ftn.iss.eventplanner.dtos.*;
 import edu.ftn.iss.eventplanner.dtos.SolutionFilterParamsDto;
 import edu.ftn.iss.eventplanner.dtos.productDetails.ProductDTO;
-import edu.ftn.iss.eventplanner.dtos.UpdateProductDTO;
+import edu.ftn.iss.eventplanner.dtos.serviceDetails.ServiceDTO;
 import edu.ftn.iss.eventplanner.entities.*;
 import edu.ftn.iss.eventplanner.entities.SolutionSearchRequest;
 import edu.ftn.iss.eventplanner.enums.OfferingVisibility;
@@ -75,34 +74,33 @@ public class ProductController {
 
     @PostMapping
     @PreAuthorize("hasRole('PROVIDER')")
-    public ResponseEntity<ProductDTO> createProduct(
-            @RequestBody @Validated CreateProductDTO productDTO,
-            @AuthenticationPrincipal ServiceAndProductProvider principal
-    ) {
+    void createProductRedirect(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @AuthenticationPrincipal ServiceAndProductProvider principal,
+            UriComponentsBuilder uriBuilder
+    )
+    {
+        String path = uriBuilder.path("/api/providers/{id}/products")
+                .buildAndExpand(principal.getId())
+                .getPath();
+
         try {
-            // ✅ Set logged-in provider ID
-            productDTO.setProviderId(principal.getId());
-
-            // ✅ Create product
-            Product product = productService.createProduct(productDTO);
-
-            // ✅ Map to response DTO
-            ProductDTO responseDTO = modelMapper.toProductDTO(product);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
-        } catch (Exception e) {
-            throw new InternalServerError("Failed to create product: " + e.getMessage());
+            request.getRequestDispatcher(path).forward(request, response);
+        } catch (ServletException | IOException e) {
+            throw new InternalServerError(e.getMessage());
         }
     }
 
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> putUpdateProduct(
+    @PutMapping(path = "/{id:\\d+}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PROVIDER') and true") //
+    ResponseEntity<ProductDTO> putUpdateProduct(
             @PathVariable int id,
             @RequestBody @Validated UpdateProductDTO updateProductDTO
     ) {
         updateProductDTO.setId(id);
-        Product product = productService.updateProduct(updateProductDTO);
+        Product product = productService.updateProduct(modelMapper.toUpdateProductRequest(updateProductDTO));
         return ResponseEntity.ok(modelMapper.toProductDTO(product));
     }
 
@@ -116,7 +114,6 @@ public class ProductController {
         product.setSpecificities(dto.getSpecificities());
         product.setPrice(dto.getPrice());
         product.setDiscount(dto.getDiscount());
-        product.setImageUrl(dto.getImages() != null && !dto.getImages().isEmpty() ? dto.getImages().get(0) : null);
         product.setAvailable(dto.getAvailable() != null ? dto.getAvailable() : product.isAvailable());
         product.setVisible(dto.getVisibility() != null && dto.getVisibility() == OfferingVisibility.PUBLIC);
 
@@ -129,13 +126,11 @@ public class ProductController {
         return productRepository.save(product);
     }
 
-
-
     // DELETE provider[Provides the product]|admin@*/api/products/1
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(path = "/{id:\\d+}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PROVIDER') and true")
-    public void deleteProduct(
+    void deleteProduct(
             @PathVariable(name = "id") int id
     ) {
         productService.deleteProduct(id);

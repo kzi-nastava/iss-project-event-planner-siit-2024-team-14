@@ -1,6 +1,8 @@
 package edu.ftn.iss.eventplanner.mappers;
 
+import edu.ftn.iss.eventplanner.dtos.CreateProductDTO;
 import edu.ftn.iss.eventplanner.dtos.productDetails.ProductDTO;
+import edu.ftn.iss.eventplanner.entities.CreateProductRequest;
 import edu.ftn.iss.eventplanner.entities.Product;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,9 @@ import org.springframework.stereotype.Component;
 import edu.ftn.iss.eventplanner.dtos.UpdateProductDTO;
 import edu.ftn.iss.eventplanner.entities.UpdateProductRequest;
 import edu.ftn.iss.eventplanner.enums.OfferingVisibility;
+
+import java.time.Duration;
+import java.util.Optional;
 
 
 @Component
@@ -20,27 +25,38 @@ public class ProductDTOMapper {
         this.modelMapper = modelMapper;
     }
 
+    public Product fromDTO(Object dto) { return this.modelMapper.map(dto, Product.class); }
+
     public ProductDTO toProductDTO(Product product) {
-        ProductDTO dto = modelMapper.map(product, ProductDTO.class);
-        dto.setImages(product.getImageUrl() != null ? new String[]{product.getImageUrl()} : new String[0]);
-        return dto;
+        ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+        productDTO.setVisibility(product.isVisible() ? OfferingVisibility.PUBLIC : OfferingVisibility.PRIVATE);
+
+        return productDTO;
+    }
+
+    public CreateProductRequest toCreateProductRequest(CreateProductDTO productRequestDTO, int providerId) {
+        CreateProductRequest createProductRequest = modelMapper.map(productRequestDTO, CreateProductRequest.class);
+        createProductRequest.setProviderId(providerId);
+
+        Optional.ofNullable(productRequestDTO.getCategory())
+                .ifPresentOrElse(
+                        cr -> {
+                            if (cr.getId() != null) {
+                                createProductRequest.setCategoryId(cr.getId());
+                            } else {
+                                createProductRequest.setCategoryName(cr.getName());
+                                createProductRequest.setCategoryDescription(cr.getDescription());
+                            }
+                        },
+                        () -> {/* maybe throw exception */}
+                );
+
+        return createProductRequest;
     }
 
     public UpdateProductRequest toUpdateProductRequest(UpdateProductDTO dto) {
-        UpdateProductRequest request = new UpdateProductRequest();
 
-        request.setId(dto.getId());
-        request.setName(dto.getName());
-        request.setDescription(dto.getDescription());
-        request.setSpecificities(dto.getSpecificities());
-        request.setPrice(dto.getPrice());
-        request.setDiscount(dto.getDiscount());
-        request.setImageUrl(dto.getImages() != null && !dto.getImages().isEmpty() ? dto.getImages().get(0) : null);
-        request.setAvailable(dto.getAvailable());
-        request.setVisible(dto.getVisibility() != null && dto.getVisibility() == OfferingVisibility.PUBLIC);
-        request.setCategoryId(dto.getCategoryIds() != null && !dto.getCategoryIds().isEmpty() ? dto.getCategoryIds().get(0) : null);
-
-        return request;
+        return modelMapper.map(dto, UpdateProductRequest.class);
     }
 
 }

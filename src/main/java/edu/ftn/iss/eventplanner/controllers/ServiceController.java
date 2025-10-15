@@ -45,7 +45,6 @@ public class ServiceController {
         this.modelMapper = modelMapper;
     }
 
-
     // GET */api/services (Result differs across user roles)
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
