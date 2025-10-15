@@ -3,6 +3,7 @@ package edu.ftn.iss.eventplanner.entities;
 import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -21,7 +22,7 @@ public class Activity {
 
     private String name;
     private String description;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private String location;
 }

@@ -52,6 +52,9 @@ public class Event {
     @OneToOne(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private Budget budget;
 
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Activity> activities = new ArrayList<>();
+
 
     public Event(Integer id, EventOrganizer organizer, String name, String description, int maxParticipants, PrivacyType privacyType, String location, LocalDate startDate, LocalDate endDate, String imageUrl, EventType eventType, List<SolutionCategory> selectedCategories) {
         this.id = id;

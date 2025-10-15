@@ -1,15 +1,19 @@
 package edu.ftn.iss.eventplanner.controllers;
 
+import edu.ftn.iss.eventplanner.dtos.activity.ActivityDTO;
+import edu.ftn.iss.eventplanner.dtos.activity.CreateActivityDTO;
 import edu.ftn.iss.eventplanner.dtos.events.CreateEventDTO;
 import edu.ftn.iss.eventplanner.dtos.homepage.EventDTO;
 import edu.ftn.iss.eventplanner.entities.Event;
 import edu.ftn.iss.eventplanner.exceptions.BadRequestException;
 import edu.ftn.iss.eventplanner.services.BlockedUserService;
 import edu.ftn.iss.eventplanner.services.EventService;
+import jakarta.validation.Valid;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -141,6 +145,20 @@ public class EventController {
     public ResponseEntity<Resource> getPhoto(@PathVariable("id") int id) throws MalformedURLException {
         System.out.println("ENTERED getPhoto CONTROLLER for Event");
         return eventService.getEventPhoto(id);
+    }
+
+    @PostMapping("api/events/{eventId}/activities")
+    public ResponseEntity<ActivityDTO> addActivity(
+            @PathVariable Integer eventId,
+            @RequestBody @Valid CreateActivityDTO dto
+    ) {
+        ActivityDTO activityDTO = eventService.addActivity(eventId, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(activityDTO);
+    }
+
+    @GetMapping("api/events/{eventId}/activities")
+    public List<ActivityDTO> getActivities(@PathVariable Integer eventId) {
+        return eventService.getActivities(eventId);
     }
 
 }
