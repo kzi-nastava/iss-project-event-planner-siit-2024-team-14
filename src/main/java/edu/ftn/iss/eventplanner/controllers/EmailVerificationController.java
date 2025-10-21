@@ -32,6 +32,14 @@ public class EmailVerificationController {
         }
     }
 
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyGet(@RequestParam String token) {
+        return emailService.verifyActivationToken(token)
+                ? ResponseEntity.ok("Email verified successfully!")
+                : ResponseEntity.badRequest().body("Invalid or expired token.");
+    }
+
+
     @PostMapping("/resend")
     public ResponseEntity<String> resendVerificationEmail(@RequestBody EmailVerificationDTO verificationDTO) {
         System.out.println("Resending verification email to token: " + verificationDTO.getToken());

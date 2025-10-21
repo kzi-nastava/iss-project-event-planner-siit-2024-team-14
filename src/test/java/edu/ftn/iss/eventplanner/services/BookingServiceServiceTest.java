@@ -151,7 +151,7 @@ class BookingServiceServiceTest {
                 eq("org@example.com"),
                 eq("Test Event"),
                 eq(null),
-                eq(LocalDate.of(2025,9,11)),
+                eq(LocalDate.now()),
                 eq(Time.valueOf("10:00:00")),
                 eq(Duration.ofHours(1))
         );

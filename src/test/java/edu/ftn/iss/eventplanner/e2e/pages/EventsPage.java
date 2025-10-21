@@ -1,6 +1,7 @@
 package edu.ftn.iss.eventplanner.e2e.pages;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -18,8 +19,17 @@ public class EventsPage {
     }
 
     // ===== NAVIGATION =====
+    /** Stari potpis (koristi interni baseUrl) */
     public void open() {
         driver.get(baseUrl);
+        waitForInitialLoad();
+    }
+
+    /** Novi overload da test može da prosledi baseUrl (npr. "http://localhost:4200") */
+    public void open(String appBaseUrl) {
+        String url = appBaseUrl.endsWith("/events") ? appBaseUrl : appBaseUrl + "/events";
+        driver.get(url);
+        waitForInitialLoad();
     }
 
     // ===== ELEMENTS =====
@@ -58,9 +68,11 @@ public class EventsPage {
     // ===== ACTIONS =====
     public void search(String text) {
         WebElement input = searchInput();
+        int old = getCardsCount();
         input.clear();
         input.sendKeys(text);
         input.sendKeys(Keys.ENTER);
+        waitForCardsCountChange(old, 5);
     }
 
     public void setDate(String id, String value) {
@@ -83,7 +95,9 @@ public class EventsPage {
     }
 
     public void applyFilters() {
+        int old = getCardsCount();
         applyFiltersButton().click();
+        waitForCardsCountChange(old, 5);
     }
 
     public int getCardsCount() {
@@ -98,5 +112,30 @@ public class EventsPage {
     public void waitForAtLeastCards(int min, int timeoutSeconds) {
         new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds))
                 .until(d -> eventCards().size() >= min);
+    }
+
+    // ===== KOMPATIBILNE METODE ZA TVOJ TEST =====
+    /** Dugme "Add Event" / "Create" */
+    public void clickAddEvent() {
+        By by = By.cssSelector("[data-testid='add-event']");
+        if (!exists(by)) {
+            by = By.xpath("//button[contains(.,'Add Event') or contains(.,'Create')]");
+        }
+        wait.until(ExpectedConditions.elementToBeClickable(by)).click();
+    }
+
+    /** Provera da li lista kartica sadrži naziv događaja */
+    public boolean isEventInList(String name) {
+        return eventCards().stream().anyMatch(c -> c.getText() != null && c.getText().contains(name));
+    }
+
+    // ===== POMOĆNE =====
+    private void waitForInitialLoad() {
+        // sačekaj da se pojave kartice ili prazan state
+        wait.until(d -> !eventCards().isEmpty() || exists(By.cssSelector(".empty-state")));
+    }
+
+    private boolean exists(By by) {
+        return !driver.findElements(by).isEmpty();
     }
 }

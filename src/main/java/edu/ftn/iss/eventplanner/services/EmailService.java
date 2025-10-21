@@ -3,14 +3,16 @@ package edu.ftn.iss.eventplanner.services;
 import edu.ftn.iss.eventplanner.entities.Event;
 import edu.ftn.iss.eventplanner.entities.User;
 import edu.ftn.iss.eventplanner.repositories.UserRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -25,31 +27,45 @@ public class EmailService {
     @Autowired
     private UserRepository userRepository;
 
+    // In dev (emulator), your backend is reachable at 10.0.2.2
+    // In prod, switch to your real HTTPS domain.
+    private static final String BACKEND_BASE_URL = "http://10.0.2.2:8080";
+
+    private String urlEncode(String s) {
+        try {
+            return URLEncoder.encode(s, StandardCharsets.UTF_8.toString());
+        } catch (Exception e) {
+            return s;
+        }
+    }
+
     public void sendActivationEmail(String to, String activationToken, String role) throws MessagingException {
         String subject = "Activate Your Account";
 
-        String frontendWebUrl = "http://localhost:4200";
-        String androidAppUrl = "http://10.0.2.2:8080";
+        // Build ONE verify URL that hits your backend GET /api/email-verification/verify
+        String verifyUrl = BACKEND_BASE_URL
+                + "/api/email-verification/verify?token=" + urlEncode(activationToken)
+                + "&role=" + urlEncode(role);
 
-        String webLink = frontendWebUrl + "/activate?token=" + activationToken + "&role=" + role;
-        String androidLink = androidAppUrl + "/activate?token=" + activationToken + "&role=" + role;
-
-        String body = "<html>"
-                + "<body>"
-                + "<p>Click the button below to activate your account from Web:</p>"
-                + "<a href='" + webLink + "' style='display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: #5d5d5d; text-decoration: none; border-radius: 5px;'>Activate on Web</a>"
-                + "<br/><br/>"
-                + "<p>Or activate directly via Android app:</p>"
-                + "<a href='" + androidLink + "' style='display: inline-block; padding: 10px 20px; font-size: 16px; color: white; background-color: #8b5d5d; text-decoration: none; border-radius: 5px;'>Activate on Android</a>"
-                + "<br/><br/>"
-                + "<p>If neither button works, copy one of the links below:</p>"
-                + "<p>Web: <a href='" + webLink + "'>" + webLink + "</a></p>"
-                + "<p>Android: <a href='" + androidLink + "'>" + androidLink + "</a></p>"
-                + "</body>"
-                + "</html>";
+        String body = """
+                <html>
+                  <body style="font-family: Arial, Helvetica, sans-serif;">
+                    <p>Click the button below to verify your email and activate your account:</p>
+                    <p>
+                      <a href="%s"
+                         style="display:inline-block;padding:12px 20px;font-size:16px;color:#ffffff;
+                                background-color:#5d5d5d;text-decoration:none;border-radius:6px;">
+                        Verify Email
+                      </a>
+                    </p>
+                    <p>If the button doesn’t work, copy and paste this link into your browser:</p>
+                    <p><a href="%s">%s</a></p>
+                  </body>
+                </html>
+                """.formatted(verifyUrl, verifyUrl, verifyUrl);
 
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(body, true);
@@ -57,63 +73,58 @@ public class EmailService {
         mailSender.send(message);
     }
 
-
     public boolean verifyActivationToken(String token) {
         User user = userRepository.findByActivationToken(token);
         if (user == null) {
-            System.out.println("USERA NOT FIND------------------------------------------------------------------------------------------------------------");
-            return false; // Token is invalid
+            System.out.println("USER NOT FOUND for token");
+            return false;
         }
 
         LocalDateTime tokenCreationTime = user.getTokenCreationDate();
-        if (tokenCreationTime == null ||tokenCreationTime.plusHours(24).isBefore(LocalDateTime.now())) {
-            return false; // Token has expired
+        System.out.println("Created=" + tokenCreationTime + " Now=" + LocalDateTime.now());
+        if (tokenCreationTime == null || tokenCreationTime.plusHours(24).isBefore(LocalDateTime.now())) {
+            System.out.println("TOKEN INVALID or EXPIRED");
+            return false;
         }
 
-        // Token is valid, activate user
         user.setActive(true);
-        user.setActivationToken(null); // Remove token after activation
-        user.setTokenCreationDate(null); // Remove token creation date
+        user.setVerified(true);
+        user.setActivationToken(null);
+        user.setTokenCreationDate(null);
         userRepository.save(user);
+        System.out.println("USER ACTIVATED");
         return true;
     }
 
     public boolean resendActivationEmail(String token) {
-        // Find the user by the activation token
         User user = userRepository.findByActivationToken(token);
-
         if (user == null) {
-            // If no user is found with the provided token, return false
             System.out.println("User not found with the given activation token.");
             return false;
         }
 
-        // Check if the token is expired (24-hour validity)
         LocalDateTime tokenCreationTime = user.getTokenCreationDate();
         if (tokenCreationTime.plusHours(24).isBefore(LocalDateTime.now())) {
-            // If the token is expired, return false
             System.out.println("The activation token has expired.");
             return false;
         }
 
-        // Generate a new activation token (optional, if needed)
         user.generateActivationToken();
         user.setTokenCreationDate(LocalDateTime.now());
         userRepository.save(user);
 
-        // Send the activation email again
         try {
             sendActivationEmail(user.getEmail(), user.getActivationToken(), user.getClass().getSimpleName());
             System.out.println("Activation email resent successfully.");
             return true;
         } catch (MessagingException e) {
-            // Handle any issues with sending the email
             System.out.println("Failed to resend the activation email.");
             return false;
         }
     }
 
-    public void sendBookingNotification(String to, String eventName, String serviceName, LocalDate date, Time startTime, Duration duration) throws MessagingException {
+    public void sendBookingNotification(String to, String eventName, String serviceName,
+                                        LocalDate date, Time startTime, Duration duration) throws MessagingException {
         String subject = "New Booking Notification";
 
         String body = "<html>"
@@ -128,7 +139,7 @@ public class EmailService {
                 + "</html>";
 
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(body, true);
@@ -140,29 +151,29 @@ public class EmailService {
         String subject = "You're invited to the event: " + event.getName();
 
         String content = """
-        Hello,
+                Hello,
 
-        You have been invited to the event:
+                You have been invited to the event:
 
-        📝 Name: %s
-        🗒️ Description: %s
-        📍 Location: %s
-        📅 Start: %s
-        📅 End: %s
-        👤 Organizer: %s %s
+                📝 Name: %s
+                🗒️ Description: %s
+                📍 Location: %s
+                📅 Start: %s
+                📅 End: %s
+                👤 Organizer: %s %s
 
-        ➡️ To follow the event on web, click the following link:
-        %s
+                ➡️ To follow the event on web, click the following link:
+                %s
 
-        ➡️ To open the invitation on your Android app, use this link:
-        %s
+                ➡️ To open the invitation on your Android app, use this link:
+                %s
 
-        If you don't have an account, you'll be able to register quickly using these links.
-        If you already have an account, you'll be redirected to login and the event will be added to your calendar.
+                If you don't have an account, you'll be able to register quickly using these links.
+                If you already have an account, you'll be redirected to login and the event will be added to your calendar.
 
-        Best regards,
-        EventPlanner Team
-        """.formatted(
+                Best regards,
+                EventPlanner Team
+                """.formatted(
                 event.getName(),
                 event.getDescription(),
                 event.getLocation(),
@@ -181,7 +192,4 @@ public class EmailService {
 
         mailSender.send(message);
     }
-
-
-
 }
